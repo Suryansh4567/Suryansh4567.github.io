@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gati Infra - A Legacy of Engineering</title>
+    <meta name="description" content="Gati Infra: The confluence of precision engineering and timeless design, creating infrastructure that endures as a legacy for generations.">
+
+    <!-- External Resonances -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- AESTHETIC SIGNATURE (Integrated CSS) -->
+    <style>
+        :root {
+            --dark-green: #00381b; /* Refined, deeper green */
+            --off-white: #f9f9f9;
+            --text-dark: #1a1a1a;
+            --border-light: #e0e0e0;
+        }
+
+        /* Global Reset & Base Configuration */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--off-white);
+            color: var(--text-dark);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--dark-green);
+            font-weight: 700;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        section {
+            padding: 7rem 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        section.visible { opacity: 1; transform: translateY(0); }
+
+        /* Unified Image Philosophy */
+        img {
+            filter: grayscale(100%) contrast(1.1);
+            transition: filter 0.5s ease;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: rgba(249, 249, 249, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-light);
+            padding: 1.5rem 0;
+        }
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Playfair Display', serif; color: var(--dark-green); font-size: 1.8rem; text-decoration: none; letter-spacing: 1px; }
+        nav ul { display: flex; list-style: none; }
+        nav ul li { margin-left: 2.5rem; }
+        nav a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding-bottom: 5px;
+        }
+        nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background-color: var(--dark-green); transition: width 0.4s ease; }
+        nav a:hover::after { width: 100%; }
+
+        /* Hero Section */
+        #hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') no-repeat center center/cover;
+            background-attachment: fixed; /* Parallax effect */
+            color: white;
+            padding-top: 0;
+        }
+        .hero-content { max-width: 800px; }
+        #hero h1 {
+            font-size: 5rem;
+            color: white;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+            line-height: 1.1;
+        }
+        #hero p { font-size: 1.2rem; margin-top: 1rem; max-width: 500px; font-weight: 300; }
+        
+        /* Philosophy Section */
+        #philosophy .container { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 5rem; align-items: center; }
+        #philosophy h2 { font-size: 3.2rem; margin-bottom: 1.5rem; line-height: 1.2; }
+        #philosophy p { font-size: 1.1rem; margin-bottom: 1rem; }
+        .philosophy-image img { width: 100%; height: auto; }
+
+        /* Masterworks (Projects) Section */
+        #masterworks { background-color: #fff; }
+        #masterworks h2 { text-align: center; font-size: 3.2rem; margin-bottom: 4rem; }
+        .masterworks-grid { display: grid; grid-template-columns: 1fr; gap: 6rem; }
+        .masterwork-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        /* Alternate card layout */
+        .masterwork-card:nth-child(even) .image-wrapper { order: 2; }
+        .masterwork-card:nth-child(even) .masterwork-info { text-align: right; }
+        
+        .masterwork-card .image-wrapper { overflow: hidden; }
+        .masterwork-card img { width: 100%; height: 500px; object-fit: cover; display: block; }
+        .masterwork-info h3 { font-size: 2.2rem; margin-bottom: 1rem; }
+        .masterwork-info p { font-size: 1.1rem; max-width: 450px; }
+        .masterwork-card:nth-child(even) .masterwork-info p { margin-left: auto; }
+
+        /* Invitation Section */
+        #invitation { background-color: var(--dark-green); text-align: center; color: var(--off-white); }
+        #invitation h2 { color: white; font-size: 3.2rem; }
+        #invitation p { max-width: 600px; margin: 1rem auto 2.5rem auto; opacity: 0.9; }
+        .cta-button {
+            background: transparent;
+            color: var(--off-white);
+            border: 2px solid var(--off-white);
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.4s ease;
+        }
+        .cta-button:hover { background: var(--off-white); color: var(--dark-green); }
+
+        /* Footer */
+        footer { text-align: center; padding: 4rem 0; border-top: 1px solid var(--border-light); background: #fff; }
+        .footer-logo { font-family: 'Playfair Display', serif; color: var(--dark-green); font-size: 1.5rem; text-decoration: none; letter-spacing: 1px; margin-bottom: 1rem; display: inline-block; }
+        footer p { font-size: 0.9rem; color: #777; }
+        
+        /* Responsive Design */
+        @media(max-width: 900px) {
+            #philosophy .container, .masterwork-card, .masterwork-card:nth-child(even) { grid-template-columns: 1fr; }
+            .philosophy-image, .masterwork-card:nth-child(even) .image-wrapper { order: -1; margin-bottom: 2rem; }
+            .masterwork-card .masterwork-info, .masterwork-card:nth-child(even) .masterwork-info { text-align: left; }
+            .masterwork-info p { margin-left: 0; }
+        }
+        @media(max-width: 768px) {
+            nav ul { display: none; }
+            #hero h1 { font-size: 3rem; }
+            h2, #philosophy h2, #masterworks h2, #invitation h2 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <a href="#" class="logo">GATI INFRA</a>
+            <nav>
+                <ul>
+                    <li><a href="#philosophy">Philosophy</a></li>
+                    <li><a href="#masterworks">Masterworks</a></li>
+                    <li><a href="#invitation">Partnership</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero: Image of monumental urban architecture, conveys scale and ambition. -->
+        <section id="hero" class="visible">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>The Geometry of Progress</h1>
+                    <p>We do not merely build. We impose order on chaos, engineering the foundational structures of civilization with enduring vision and absolute precision.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Philosophy: Image of stark, precise blueprints. It is the thought before the form. -->
+        <section id="philosophy">
+            <div class="container">
+                <div class="philosophy-text">
+                    <h2>Intent Made Manifest</h2>
+                    <p>Our work begins not with concrete and steel, but with an unwavering principle: that form must have purpose, and purpose must strive for permanence. Every angle, every material, every calculation is an expression of this core intent. We see infrastructure as a legacy—a testament to human ambition written in the language of engineering.</p>
+                </div>
+                <div class="philosophy-image">
+                    <img src="https://images.pexels.com/photos/1329309/pexels-photo-1329309.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="High-contrast, detailed architectural blueprints, symbolizing precision and planning.">
+                </div>
+            </div>
+        </section>
+
+        <!-- Masterworks: High-art architectural photography. Each is a portrait of a monumental structure. -->
+        <section id="masterworks">
+            <div class="container">
+                <h2>Our Masterworks</h2>
+                <div class="masterworks-grid">
+                    <div class="masterwork-card">
+                        <div class="image-wrapper">
+                             <img src="https://images.pexels.com/photos/354939/pexels-photo-354939.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="A powerful, geometric concrete bridge structure.">
+                        </div>
+                        <div class="masterwork-info">
+                            <h3>The Axiom Bridge</h3>
+                            <p>A declaration of strength, connecting two points with indisputable logic and grace.</p>
+                        </div>
+                    </div>
+                    <div class="masterwork-card">
+                        <div class="image-wrapper">
+                            <img src="https://images.pexels.com/photos/220769/pexels-photo-220769.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="The abstract, repeating facade of a modern, brutalist building.">
+                        </div>
+                        <div class="masterwork-info">
+                            <h3>Apex Spire</h3>
+                            <p>An ascent of concrete and glass, defining the skyline as a testament to vertical ambition.</p>
+                        </div>
+                    </div>
+                    <div class="masterwork-card">
+                        <div class="image-wrapper">
+                            <img src="https://images.pexels.com/photos/569163/pexels-photo-569163.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="The interior of a vast, modern structure, showing the interplay of light and shadow.">
+                        </div>
+                        <div class="masterwork-info">
+                            <h3>The Sovereign Terminal</h3>
+                            <p>A cathedral of transit, designed for the seamless flow of commerce and culture.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Invitation Section -->
+        <section id="invitation">
+            <div class="container">
+                <h2>Forge a Legacy</h2>
+                <p>A vision of significance requires a partner of commensurate ability. We invite you to engage with us and build the future.</p>
+                <a href="mailto:inquiries@gati-infra.com" class="cta-button">Initiate Contact</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <a href="#" class="footer-logo">GATI INFRA</a>
+            <p>&copy; 2024 Gati Infra. All Rights Reserved. Engineering for Eternity.</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE LIFE-PRINCIPLE (Integrated JavaScript) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('section').forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>
