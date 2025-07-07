@@ -3,710 +3,2162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gati Infra - A Legacy of Engineering</title>
-    <meta name="description" content="Gati Infra: The confluence of precision engineering and timeless design, creating infrastructure that endures as a legacy for generations.">
-
-    <!-- External Resonances -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Tatti Players - Profiles</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- AESTHETIC SIGNATURE (Enhanced CSS) -->
     <style>
         :root {
-            --dark-green: #00381b;
-            --accent-green: #2d5a3d;
-            --light-green: #4a7c59;
-            --off-white: #f9f9f9;
-            --pure-white: #ffffff;
-            --text-dark: #1a1a1a;
-            --text-medium: #555555;
-            --border-light: #e0e0e0;
-            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.15);
-            --gradient-primary: linear-gradient(135deg, var(--dark-green) 0%, var(--accent-green) 100%);
+            --dark-bg: #0c1524;
+            --darker-bg: #080e1a;
+            --accent-blue: #00f0ff;
+            --accent-purple: #8a2be2;
+            --accent-pink: #ff00d0;
+            --surface-color: #121b2b;
+            --card-color: #1a2539;
+            --border-color: #2a3a54;
+            --text-primary: #e0f7ff;
+            --text-secondary: #a0b8c8;
+            --status-success: #00e676;
+            --status-warning: #ff9100;
+            --status-danger: #ff1744;
+            --highlight-effect: rgba(0, 240, 255, 0.15);
         }
 
-        /* Global Reset & Base Configuration */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--off-white);
-            color: var(--text-dark);
-            line-height: 1.7;
-            font-weight: 400;
+            background: radial-gradient(circle at top, var(--dark-bg), var(--darker-bg));
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
             overflow-x: hidden;
         }
-        h1, h2, h3 {
-            font-family: 'Playfair Display', serif;
-            color: var(--dark-green);
-            font-weight: 700;
-        }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
-        
-        /* Enhanced Section Animations */
-        section {
-            padding: 8rem 0;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: opacity, transform;
-        }
-        section.visible { 
-            opacity: 1; 
-            transform: translateY(0); 
-        }
 
-        /* Floating Animation Elements */
-        .floating-element {
-            position: absolute;
-            opacity: 0.1;
-            pointer-events: none;
-            font-size: 2rem;
-            color: var(--dark-green);
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-        }
-
-        /* Enhanced Image Philosophy */
-        img {
-            filter: grayscale(80%) contrast(1.2) brightness(0.9);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: filter, transform;
-        }
-        img:hover {
-            filter: grayscale(40%) contrast(1.1) brightness(1.1);
-            transform: scale(1.01);
-        }
-
-        /* Progressive Header */
-        header {
-            background: rgba(249, 249, 249, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        /* Background effect */
+        .dynamic-background {
             position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-light);
-            padding: 1.5rem 0;
-            transition: all 0.3s ease;
-        }
-        header.scrolled {
-            padding: 1rem 0;
-            background: rgba(249, 249, 249, 0.98);
-            box-shadow: var(--shadow-soft);
-        }
-        header .container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { 
-            font-family: 'Playfair Display', serif; 
-            color: var(--dark-green); 
-            font-size: 2rem; 
-            text-decoration: none; 
-            letter-spacing: 2px;
-            font-weight: 900;
-            transition: all 0.3s ease;
-        }
-        .logo:hover { color: var(--accent-green); }
-        
-        /* Enhanced Navigation */
-        nav ul { display: flex; list-style: none; gap: 3rem; }
-        nav a {
-            color: var(--text-dark);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            padding: 0.5rem 0;
-            transition: color 0.3s ease;
-        }
-        nav a::before {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-primary);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            transform: translateX(-50%);
-        }
-        nav a:hover { color: var(--dark-green); }
-        nav a:hover::before { width: 100%; }
-
-        /* Hero Section Enhancement */
-        #hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), url('https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') no-repeat center center/cover;
-            background-attachment: fixed;
-            color: white;
-            padding-top: 0;
-            position: relative;
+            height: 100%;
+            z-index: -1;
             overflow: hidden;
         }
-        
-        /* Geometric Overlay */
-        #hero::before {
+
+        .dynamic-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            opacity: 0.2;
+            animation: float 15s infinite linear;
+            filter: blur(1px);
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(100px, 50px); }
+            50% { transform: translate(200px, 0); }
+            75% { transform: translate(100px, -50px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Header styling */
+        .site-header {
+            background: rgba(12, 21, 36, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 25px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 10;
+        }
+
+        .site-header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .site-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .user-id-display {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .user-id-display i {
+            color: var(--accent-blue);
+        }
+        .user-id-display span {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .display-name-input-container {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px;
+        }
+
+        .display-name-input-container input[type="text"] {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            font-size: 1rem;
+            width: 250px;
+            max-width: 100%;
+        }
+
+        .display-name-input-container button {
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 0, 208, 0.3);
+        }
+
+        .display-name-input-container button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 0, 208, 0.4);
+        }
+
+
+        /* Navigation */
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            background: rgba(26, 37, 57, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .main-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 12px 25px;
+            margin: 0 5px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer; /* Added cursor pointer for clickable links */
+        }
+
+        .main-nav a::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(0, 56, 27, 0.1) 50%, transparent 70%);
-            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--highlight-effect), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
         }
-        
-        .hero-content { 
-            max-width: 900px; 
+
+        .main-nav a:hover {
+            color: var(--text-primary);
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .main-nav a:hover::before {
+            transform: translateX(100%);
+        }
+
+        .main-nav a.active {
+            color: var(--accent-blue);
+            background: var(--highlight-effect);
+        }
+
+        /* Dashboard layout */
+        .dashboard {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .dashboard-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Profile cards */
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            position: relative;
+        }
+
+        .profile-card {
+            background: var(--card-color);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             z-index: 2;
         }
-        #hero h1 {
-            font-size: 6rem;
-            color: white;
-            text-shadow: 3px 3px 15px rgba(0,0,0,0.8);
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            font-weight: 900;
-            letter-spacing: -2px;
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
         }
-        #hero p { 
-            font-size: 1.3rem; 
-            margin-top: 1rem; 
-            max-width: 600px; 
-            font-weight: 300;
-            opacity: 0.95;
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+        }
+
+        .profile-header {
+            display: flex;
+            padding: 40px 25px 25px 25px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 20px;
+            align-items: center;
+            min-height: 120px;
+        }
+
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid var(--surface-color);
+            position: relative;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Modified to show a user icon when no image is present */
+        .profile-image .fa-user-circle {
+            font-size: 3.5rem; /* Larger icon size */
+            color: var(--text-primary);
+            opacity: 0.7;
+        }
+
+        .profile-image::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-blue);
+            animation: profile-pulse 2s infinite; /* Renamed animation */
+        }
+
+        @keyframes profile-pulse { /* Renamed animation */
+            0% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.5; transform: scale(1); }
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-online {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--status-success);
+            border: 1px solid var(--status-success);
+        }
+
+        .status-away {
+            background: rgba(255, 145, 0, 0.15);
+            color: var(--status-warning);
+            border: 1px solid var(--status-warning);
+        }
+
+        .status-offline {
+            background: rgba(255, 23, 68, 0.15);
+            color: var(--status-danger);
+            border: 1px solid var(--status-danger);
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .profile-meta div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .profile-meta i {
+            color: var(--accent-blue);
+        }
+
+        .profile-content {
+            padding: 25px;
+        }
+
+        .profile-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .trait-list {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .trait-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+        }
+
+        .trait-list li:last-child {
+            border-bottom: none;
+        }
+
+        .trait-list i {
+            color: var(--accent-blue);
+            min-width: 20px;
+        }
+
+        .trait-list strong {
+            color: var(--text-primary);
+        }
+
+        /* Essence */
+        .tatti-essence {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(255, 0, 208, 0.1);
+            color: var(--accent-pink);
+            border: 1px solid var(--accent-pink);
+            backdrop-filter: blur(5px);
+            z-index: 2;
+            max-width: 60%;
+            text-align: center;
+        }
+
+        /* Analytics Page Specific Styling */
+        .analytics-content {
+            background: var(--card-color);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .analytics-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .analytics-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        /* Removed .analytics-grid styling for player score cards */
+
+        .analytics-card { /* Kept for general analytics cards if any are added later */
+            background: var(--surface-color);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .analytics-card h3 {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+
+        .analytics-card p {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        /* Canvas styling */
+        #playerBarChart {
+            display: block;
+            background-color: var(--surface-color);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            margin-top: 30px;
+            width: 100%; /* Make canvas responsive */
+            height: 300px; /* Fixed height for consistency */
+        }
+
+        /* Page content display using classes */
+        .page-content {
+            display: none; /* Hide all pages by default */
+        }
+
+        .page-content.active-page {
+            display: grid; /* Show active page as grid */
+        }
+
+        /* Player Description Styling */
+        .player-description-card {
+            background: var(--surface-color);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-top: 20px;
+            text-align: left;
+            /* display: none; Removed, as they will always be generated */
+            grid-column: 1 / -1; /* Span across all columns in the grid */
+        }
+        .player-description-card h3 {
+            color: var(--accent-pink);
+            margin-bottom: 10px;
+        }
+        .player-description-card p {
+            font-size: 1rem;
+            color: var(--text-secondary);
             line-height: 1.6;
         }
 
-        /* Enhanced Philosophy Section */
-        #philosophy { 
-            background: linear-gradient(135deg, var(--pure-white) 0%, var(--off-white) 100%);
-            position: relative;
+        /* What If Page Specific Styling */
+        .what-if-content {
+            background: var(--card-color);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            margin-top: 30px;
         }
-        #philosophy::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(0, 56, 27, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 56, 27, 0.03) 0%, transparent 50%);
-            pointer-events: none;
+
+        .what-if-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        #philosophy .container { 
-            display: grid; 
-            grid-template-columns: 1.2fr 0.8fr; 
-            gap: 6rem; 
-            align-items: center;
-            position: relative;
-            z-index: 1;
-        }
-        #philosophy h2 { 
-            font-size: 3.8rem; 
-            margin-bottom: 2rem; 
-            line-height: 1.1;
-            font-weight: 700;
-        }
-        #philosophy p { 
-            font-size: 1.2rem; 
-            margin-bottom: 1.5rem;
-            color: var(--text-medium);
+
+        .what-if-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
             line-height: 1.8;
-        }
-        .philosophy-image {
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow-strong);
-        }
-        .philosophy-image img { 
-            width: 100%; 
-            height: auto;
-            display: block;
+            margin-bottom: 15px;
         }
 
-        /* Enhanced Masterworks Section */
-        #masterworks { 
-            background: var(--pure-white);
-            position: relative;
+        .story-form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        #masterworks h2 { 
-            text-align: center; 
-            font-size: 3.8rem; 
-            margin-bottom: 5rem;
-            position: relative;
-        }
-        #masterworks h2::after {
-            content: '';
-            position: absolute;
-            bottom: -1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background: var(--gradient-primary);
-        }
-        
-        .masterworks-grid { 
-            display: grid; 
-            grid-template-columns: 1fr; 
-            gap: 8rem; 
-        }
-        
-        .masterwork-card {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            padding: 3rem;
-            border-radius: 16px;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .masterwork-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(249, 249, 249, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-        }
-        
-        .masterwork-card:hover::before { opacity: 1; }
-        .masterwork-card:hover { 
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-strong);
-        }
-        
-        .masterwork-card:nth-child(even) .image-wrapper { order: 2; }
-        .masterwork-card:nth-child(even) .masterwork-info { text-align: right; }
-        
-        .masterwork-card .image-wrapper { 
-            overflow: hidden; 
-            border-radius: 12px;
-            box-shadow: var(--shadow-soft);
-            position: relative;
-            z-index: 1;
-        }
-        .masterwork-card img { 
-            width: 100%; 
-            height: 500px; 
-            object-fit: cover; 
-            display: block;
-        }
-        .masterwork-info {
-            position: relative;
-            z-index: 1;
-        }
-        .masterwork-info h3 { 
-            font-size: 2.5rem; 
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-        }
-        .masterwork-info p { 
-            font-size: 1.2rem; 
-            max-width: 500px;
-            color: var(--text-medium);
-            line-height: 1.7;
-        }
-        .masterwork-card:nth-child(even) .masterwork-info p { margin-left: auto; }
 
-        /* Enhanced Invitation Section */
-        #invitation { 
-            background: var(--gradient-primary);
-            text-align: center; 
-            color: var(--off-white);
-            position: relative;
-            overflow: hidden;
+        .story-form label {
+            font-size: 1.1rem;
+            color: var(--text-primary);
         }
-        
-        #invitation::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-        }
-        #invitation .container { position: relative; z-index: 1; }
-        #invitation h2 { 
-            color: white; 
-            font-size: 3.8rem;
-            margin-bottom: 2rem;
-            font-weight: 700;
-        }
-        #invitation p { 
-            max-width: 700px; 
-            margin: 0 auto 3rem auto; 
-            opacity: 0.95;
-            font-size: 1.2rem;
-            line-height: 1.7;
-        }
-        
-        .cta-button {
-            background: transparent;
-            color: var(--off-white);
-            border: 2px solid var(--off-white);
-            padding: 1.2rem 3rem;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-radius: 6px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+
+        .story-form textarea {
             width: 100%;
-            height: 100%;
-            background: var(--off-white);
-            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: -1;
-        }
-        
-        .cta-button:hover::before { left: 0; }
-        .cta-button:hover { 
-            color: var(--dark-green);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            font-size: 1rem;
+            min-height: 150px;
+            resize: vertical;
         }
 
-        /* Enhanced Footer */
-        footer { 
-            text-align: center; 
-            padding: 5rem 0; 
-            border-top: 1px solid var(--border-light); 
-            background: var(--pure-white);
-        }
-        .footer-logo { 
-            font-family: 'Playfair Display', serif; 
-            color: var(--dark-green); 
-            font-size: 1.8rem; 
-            text-decoration: none; 
-            letter-spacing: 2px; 
-            margin-bottom: 1.5rem; 
-            display: inline-block;
-            font-weight: 900;
-            transition: color 0.3s ease;
-        }
-        .footer-logo:hover { color: var(--accent-green); }
-        footer p { 
-            font-size: 0.95rem; 
-            color: var(--text-medium);
-            font-weight: 300;
-        }
-
-        /* Mobile Menu */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
+        .story-form button {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 12px 25px;
             border: none;
-            font-size: 1.5rem;
-            color: var(--dark-green);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-        }
-        
-        /* Responsive Design */
-        @media(max-width: 1024px) {
-            #philosophy .container, .masterwork-card, .masterwork-card:nth-child(even) { 
-                grid-template-columns: 1fr; 
-                gap: 3rem;
-            }
-            .philosophy-image, .masterwork-card:nth-child(even) .image-wrapper { 
-                order: -1; 
-            }
-            .masterwork-card .masterwork-info, .masterwork-card:nth-child(even) .masterwork-info { 
-                text-align: center; 
-            }
-            .masterwork-info p, .masterwork-card:nth-child(even) .masterwork-info p { 
-                margin: 0 auto; 
-            }
-        }
-        
-        @media(max-width: 768px) {
-            .mobile-menu-toggle { display: block; }
-            nav ul { 
-                display: none; 
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(249, 249, 249, 0.98);
-                flex-direction: column;
-                padding: 2rem;
-                box-shadow: var(--shadow-soft);
-                gap: 1rem;
-            }
-            nav ul.active { display: flex; }
-            
-            #hero h1 { font-size: 3.5rem; }
-            h2, #philosophy h2, #masterworks h2, #invitation h2 { font-size: 2.8rem; }
-            .masterwork-card { padding: 2rem 1rem; }
-            section { padding: 5rem 0; }
-        }
-        
-        @media(max-width: 480px) {
-            #hero h1 { font-size: 2.8rem; }
-            h2, #philosophy h2, #masterworks h2, #invitation h2 { font-size: 2.2rem; }
-            .container { padding: 0 1rem; }
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 240, 255, 0.3);
         }
 
-        /* Scroll Progress Indicator */
-        .scroll-progress {
+        .story-form button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .stories-list {
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .stories-list h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .story-item {
+            background: var(--surface-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .story-item p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .story-meta {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            text-align: right;
+            opacity: 0.7;
+        }
+
+        /* Custom Modal Styling */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--gradient-primary);
-            z-index: 1001;
-            transition: width 0.1s ease;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none; /* Changed to none by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0; /* Start hidden */
+            pointer-events: none; /* Prevent interaction when hidden */
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transform: scale(0.95); /* Initial scale for animation */
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .modal-content {
+            background: var(--card-color);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.confirm-yes {
+            background: linear-gradient(90deg, #00e676, #00c853);
+            color: white;
+        }
+
+        .modal-btn.confirm-no {
+            background: linear-gradient(90deg, #ff1744, #d50000);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Story Action Buttons Styling */
+        .story-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end; /* Align buttons to the right */
+        }
+
+        .story-actions button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .story-actions .edit-story-btn {
+            background-color: var(--accent-blue);
+            color: var(--darker-bg);
+        }
+
+        .story-actions .delete-story-btn {
+            background-color: var(--status-danger);
+            color: white;
+        }
+
+        .story-actions .save-story-btn {
+            background-color: var(--status-success);
+            color: white;
+        }
+
+        .story-actions .cancel-edit-btn {
+            background-color: var(--text-secondary);
+            color: var(--darker-bg);
+        }
+
+        .story-actions button:hover {
+            opacity: 0.8;
+        }
+
+        .story-item textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--darker-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            min-height: 80px;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        /* Welcome Modal Specific Styling */
+        #welcomeModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none; /* Changed to none by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1001; /* Higher than other modals */
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            opacity: 0; /* Start hidden */
+            pointer-events: none; /* Prevent interaction when hidden */
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transform: scale(0.95); /* Initial scale for animation */
+        }
+
+        #welcomeModal.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        #welcomeModal .modal-content {
+            background: var(--dark-bg);
+            border: 2px solid var(--accent-blue);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 240, 255, 0.3);
+            max-width: 500px;
+        }
+
+        #welcomeModal h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        #welcomeModal p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        #welcomeModal input[type="text"] {
+            width: calc(100% - 30px); /* Adjust for padding */
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #welcomeModal button {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 240, 255, 0.4);
+        }
+
+        #welcomeModal button:hover {
+            opacity: 0.9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 240, 255, 0.5);
+        }
+
+        /* Utility class to hide main content */
+        .main-content {
+            display: none; /* Changed to none by default */
+            opacity: 0; /* Start hidden */
+            pointer-events: none; /* Prevent interaction when hidden */
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(20px); /* Initial position for animation */
+        }
+
+        .main-content.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Admin Page Specific Styling */
+        .admin-content {
+            background: var(--card-color);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .admin-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .admin-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .user-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .user-list-item {
+            background: var(--surface-color);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .user-list-item span:first-child {
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .user-list-item span:last-child {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .admin-pin-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--surface-color);
+            margin-top: 20px;
+        }
+
+        .admin-pin-section input[type="password"] {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--darker-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            width: 250px;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .admin-pin-section button {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 240, 255, 0.3);
+        }
+
+        .admin-pin-section button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 240, 255, 0.4);
+        }
+
+        #revokeAdminBtn {
+            background-color: var(--status-danger);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: block; /* Ensure it's on its own line */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #revokeAdminBtn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .user-list-item button {
+            background: var(--accent-purple);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .user-list-item button:hover {
+            background-color: #7a1be2;
+        }
+
+        .admin-stories-view .story-item {
+            background: var(--surface-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-stories-view .story-item .story-actions {
+            justify-content: flex-start; /* Align delete button to left in admin view */
+        }
+
+        .admin-stories-view .story-item .delete-story-btn {
+            background-color: var(--status-danger);
+            color: white;
+        }
+
+        .admin-stories-view h3 {
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+        }
+
+        .back-button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-button-container button {
+            background: var(--accent-pink);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-button-container button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-nav {
+                flex-wrap: wrap;
+                padding: 10px;
+            }
+            
+            .main-nav a {
+                padding: 8px 15px;
+                margin: 5px;
+                font-size: 0.9rem;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 60px 20px 20px 20px;
+                min-height: 150px;
+            }
+            
+            .profile-meta {
+                justify-content: center;
+            }
+
+            .tatti-essence {
+                top: 10px;
+                right: 10px;
+                max-width: calc(100% - 20px);
+                font-size: 0.75rem;
+            }
+            
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .analytics-grid { /* This will now only affect the overall analytics content */
+                grid-template-columns: 1fr;
+            }
+
+            .display-name-input-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .display-name-input-container input[type="text"] {
+                width: 100%;
+            }
+
+            #welcomeModal .modal-content {
+                padding: 30px 20px;
+            }
+
+            #welcomeModal h2 {
+                font-size: 2rem;
+            }
+
+            #welcomeModal input[type="text"] {
+                width: 100%;
+            }
+
+            .admin-pin-section input[type="password"] {
+                width: 100%;
+            }
+
+            .user-list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .user-list-item span:last-child {
+                text-align: left;
+                width: 100%;
+            }
+
+            .user-list-item button {
+                width: 100%;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="scroll-progress"></div>
-
-    <header>
-        <div class="container">
-            <a href="#" class="logo">GATI INFRA</a>
-            <nav>
-                <ul>
-                    <li><a href="#philosophy">Philosophy</a></li>
-                    <li><a href="#masterworks">Masterworks</a></li>
-                    <li><a href="#invitation">Partnership</a></li>
-                </ul>
-            </nav>
-            <button class="mobile-menu-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
+    <!-- Background particles -->
+    <div class="dynamic-background" id="dynamic-bg"></div>
+    
+    <header class="site-header">
+        <h1>Tatti Players</h1>
+        <p>Player Profiles & Analytics</p>
+        <div class="user-id-display">
+            <i class="fas fa-user-circle"></i> Your Display Name: <span id="displayUserId">Loading...</span>
+        </div>
+        <div class="display-name-input-container">
+            <input type="text" id="displayNameInput" placeholder="Change your display name">
+            <button id="saveDisplayNameBtn">Save Name</button>
         </div>
     </header>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="hero" class="visible">
-            <div class="floating-element" style="top: 20%; left: 10%;">▲</div>
-            <div class="floating-element" style="top: 60%; right: 15%; animation-delay: -2s;">■</div>
-            <div class="floating-element" style="top: 40%; right: 25%; animation-delay: -4s;">●</div>
-            <div class="container">
-                <div class="hero-content">
-                    <h1>The Geometry of Progress</h1>
-                    <p>We do not merely build. We impose order on chaos, engineering the foundational structures of civilization with enduring vision and absolute precision.</p>
+    <nav class="main-nav">
+        <a href="#" class="nav-link active" data-target="dashboard-page"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="#" class="nav-link" data-target="analytics-page"><i class="fas fa-chart-line"></i> Analytics</a>
+        <a href="#" class="nav-link" data-target="what-if-page"><i class="fas fa-question-circle"></i> What If</a>
+        <a href="#" class="nav-link" id="adminPanelLink" data-target="admin-page"><i class="fas fa-user-shield"></i> Admin Panel</a>
+        <a href="#" class="nav-link" data-target="settings-page"><i class="fas fa-cog"></i> Settings</a>
+    </nav>
+
+    <div class="main-content" style="display: none;">
+        <!-- Dashboard Page Content -->
+        <div id="dashboard-page" class="dashboard page-content active-page">
+            <div class="dashboard-header">
+                <div>
+                    <h2><i class="fas fa-users"></i> Player Profiles</h2>
                 </div>
             </div>
-        </section>
 
-        <!-- Philosophy Section -->
-        <section id="philosophy">
-            <div class="container">
-                <div class="philosophy-text">
-                    <h2>Intent Made Manifest</h2>
-                    <p>Our work begins not with concrete and steel, but with an unwavering principle: that form must have purpose, and purpose must strive for permanence. Every angle, every material, every calculation is an expression of this core intent.</p>
-                    <p>We see infrastructure as a legacy—a testament to human ambition written in the language of engineering. Each project is a deliberate act of creation, shaped by vision and executed with unwavering precision.</p>
-                </div>
-                <div class="philosophy-image">
-                    <img src="https://images.pexels.com/photos/1329309/pexels-photo-1329309.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="High-contrast, detailed architectural blueprints, symbolizing precision and planning.">
-                </div>
-            </div>
-        </section>
-
-        <!-- Masterworks Section -->
-        <section id="masterworks">
-            <div class="container">
-                <h2>Our Masterworks</h2>
-                <div class="masterworks-grid">
-                    <div class="masterwork-card">
-                        <div class="image-wrapper">
-                             <img src="https://images.pexels.com/photos/1105766/pexels-photo-1105766.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Construction site with steel framework and concrete pillars rising into the sky.">
-                        </div>
-                        <div class="masterwork-info">
-                            <h3>Metroplex Corporate Tower</h3>
-                            <p>A 47-story architectural marvel that redefines urban skylines. Our precision engineering delivered this landmark project on schedule, featuring advanced steel-concrete composite construction and state-of-the-art seismic resistance systems.</p>
-                        </div>
-                    </div>
-                    <div class="masterwork-card">
-                        <div class="image-wrapper">
-                            <img src="https://images.pexels.com/photos/834892/pexels-photo-834892.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Modern highway interchange construction with multiple levels of concrete roadways.">
-                        </div>
-                        <div class="masterwork-info">
-                            <h3>Delhi-Mumbai Expressway Interchange</h3>
-                            <p>India's most complex multi-level interchange spanning 2.3 kilometers. This engineering masterpiece handles 200,000 vehicles daily through eight directional ramps, built using revolutionary precast segmental construction techniques.</p>
-                        </div>
-                    </div>
-                    <div class="masterwork-card">
-                        <div class="image-wrapper">
-                            <img src="https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Large-scale dam construction with massive concrete structures and construction machinery.">
-                        </div>
-                        <div class="masterwork-info">
-                            <h3>Narmada Hydroelectric Complex</h3>
-                            <p>A monumental water infrastructure project generating 1,200 MW of clean energy. Our advanced concrete technology and precision engineering delivered this critical dam structure, providing sustainable power to 3 million homes across Gujarat.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Invitation Section -->
-        <section id="invitation">
-            <div class="container">
-                <h2>Forge a Legacy</h2>
-                <p>A vision of significance requires a partner of commensurate ability. We invite you to engage with us and build the future that will stand as testament to our shared ambition.</p>
-               <a href="https://wa.me/919899010777" target="_blank" rel="noopener noreferrer" class="cta-button">Contact</a>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <a href="#" class="footer-logo">GATI INFRA</a>
-            <p>&copy; 2024 Gati Infra. All Rights Reserved. Engineering for Eternity.</p>
-        </div>
-    </footer>
-
-    <!-- Enhanced JavaScript -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Intersection Observer for animations
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.15 });
-            
-            document.querySelectorAll('section').forEach(section => observer.observe(section));
-
-            // Scroll progress indicator (throttled)
-            const scrollProgress = document.querySelector('.scroll-progress');
-            const header = document.querySelector('header');
-            let scrollTicking = false;
-            
-            function updateScrollEffects() {
-                const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
-                const scrolled = window.scrollY;
-                const progress = Math.min((scrolled / windowHeight) * 100, 100);
-                scrollProgress.style.width = progress + '%';
-                
-                // Header scroll effect
-                if (scrolled > 100) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-                scrollTicking = false;
-            }
-            
-            window.addEventListener('scroll', () => {
-                if (!scrollTicking) {
-                    requestAnimationFrame(updateScrollEffects);
-                    scrollTicking = true;
-                }
-            });
-
-            // Mobile menu toggle
-            const mobileToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('nav ul');
-            
-            mobileToggle.addEventListener('click', () => {
-                navMenu.classList.toggle('active');
-                const icon = mobileToggle.querySelector('i');
-                icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times');
-            });
-
-            // Smooth scrolling for navigation links
-            document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
+            <div class="members-grid">
+                <!-- Profile Card 1 (Naga Saki) -->
+                <div class="profile-card" data-member-id="naga-saki">
+                    <div class="tatti-essence">Tatti Status: Active</div>
                     
-                    if (targetElement) {
-                        const headerHeight = header.offsetHeight;
-                        const targetPosition = targetElement.offsetTop - headerHeight;
-                        
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
-                        
-                        // Close mobile menu if open
-                        navMenu.classList.remove('active');
-                        const icon = mobileToggle.querySelector('i');
-                        icon.classList.add('fa-bars');
-                        icon.classList.remove('fa-times');
-                    }
-                });
-            });
+                    <div class="profile-header">
+                        <div class="profile-image">
+                            <img src="images.jpeg" alt="Naga Saki">
+                        </div>
+                        <div class="profile-info">
+                            <h2>Naga Saki <span class="profile-status status-online">Online</span></h2>
+                            <div class="profile-meta">
+                                <div><i class="fas fa-id-card"></i> Player ID: naga-saki</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-content">
+                        <h3>Pros:</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Apni mummy ki bohot respect karta hai.</li>
+                        </ul>
+                        <h3>Cons:</h3>
+                        <ul>
+                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> Par galti bohot karta hai.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Profile Card 2 (Ali Khan) -->
+                <div class="profile-card" data-member-id="ali-khan">
+                    <div class="tatti-essence">Tatti Status: Active</div>
+                    
+                    <div class="profile-header">
+                        <div class="profile-image">
+                            <img src="https://placehold.co/200x200/B0E0E6/000000?text=Elephant" alt="Ali Khan">
+                        </div>
+                        <div class="profile-info">
+                            <h2>Ali Khan <span class="profile-status status-offline">Offline</span></h2>
+                            <div class="profile-meta">
+                                <div><i class="fas fa-id-card"></i> Player ID: ali-khan</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-content">
+                        <h3>Pros:</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Uske bohot saare papa hai.</li>
+                        </ul>
+                        <h3>Cons:</h3>
+                        <ul>
+                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> Par wo sirf Shailu, Ishan, Rounak ko papa bolta hai.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Profile Card 3 (Nxt Figo) -->
+                <div class="profile-card" data-member-id="nxt-figo">
+                    <div class="tatti-essence">Tatti Status: Active</div>
+                    
+                    <div class="profile-header">
+                        <div class="profile-image">
+                            <!-- Image removed as requested, using a Font Awesome icon as fallback -->
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h2>Nxt Figo <span class="profile-status status-offline">Offline</span></h2>
+                            <div class="profile-meta">
+                                <div><i class="fas fa-id-card"></i> Player ID: nxt-figo</div>
+                            </div>
+                        </div>
+                        </div>
+                    
+                    <div class="profile-content">
+                        <h3>Pros:</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Sab uski respect karte hai.</li>
+                        </ul>
+                        <h3>Cons:</h3>
+                        <ul>
+                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> Sanya uski best friend hai.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            // Parallax effect for hero section (throttled for performance)
-            let ticking = false;
-            function updateParallax() {
-                const hero = document.getElementById('hero');
-                const scrolled = window.pageYOffset;
-                const rate = scrolled * -0.3;
-                hero.style.transform = `translateY(${rate}px)`;
-                ticking = false;
+        <!-- Analytics Page Content -->
+        <div id="analytics-page" class="dashboard page-content">
+            <div class="analytics-content">
+                <h2><i class="fas fa-chart-line"></i> Tatti Analytics</h2>
+                <p>Yahan aap apne players ke performance aur stats dekh sakte hain.</p>
+                
+                <canvas id="playerBarChart"></canvas>
+
+                <!-- Player Description Container -->
+                <div id="playerDescriptions" style="margin-top: 20px;">
+                    <!-- Descriptions will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- What If Page Content -->
+        <div id="what-if-page" class="dashboard page-content">
+            <div class="what-if-content">
+                <h2><i class="fas fa-feather-alt"></i> Apni Story Share Karein</h2>
+                <p>Yahan aap apni "What If" stories share kar sakte hain. Aapki stories aapki unique ID se link hongi, aur aap sirf apni stories ko edit ya delete kar payenge.</p>
+                
+                <form id="storyForm" class="story-form">
+                    <label for="storyText">Apni Story Likhein:</label>
+                    <textarea id="storyText" placeholder="Apni kahani yahan likhein..." required></textarea>
+                    <button type="submit">Story Submit Karein</button>
+                </form>
+
+                <div class="stories-list">
+                    <h3>Shared Stories</h3>
+                    <div id="sharedStoriesContainer">
+                        <!-- Stories will be dynamically loaded here -->
+                        <p style="text-align: center; color: var(--text-secondary);">Loading stories...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Page Content -->
+        <div id="admin-page" class="dashboard page-content">
+            <div class="admin-content">
+                <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
+                <p>Yahan aap sabhi users ke display names aur unki unique IDs dekh sakte hain.</p>
+                
+                <!-- Admin PIN Section (initially visible if not admin) -->
+                <div id="adminPinSection" class="admin-pin-section">
+                    <h3>Enter Admin PIN</h3>
+                    <input type="password" id="adminPinInput" placeholder="Enter PIN to gain admin access">
+                    <button id="grantAdminBtn">Grant Admin Access</button>
+                </div>
+
+                <!-- Admin User List Section (initially hidden) -->
+                <div id="adminUserListSection" style="display: none;">
+                    <div id="userListContainer" class="user-list">
+                        <p style="text-align: center; color: var(--text-secondary);">Loading users...</p>
+                    </div>
+                    <div id="adminUserStoriesView" class="admin-stories-view" style="display: none;">
+                        <h3>Stories by <span id="currentAdminUserDisplayName"></span> (<span id="currentAdminUserId"></span>)</h3>
+                        <div id="adminSpecificUserStoriesContainer">
+                            <p style="text-align: center; color: var(--text-secondary);">Loading stories...</p>
+                        </div>
+                        <div class="back-button-container">
+                            <button id="backToAllUsersBtn">Back to All Users</button>
+                        </div>
+                    </div>
+                    <button id="revokeAdminBtn">Revoke Admin Access</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page Content (Placeholder) -->
+        <div id="settings-page" class="dashboard page-content">
+            <div class="analytics-content">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <p>Yahan aap apni app ki settings manage kar sakte hain.</p>
+                <p style="margin-top: 20px; text-align: center; color: var(--text-secondary);">Settings options will be added here.</p>
+            </div>
+        </div>
+
+    </div> <!-- End of main-content -->
+
+    <!-- Custom Confirmation Modal -->
+    <div id="customConfirmModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <p id="confirmMessage"></p>
+            <div class="modal-buttons">
+                <button id="confirmYesBtn" class="modal-btn confirm-yes">Yes</button>
+                <button id="confirmNoBtn" class="modal-btn confirm-no">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Modal for Display Name -->
+    <div id="welcomeModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>Welcome to Tatti Players!</h2>
+            <p>Please enter a display name to start exploring the app and sharing your stories.</p>
+            <input type="text" id="welcomeDisplayNameInput" placeholder="Enter your display name" required>
+            <button id="startExploringBtn">Start Exploring</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase SDK imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc, getDocs, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase variables
+        let app;
+        let db;
+        let auth;
+        let userId;
+        let userDisplayName = ""; // Initialize as empty string
+        let isAdmin = false; // Track admin status
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+        // Define admin PIN
+        const ADMIN_PIN = "859534"; 
+
+        // Helper function for modal/content visibility with transitions
+        function toggleVisibility(element, show, displayType = 'flex', transitionDuration = 300) {
+            if (show) {
+                element.style.display = displayType;
+                // Force reflow to ensure display property is applied before transition starts
+                element.offsetHeight; 
+                element.classList.add('visible');
+                element.style.pointerEvents = 'auto';
+            } else {
+                element.classList.remove('visible');
+                element.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, transitionDuration);
             }
-            
-            window.addEventListener('scroll', () => {
-                if (!ticking) {
-                    requestAnimationFrame(updateParallax);
-                    ticking = true;
-                }
-            });
+        }
 
-            // Add stagger animation to masterwork cards
-            const masterworkCards = document.querySelectorAll('.masterwork-card');
-            const cardObserver = new IntersectionObserver((entries) => {
-                entries.forEach((entry, index) => {
-                    if (entry.isIntersecting) {
-                        setTimeout(() => {
-                            entry.target.style.opacity = '1';
-                            entry.target.style.transform = 'translateY(0)';
-                        }, index * 150);
+        // --- UI Visibility Functions ---
+        function showWelcomeModal() {
+            const welcomeModal = document.getElementById('welcomeModal');
+            toggleVisibility(welcomeModal, true, 'flex');
+        }
+
+        function hideWelcomeModal() {
+            const welcomeModal = document.getElementById('welcomeModal');
+            toggleVisibility(welcomeModal, false);
+        }
+
+        function showMainContent() {
+            const mainContent = document.querySelector('.main-content');
+            toggleVisibility(mainContent, true, 'grid'); // main-content uses grid display
+        }
+
+        // Custom Confirmation Modal Logic
+        let confirmModalResolve;
+        function showConfirmModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customConfirmModal');
+                const confirmMessage = document.getElementById('confirmMessage');
+                const confirmYesBtn = document.getElementById('confirmYesBtn');
+                const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+                confirmMessage.textContent = message;
+                toggleVisibility(modal, true, 'flex');
+
+                confirmModalResolve = resolve; // Store resolve function
+
+                // Remove previous listeners to prevent multiple calls
+                confirmYesBtn.onclick = null;
+                confirmNoBtn.onclick = null;
+
+                confirmYesBtn.onclick = () => {
+                    toggleVisibility(modal, false);
+                    confirmModalResolve(true);
+                };
+                confirmNoBtn.onclick = () => {
+                    toggleVisibility(modal, false);
+                    confirmModalResolve(false);
+                };
+            });
+        }
+
+
+        // Initialize Firebase
+        async function initializeFirebase() {
+            try {
+                if (!app) {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            // Fetch display name and admin status
+                            await fetchUserProfile(userId); 
+                            
+                            document.getElementById('displayUserId').textContent = userDisplayName; // Display user ID/name
+                            document.getElementById('displayNameInput').value = userDisplayName; // Set input field
+
+                            updateAdminPanelUI(); // Update admin panel UI based on fetched isAdmin status
+
+                            // Check if display name is set, if not, show welcome modal
+                            if (!userDisplayName || userDisplayName === userId) { // If it's empty or still the raw UID
+                                showWelcomeModal();
+                            } else {
+                                hideWelcomeModal();
+                                showMainContent();
+                                loadSharedStories();
+                            }
+                        } else {
+                            console.log("No user signed in. Signing in anonymously...");
+                            try {
+                                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                    await signInWithCustomToken(auth, __initial_auth_token);
+                                } else {
+                                    await signInAnonymously(auth);
+                                }
+                                // After anonymous sign-in, onAuthStateChanged will be triggered again
+                            } catch (error) {
+                                console.error("Anonymous sign-in failed:", error);
+                                document.getElementById('displayUserId').textContent = 'Error loading ID';
+                                showWelcomeModal(); // Show welcome modal even on error to prompt name
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                document.getElementById('displayUserId').textContent = 'Error initializing Firebase';
+                showWelcomeModal(); // Show welcome modal even on error
+            }
+        }
+
+        // Function to fetch user's profile (display name and admin status)
+        async function fetchUserProfile(uid) {
+            if (!db) {
+                console.warn("Firestore not initialized. Cannot fetch user profile.");
+                userDisplayName = uid; // Fallback to UID
+                isAdmin = false;
+                return;
+            }
+            try {
+                const userProfileRef = doc(db, `artifacts/${appId}/users/${uid}/profile/userProfile`);
+                const docSnap = await getDoc(userProfileRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    userDisplayName = data.displayName || uid;
+                    isAdmin = data.isAdmin || false;
+                } else {
+                    userDisplayName = uid; // Fallback to UID if no profile
+                    isAdmin = false;
+                }
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+                userDisplayName = uid; // Fallback to UID on error
+                isAdmin = false;
+            }
+        }
+
+        // Function to update user's profile (display name or admin status)
+        async function updateUserProfile(dataToUpdate) {
+            if (!db || !userId) {
+                showConfirmModal('Firebase not initialized or user not authenticated. Cannot update profile.');
+                return false;
+            }
+            try {
+                const userProfileRef = doc(db, `artifacts/${appId}/users/${userId}/profile/userProfile`);
+                await setDoc(userProfileRef, dataToUpdate, { merge: true });
+                return true;
+            } catch (error) {
+                console.error("Error updating user profile:", error);
+                showConfirmModal('Failed to update profile. Please try again.');
+                return false;
+            }
+        }
+
+        // Function to save user's display name
+        async function saveUserDisplayName(nameToSave) {
+            if (!nameToSave.trim()) {
+                showConfirmModal('Display name cannot be empty.');
+                return false;
+            }
+            const success = await updateUserProfile({ displayName: nameToSave });
+            if (success) {
+                userDisplayName = nameToSave;
+                document.getElementById('displayUserId').textContent = userDisplayName;
+                showConfirmModal('Display name saved successfully!');
+                loadSharedStories(); // Reload stories to update displayed names
+            }
+            return success;
+        }
+
+        // --- Admin Panel Specific Functions ---
+        async function grantAdminAccess() {
+            const enteredPin = document.getElementById('adminPinInput').value.trim();
+            if (enteredPin === ADMIN_PIN) {
+                const success = await updateUserProfile({ isAdmin: true });
+                if (success) {
+                    isAdmin = true;
+                    updateAdminPanelUI();
+                    showConfirmModal('Admin access granted successfully!');
+                    document.getElementById('adminPinInput').value = ''; // Clear PIN
+                }
+            } else {
+                showConfirmModal('Incorrect PIN. Please try again.');
+            }
+        }
+
+        async function revokeAdminAccess() {
+            const confirmed = await showConfirmModal('Are you sure you want to revoke your admin access?');
+            if (confirmed) {
+                const success = await updateUserProfile({ isAdmin: false });
+                if (success) {
+                    isAdmin = false;
+                    updateAdminPanelUI();
+                    showConfirmModal('Admin access revoked.');
+                }
+            }
+        }
+
+        function updateAdminPanelUI() {
+            const adminPinSection = document.getElementById('adminPinSection');
+            const adminUserListSection = document.getElementById('adminUserListSection');
+            const userListContainer = document.getElementById('userListContainer');
+            const adminUserStoriesView = document.getElementById('adminUserStoriesView');
+            const revokeAdminBtn = document.getElementById('revokeAdminBtn');
+
+            if (isAdmin) {
+                adminPinSection.style.display = 'none';
+                adminUserListSection.style.display = 'block'; // Or 'grid' if it's a grid layout
+                revokeAdminBtn.style.display = 'block';
+                userListContainer.style.display = 'flex'; // Show user list by default
+                adminUserStoriesView.style.display = 'none'; // Hide specific user stories view
+                loadAllUserProfiles(); // Load user list when admin panel is shown for admin
+            } else {
+                adminPinSection.style.display = 'flex'; // Use flex for centering
+                adminUserListSection.style.display = 'none';
+                revokeAdminBtn.style.display = 'none';
+                userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Enter PIN to view user list.</p>';
+                adminUserStoriesView.style.display = 'none'; // Ensure specific user stories view is hidden
+            }
+        }
+
+        // Function to load all user profiles for admin panel
+        async function loadAllUserProfiles() {
+            const userListContainer = document.getElementById('userListContainer');
+            userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading users...</p>'; // Loading indicator
+
+            if (!db) {
+                console.warn("Firestore not initialized. Cannot load all user profiles.");
+                userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error: Firestore not ready.</p>';
+                return;
+            }
+
+            try {
+                // Fetch all unique users who have posted stories
+                const storiesCollectionRef = collection(db, `artifacts/${appId}/public/data/stories`);
+                const querySnapshot = await getDocs(storiesCollectionRef);
+                const uniqueUsers = new Map(); // Use a Map to store unique users by their userId
+
+                querySnapshot.forEach((docSnap) => {
+                    const storyData = docSnap.data();
+                    if (storyData.userId) {
+                        uniqueUsers.set(storyData.userId, {
+                            displayName: storyData.displayName || storyData.userId,
+                            userId: storyData.userId
+                        });
                     }
                 });
-            }, { threshold: 0.1 });
 
-            masterworkCards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(30px)';
-                card.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                card.style.willChange = 'opacity, transform';
-                cardObserver.observe(card);
+                userListContainer.innerHTML = ''; // Clear loading indicator
+
+                if (uniqueUsers.size === 0) {
+                    userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No users found who have posted stories.</p>';
+                    return;
+                }
+
+                uniqueUsers.forEach(userData => {
+                    const listItem = document.createElement('div');
+                    listItem.className = 'user-list-item';
+                    listItem.innerHTML = `
+                        <span>${userData.displayName}</span>
+                        <span>(ID: ${userData.userId})</span>
+                        <button data-user-id="${userData.userId}" data-display-name="${userData.displayName}" class="view-user-stories-btn">View Stories</button>
+                    `;
+                    userListContainer.appendChild(listItem);
+                });
+
+                // Add event listeners to the new buttons
+                document.querySelectorAll('.view-user-stories-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const targetUserId = event.target.dataset.userId;
+                        const targetDisplayName = event.target.dataset.displayName;
+                        viewUserStoriesAsAdmin(targetUserId, targetDisplayName);
+                    });
+                });
+
+            } catch (error) {
+                console.error("Error loading all user profiles:", error);
+                userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list. Please check your browser\'s console (F12) for details. It might be a missing Firestore index or security rule issue.</p>';
+            }
+        }
+
+        // Function to view a specific user's stories in the admin panel
+        async function viewUserStoriesAsAdmin(targetUserId, targetDisplayName) {
+            const userListContainer = document.getElementById('userListContainer');
+            const adminUserStoriesView = document.getElementById('adminUserStoriesView');
+            const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
+            const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
+            const adminSpecificUserStoriesContainer = document.getElementById('adminSpecificUserStoriesContainer');
+
+            userListContainer.style.display = 'none'; // Hide the all users list
+            adminUserStoriesView.style.display = 'block'; // Show specific user stories view
+
+            currentAdminUserDisplayNameSpan.textContent = targetDisplayName;
+            currentAdminUserIdSpan.textContent = targetUserId;
+            adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading stories for this user...</p>';
+
+            if (!db) {
+                console.warn("Firestore not initialized. Cannot load user's stories for admin view.");
+                adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error: Firestore not ready.</p>';
+                return;
+            }
+
+            try {
+                const storiesCollectionRef = collection(db, `artifacts/${appId}/public/data/stories`);
+                // Query for stories by a specific user.
+                // NOTE: If you want to order these stories by timestamp, you will need to create a composite index in Firestore.
+                // Go to Firebase Console -> Firestore Database -> Indexes tab.
+                // Create a new index for Collection ID: 'stories', fields: 'userId' (Ascending), 'timestamp' (Descending).
+                const q = query(storiesCollectionRef, where('userId', '==', targetUserId)); // Removed orderBy to avoid index error
+                
+                onSnapshot(q, (snapshot) => {
+                    adminSpecificUserStoriesContainer.innerHTML = ''; // Clear existing stories
+
+                    if (snapshot.empty) {
+                        adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">This user has not posted any stories.</p>';
+                        return;
+                    }
+
+                    snapshot.forEach((docItem) => {
+                        const story = docItem.data();
+                        const storyId = docItem.id;
+                        const storyItem = document.createElement('div');
+                        storyItem.className = 'story-item';
+                        storyItem.dataset.storyId = storyId;
+                        storyItem.dataset.userId = story.userId;
+                        const timestamp = story.timestamp ? new Date(story.timestamp.toDate()).toLocaleString() : 'Unknown Date';
+
+                        storyItem.innerHTML = `
+                            <p class="story-text">${story.text}</p>
+                            <div class="story-meta">Shared by: ${story.displayName || story.userId} on ${timestamp}</div>
+                            <div class="story-actions">
+                                <button data-story-id="${storyId}" class="delete-story-btn">Delete Story (Admin)</button>
+                            </div>
+                        `;
+                        adminSpecificUserStoriesContainer.appendChild(storyItem);
+                    });
+
+                    // Add event listeners for delete buttons in admin view
+                    document.querySelectorAll('#adminSpecificUserStoriesContainer .delete-story-btn').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const storyIdToDelete = event.target.dataset.storyId;
+                            confirmDeleteStory(storyIdToDelete); // Use existing confirmDeleteStory
+                        });
+                    });
+                }, (error) => {
+                    console.error("Error fetching specific user stories for admin:", error);
+                    adminSpecificUserStoriesContainer.innerHTML = `<p style="text-align: center; color: var(--status-danger);">Error loading stories. Please check your browser's console (F12) for details. It might be a missing Firestore index or security rule issue.</p>`;
+                });
+
+            } catch (error) {
+                console.error("Error setting up listener for specific user stories:", error);
+                adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error setting up stories listener. Please try again later.</p>';
+            }
+        }
+
+        // Function to go back to all users list in admin panel
+        function backToAllUsers() {
+            document.getElementById('userListContainer').style.display = 'flex'; // Show the all users list
+            document.getElementById('adminUserStoriesView').style.display = 'none'; // Hide specific user stories view
+            loadAllUserProfiles(); // Reload the list just in case
+        }
+
+
+        // Function to start editing a story (for "What If" page)
+        function startEditStory(storyId, currentText) {
+            const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
+            if (!storyItem) return;
+
+            const storyTextP = storyItem.querySelector('.story-text');
+            const storyActionsDiv = storyItem.querySelector('.story-actions');
+
+            // Replace text with textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = currentText;
+            textarea.className = 'edit-story-textarea';
+            storyTextP.replaceWith(textarea);
+
+            // Replace buttons
+            storyActionsDiv.innerHTML = ''; // Clear existing buttons
+
+            const saveButton = document.createElement('button');
+            saveButton.textContent = 'Save';
+            saveButton.className = 'save-story-btn';
+            saveButton.addEventListener('click', () => saveStory(storyId, textarea.value, storyTextP));
+            storyActionsDiv.appendChild(saveButton);
+
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'Cancel';
+            cancelButton.className = 'cancel-edit-btn';
+            cancelButton.addEventListener('click', () => cancelEditStory(storyId, currentText, textarea));
+            storyActionsDiv.appendChild(cancelButton);
+        }
+
+        // Function to save an edited story
+        async function saveStory(storyId, newText, originalPElement) {
+            if (!db) {
+                console.error("Firestore not initialized.");
+                showConfirmModal('Error: Firestore not ready for saving.');
+                return;
+            }
+            if (!newText.trim()) {
+                showConfirmModal('Story cannot be empty.');
+                return;
+            }
+            try {
+                const storyRef = doc(db, `artifacts/${appId}/public/data/stories`, storyId);
+                await updateDoc(storyRef, {
+                    text: newText,
+                    timestamp: serverTimestamp() // Update timestamp on edit
+                });
+                showConfirmModal('Story updated successfully!');
+            } catch (error) {
+                console.error("Error updating document: ", error);
+                showConfirmModal('Failed to update story. Please try again.');
+            }
+        }
+
+        // Function to cancel editing a story
+        function cancelEditStory(storyId, originalText, textareaElement) {
+            const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
+            if (!storyItem) return;
+
+            const storyActionsDiv = storyItem.querySelector('.story-actions');
+            
+            // Revert textarea back to p tag
+            const originalP = document.createElement('p');
+            originalP.className = 'story-text';
+            originalP.textContent = originalText;
+            textareaElement.replaceWith(originalP);
+
+            // Re-add original buttons
+            storyActionsDiv.innerHTML = ''; // Clear existing buttons
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.className = 'edit-story-btn';
+            editButton.addEventListener('click', () => startEditStory(storyId, originalText));
+            storyActionsDiv.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'delete-story-btn';
+            deleteButton.addEventListener('click', () => confirmDeleteStory(storyId));
+            storyActionsDiv.appendChild(deleteButton);
+        }
+
+        // Function to confirm deletion of a story
+        async function confirmDeleteStory(storyId) {
+            const confirmed = await showConfirmModal('Are you sure you want to delete this story?');
+            if (confirmed) {
+                deleteStory(storyId);
+            }
+        }
+
+        // Function to delete a story
+        async function deleteStory(storyId) {
+            if (!db) {
+                console.error("Firestore not initialized.");
+                showConfirmModal('Error: Firestore not ready for deleting.');
+                return;
+            }
+            try {
+                const storyRef = doc(db, `artifacts/${appId}/public/data/stories`, storyId);
+                await deleteDoc(storyRef);
+                showConfirmModal('Story deleted successfully!');
+            } catch (error) {
+                console.error("Error deleting document: ", error);
+                showConfirmModal('Failed to delete story. Please try again.');
+            }
+        }
+
+        // Function to handle story submission
+        async function handleStorySubmit(event) {
+            event.preventDefault();
+            const storyTextarea = document.getElementById('storyText');
+            const storyText = storyTextarea.value.trim();
+
+            if (!storyText) {
+                showConfirmModal('Please write your story before submitting.');
+                return;
+            }
+
+            if (!db || !userId) {
+                showConfirmModal('Firebase not initialized or user not authenticated. Please try again.');
+                console.error("Firestore not ready for submission.");
+                return;
+            }
+
+            try {
+                const storiesCollectionRef = collection(db, `artifacts/${appId}/public/data/stories`);
+                await addDoc(storiesCollectionRef, {
+                    text: storyText,
+                    userId: userId, // Store the actual Firebase UID for ownership checks
+                    displayName: userDisplayName, // Store the display name for showing to others
+                    timestamp: serverTimestamp() // Firestore server timestamp
+                });
+                storyTextarea.value = ''; // Clear textarea
+                showConfirmModal('Story submitted successfully!');
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showConfirmModal('Failed to add story. Please try again.');
+            }
+        }
+
+        // Function to load shared stories for the current user
+        function loadSharedStories() {
+            const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
+            if (!db || !userId) {
+                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error: Stories cannot be loaded. Firebase not ready or user not authenticated.</p>';
+                console.error("Firestore DB or userId not available when trying to load stories.");
+                return;
+            }
+
+            sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading your stories...</p>';
+
+            try {
+                // Query only stories belonging to the current user.
+                // NOTE: If you want to order these stories by timestamp, you will need to create a composite index in Firestore.
+                // Go to Firebase Console -> Firestore Database -> Indexes tab.
+                // Create a new index for Collection ID: 'stories', fields: 'userId' (Ascending), 'timestamp' (Descending).
+                const q = query(collection(db, `artifacts/${appId}/public/data/stories`), 
+                                where('userId', '==', userId)); // Removed orderBy to avoid index error
+
+                onSnapshot(q, (snapshot) => {
+                    sharedStoriesContainer.innerHTML = ''; // Clear existing stories
+
+                    if (snapshot.empty) {
+                        sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">You have not posted any stories yet.</p>';
+                        return;
+                    }
+
+                    snapshot.forEach((docItem) => {
+                        const story = docItem.data();
+                        const storyId = docItem.id;
+                        const storyItem = document.createElement('div');
+                        storyItem.className = 'story-item';
+                        storyItem.dataset.storyId = storyId;
+                        storyItem.dataset.userId = story.userId; // Store userId for verification
+
+                        const timestamp = story.timestamp ? new Date(story.timestamp.toDate()).toLocaleString() : 'Unknown Date';
+
+                        storyItem.innerHTML = `
+                            <p class="story-text">${story.text}</p>
+                            <div class="story-meta">Shared by: ${story.displayName || story.userId} on ${timestamp}</div>
+                            <div class="story-actions">
+                                <button data-story-id="${storyId}" class="edit-story-btn">Edit</button>
+                                <button data-story-id="${storyId}" class="delete-story-btn">Delete</button>
+                            </div>
+                        `;
+                        sharedStoriesContainer.appendChild(storyItem);
+                    });
+
+                    // Add event listeners for edit and delete buttons
+                    document.querySelectorAll('.edit-story-btn').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const storyId = event.target.dataset.storyId;
+                            const storyText = event.target.closest('.story-item').querySelector('.story-text').textContent;
+                            startEditStory(storyId, storyText);
+                        });
+                    });
+
+                    document.querySelectorAll('.delete-story-btn').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const storyId = event.target.dataset.storyId;
+                            confirmDeleteStory(storyId);
+                        });
+                    });
+                }, (error) => {
+                    console.error("Error fetching stories from Firestore:", error); // More specific log
+                    sharedStoriesContainer.innerHTML = `<p style="text-align: center; color: var(--status-danger);">Error loading stories. Please check your browser's console (F12) for details. It might be a missing Firestore index or security rule issue.</p>`;
+                });
+            } catch (error) {
+                console.error("Error setting up stories listener (initial query build):", error); // More specific log
+                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error setting up stories listener. Please try again later.</p>';
+            }
+        }
+
+
+        // Initialize background particles
+        function initDynamicBackground() {
+            const bg = document.getElementById('dynamic-bg');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'dynamic-particle';
+                
+                const size = Math.random() * 10 + 5;
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const duration = Math.random() * 20 + 15;
+                const delay = Math.random() * 5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${x}%`;
+                particle.style.top = `${y}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                const colors = ['#00f0ff', '#8a2be2', '#ff00d0'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                bg.appendChild(particle);
+            }
+        }
+        
+        // Function to draw the bar chart
+        function drawBarChart(canvasId, data, labels, colors) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.error(`Canvas with ID '${canvasId}' not found.`);
+                return;
+            }
+            const ctx = canvas.getContext('2d');
+
+            // Adjust canvas size for high-DPI screens and responsiveness
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
+
+            const chartWidth = rect.width;
+            const chartHeight = rect.height;
+            const barWidth = chartWidth / (data.length * 2); // Adjust bar width based on number of bars
+            const spacing = barWidth / 2;
+            const maxVal = Math.max(...data);
+            const scale = (chartHeight - 50) / (maxVal > 0 ? maxVal : 1); // Scale for bars, leave space for labels. Avoid division by zero.
+
+            // Draw bars
+            for (let i = 0; i < data.length; i++) {
+                const barHeight = data[i] * scale;
+                const x = i * (barWidth + spacing) + spacing;
+                const y = chartHeight - barHeight - 30; // Position from bottom, leave space for labels
+
+                ctx.fillStyle = colors[i % colors.length]; // Use specific color for each bar, cycle through colors
+                ctx.fillRect(x, y, barWidth, barHeight);
+
+                // Draw labels
+                ctx.fillStyle = 'var(--text-primary)';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(labels[i], x + barWidth / 2, chartHeight - 10); // Label below bar
+                ctx.fillText(data[i], x + barWidth / 2, y - 5); // Value above bar
+            }
+        }
+
+        // Define player data (can be fetched from a server later)
+        const playersData = [
+            { name: 'Naga Saki', status: 'online', tattiScore: 80, description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.' },
+            { name: 'Ali Khan', status: 'offline', tattiScore: 99, description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.' },
+            { name: 'Nxt Figo', status: 'offline', tattiScore: 75, description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.' }
+        ];
+
+        // Function to update analytics numbers and draw chart
+        function updateAnalyticsAndChart() {
+            const playerDescriptionsContainer = document.getElementById('playerDescriptions');
+            playerDescriptionsContainer.innerHTML = ''; // Clear previous descriptions
+
+            // Sort players by Tatti Score in descending order
+            const sortedPlayers = [...playersData].sort((a, b) => b.tattiScore - a.tattiScore);
+
+            const chartData = [];
+            const chartLabels = [];
+            const chartColors = ['#00f0ff', '#8a2be2', '#ff00d0', '#00e676', '#ff9100', '#ff1744']; // More colors for variety
+
+            sortedPlayers.forEach((player, index) => {
+                // Add data for the bar chart
+                chartData.push(player.tattiScore);
+                chartLabels.push(player.name);
+
+                // Create and append player description card
+                const descCard = document.createElement('div');
+                descCard.className = 'player-description-card';
+                descCard.style.display = 'block'; // Always display all descriptions now
+                descCard.innerHTML = `
+                    <h3>${player.name} Performance Analysis:</h3>
+                    <p>${player.description}</p>
+                `;
+                playerDescriptionsContainer.appendChild(descCard);
             });
+            
+            drawBarChart('playerBarChart', chartData, chartLabels, chartColors);
+        }
+
+        // Function to handle page switching
+        function setupPageSwitching() {
+            const navLinks = document.querySelectorAll('.main-nav .nav-link');
+            const pageContents = document.querySelectorAll('.page-content');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent default link behavior
+
+                    // Remove 'active' class from all nav links
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    // Remove 'active-page' class from all page contents
+                    pageContents.forEach(page => page.classList.remove('active-page'));
+
+                    // Add 'active' class to the clicked link
+                    event.currentTarget.classList.add('active');
+
+                    // Add 'active-page' class to the target page
+                    const targetId = event.currentTarget.dataset.target;
+                    const targetPage = document.getElementById(targetId);
+                    if (targetPage) {
+                        targetPage.classList.add('active-page');
+                        // Only update analytics/chart if the analytics page is being shown
+                        if (targetId === 'analytics-page') {
+                            updateAnalyticsAndChart();
+                        } else if (targetId === 'admin-page') {
+                            updateAdminPanelUI(); // Call updateAdminPanelUI when admin page is active
+                        }
+                    }
+                });
+            });
+
+            // Set initial active page (Dashboard)
+            const initialActiveLink = document.querySelector('.main-nav .nav-link.active');
+            if (initialActiveLink) {
+                const targetId = initialActiveLink.dataset.target;
+                const targetPage = document.getElementById(targetId);
+                if (targetPage) {
+                    targetPage.classList.add('active-page');
+                }
+            }
+        }
+
+        // Function to handle display name submission from welcome modal
+        async function handleWelcomeDisplayNameSubmit() {
+            const welcomeDisplayNameInput = document.getElementById('welcomeDisplayNameInput');
+            const name = welcomeDisplayNameInput.value.trim();
+
+            if (!name) {
+                showConfirmModal('Please enter a display name to start exploring.');
+                return;
+            }
+
+            const success = await saveUserDisplayName(name);
+            if (success) {
+                hideWelcomeModal();
+                showMainContent();
+                loadSharedStories(); // Load stories after display name is set and main content is visible
+            }
+        }
+
+        // Initial setup on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', async () => {
+            initDynamicBackground();
+            setupPageSwitching(); // Setup page switching
+            
+            // Initialize Firebase and load stories
+            await initializeFirebase();
+
+            // Initial chart draw and description update (important if analytics is default or first viewed)
+            // This will only run if the analytics page is the initial active page AND display name is already set
+            if (document.querySelector('.nav-link.active').dataset.target === 'analytics-page' && userDisplayName && userDisplayName !== userId) {
+                updateAnalyticsAndChart(); 
+            }
+            // Add a resize event listener to redraw the chart when the window is resized
+            window.addEventListener('resize', updateAnalyticsAndChart);
+
+            // Add event listener for story form submission
+            const storyForm = document.getElementById('storyForm');
+            if (storyForm) {
+                storyForm.addEventListener('submit', handleStorySubmit);
+            }
+
+            // Add event listener for saving display name in header
+            const saveDisplayNameBtn = document.getElementById('saveDisplayNameBtn');
+            if (saveDisplayNameBtn) {
+                saveDisplayNameBtn.addEventListener('click', async () => {
+                    const name = document.getElementById('displayNameInput').value.trim();
+                    await saveUserDisplayName(name);
+                });
+            }
+
+            // Add event listener for welcome modal button
+            const startExploringBtn = document.getElementById('startExploringBtn');
+            if (startExploringBtn) {
+                startExploringBtn.addEventListener('click', handleWelcomeDisplayNameSubmit);
+            }
+
+            // Add event listeners for admin panel buttons
+            const grantAdminBtn = document.getElementById('grantAdminBtn');
+            if (grantAdminBtn) {
+                grantAdminBtn.addEventListener('click', grantAdminAccess);
+            }
+
+            const revokeAdminBtn = document.getElementById('revokeAdminBtn');
+            if (revokeAdminBtn) {
+                revokeAdminBtn.addEventListener('click', revokeAdminAccess);
+            }
+
+            const backToAllUsersBtn = document.getElementById('backToAllUsersBtn');
+            if (backToAllUsersBtn) {
+                backToAllUsersBtn.addEventListener('click', backToAllUsers);
+            }
         });
     </script>
 </body>
