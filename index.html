@@ -6,6 +6,7 @@
     <title>Tatti Players - Profiles</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* CSS remains the same as in the original */
         :root {
             --dark-bg: #0c1524;
             --darker-bg: #080e1a;
@@ -1337,22 +1338,17 @@
         </div>
     </div>
 
-    <script type="module">
-        // Firebase SDK imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc, getDocs, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global Firebase variables
-        let app;
-        let db;
-        let auth;
+    <script>
+        // Global variables
         let userId;
-        let userDisplayName = ""; // Initialize as empty string
-        let isAdmin = false; // Track admin status
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-
+        let userDisplayName = "";
+        let isAdmin = false;
+        
+        // Local storage keys
+        const USER_ID_KEY = 'tatti_userId';
+        const USER_PROFILE_KEY = 'tatti_userProfile';
+        const STORIES_KEY = 'tatti_stories';
+        
         // Define admin PIN
         const ADMIN_PIN = "859534"; 
 
@@ -1418,145 +1414,89 @@
             });
         }
 
-
-        // Initialize Firebase
-        async function initializeFirebase() {
-            try {
-                if (!app) {
-                    app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-
-                    onAuthStateChanged(auth, async (user) => {
-                        if (user) {
-                            userId = user.uid;
-                            // Fetch display name and admin status
-                            await fetchUserProfile(userId); 
-                            
-                            document.getElementById('displayUserId').textContent = userDisplayName; // Display user ID/name
-                            document.getElementById('displayNameInput').value = userDisplayName; // Set input field
-
-                            updateAdminPanelUI(); // Update admin panel UI based on fetched isAdmin status
-
-                            // Check if display name is set, if not, show welcome modal
-                            if (!userDisplayName || userDisplayName === userId) { // If it's empty or still the raw UID
-                                showWelcomeModal();
-                            } else {
-                                hideWelcomeModal();
-                                showMainContent();
-                                loadSharedStories();
-                            }
-                        } else {
-                            console.log("No user signed in. Signing in anonymously...");
-                            try {
-                                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                                    await signInWithCustomToken(auth, __initial_auth_token);
-                                } else {
-                                    await signInAnonymously(auth);
-                                }
-                                // After anonymous sign-in, onAuthStateChanged will be triggered again
-                            } catch (error) {
-                                console.error("Anonymous sign-in failed:", error);
-                                document.getElementById('displayUserId').textContent = 'Error loading ID';
-                                showWelcomeModal(); // Show welcome modal even on error to prompt name
-                            }
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error("Firebase initialization failed:", error);
-                document.getElementById('displayUserId').textContent = 'Error initializing Firebase';
-                showWelcomeModal(); // Show welcome modal even on error
+        // Initialize the app
+        function initializeApp() {
+            // Check local storage for existing user
+            const storedUserId = localStorage.getItem(USER_ID_KEY);
+            const storedProfile = JSON.parse(localStorage.getItem(USER_PROFILE_KEY)) || {};
+            
+            if (storedUserId) {
+                userId = storedUserId;
+                userDisplayName = storedProfile.displayName || userId;
+                isAdmin = storedProfile.isAdmin || false;
+                
+                document.getElementById('displayUserId').textContent = userDisplayName;
+                document.getElementById('displayNameInput').value = userDisplayName;
+                
+                updateAdminPanelUI();
+                showMainContent();
+                loadSharedStories();
+            } else {
+                // Generate a random user ID
+                userId = generateRandomId();
+                localStorage.setItem(USER_ID_KEY, userId);
+                
+                // Show welcome modal to set display name
+                showWelcomeModal();
             }
         }
 
-        // Function to fetch user's profile (display name and admin status)
-        async function fetchUserProfile(uid) {
-            if (!db) {
-                console.warn("Firestore not initialized. Cannot fetch user profile.");
-                userDisplayName = uid; // Fallback to UID
-                isAdmin = false;
-                return;
-            }
-            try {
-                const userProfileRef = doc(db, `artifacts/${appId}/users/${uid}/profile/userProfile`);
-                const docSnap = await getDoc(userProfileRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    userDisplayName = data.displayName || uid;
-                    isAdmin = data.isAdmin || false;
-                } else {
-                    userDisplayName = uid; // Fallback to UID if no profile
-                    isAdmin = false;
-                }
-            } catch (error) {
-                console.error("Error fetching user profile:", error);
-                userDisplayName = uid; // Fallback to UID on error
-                isAdmin = false;
-            }
+        // Generate a random ID
+        function generateRandomId() {
+            return 'user_' + Math.random().toString(36).substr(2, 9);
         }
 
-        // Function to update user's profile (display name or admin status)
-        async function updateUserProfile(dataToUpdate) {
-            if (!db || !userId) {
-                showConfirmModal('Firebase not initialized or user not authenticated. Cannot update profile.');
-                return false;
-            }
-            try {
-                const userProfileRef = doc(db, `artifacts/${appId}/users/${userId}/profile/userProfile`);
-                await setDoc(userProfileRef, dataToUpdate, { merge: true });
-                return true;
-            } catch (error) {
-                console.error("Error updating user profile:", error);
-                showConfirmModal('Failed to update profile. Please try again.');
-                return false;
-            }
+        // Save user profile to local storage
+        function saveUserProfile() {
+            const profile = {
+                displayName: userDisplayName,
+                isAdmin: isAdmin
+            };
+            localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(profile));
         }
 
-        // Function to save user's display name
-        async function saveUserDisplayName(nameToSave) {
-            if (!nameToSave.trim()) {
+        // Save user display name
+        async function saveUserDisplayName(name) {
+            if (!name.trim()) {
                 showConfirmModal('Display name cannot be empty.');
                 return false;
             }
-            const success = await updateUserProfile({ displayName: nameToSave });
-            if (success) {
-                userDisplayName = nameToSave;
-                document.getElementById('displayUserId').textContent = userDisplayName;
-                showConfirmModal('Display name saved successfully!');
-                loadSharedStories(); // Reload stories to update displayed names
-            }
-            return success;
+            
+            userDisplayName = name;
+            document.getElementById('displayUserId').textContent = userDisplayName;
+            saveUserProfile();
+            
+            showConfirmModal('Display name saved successfully!');
+            loadSharedStories();
+            return true;
         }
 
-        // --- Admin Panel Specific Functions ---
-        async function grantAdminAccess() {
+        // Grant admin access
+        function grantAdminAccess() {
             const enteredPin = document.getElementById('adminPinInput').value.trim();
             if (enteredPin === ADMIN_PIN) {
-                const success = await updateUserProfile({ isAdmin: true });
-                if (success) {
-                    isAdmin = true;
-                    updateAdminPanelUI();
-                    showConfirmModal('Admin access granted successfully!');
-                    document.getElementById('adminPinInput').value = ''; // Clear PIN
-                }
+                isAdmin = true;
+                saveUserProfile();
+                updateAdminPanelUI();
+                showConfirmModal('Admin access granted successfully!');
+                document.getElementById('adminPinInput').value = ''; // Clear PIN
             } else {
                 showConfirmModal('Incorrect PIN. Please try again.');
             }
         }
 
+        // Revoke admin access
         async function revokeAdminAccess() {
             const confirmed = await showConfirmModal('Are you sure you want to revoke your admin access?');
             if (confirmed) {
-                const success = await updateUserProfile({ isAdmin: false });
-                if (success) {
-                    isAdmin = false;
-                    updateAdminPanelUI();
-                    showConfirmModal('Admin access revoked.');
-                }
+                isAdmin = false;
+                saveUserProfile();
+                updateAdminPanelUI();
+                showConfirmModal('Admin access revoked.');
             }
         }
 
+        // Update admin panel UI
         function updateAdminPanelUI() {
             const adminPinSection = document.getElementById('adminPinSection');
             const adminUserListSection = document.getElementById('adminUserListSection');
@@ -1566,54 +1506,45 @@
 
             if (isAdmin) {
                 adminPinSection.style.display = 'none';
-                adminUserListSection.style.display = 'block'; // Or 'grid' if it's a grid layout
+                adminUserListSection.style.display = 'block';
                 revokeAdminBtn.style.display = 'block';
-                userListContainer.style.display = 'flex'; // Show user list by default
-                adminUserStoriesView.style.display = 'none'; // Hide specific user stories view
-                loadAllUserProfiles(); // Load user list when admin panel is shown for admin
+                userListContainer.style.display = 'flex';
+                adminUserStoriesView.style.display = 'none';
+                loadAllUserProfiles();
             } else {
-                adminPinSection.style.display = 'flex'; // Use flex for centering
+                adminPinSection.style.display = 'flex';
                 adminUserListSection.style.display = 'none';
                 revokeAdminBtn.style.display = 'none';
                 userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Enter PIN to view user list.</p>';
-                adminUserStoriesView.style.display = 'none'; // Ensure specific user stories view is hidden
+                adminUserStoriesView.style.display = 'none';
             }
         }
 
-        // Function to load all user profiles for admin panel
-        async function loadAllUserProfiles() {
+        // Load all user profiles for admin panel
+        function loadAllUserProfiles() {
             const userListContainer = document.getElementById('userListContainer');
-            userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading users...</p>'; // Loading indicator
-
-            if (!db) {
-                console.warn("Firestore not initialized. Cannot load all user profiles.");
-                userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error: Firestore not ready.</p>';
-                return;
-            }
-
+            userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading users...</p>';
+            
             try {
-                // Fetch all unique users who have posted stories
-                const storiesCollectionRef = collection(db, `artifacts/${appId}/public/data/stories`);
-                const querySnapshot = await getDocs(storiesCollectionRef);
-                const uniqueUsers = new Map(); // Use a Map to store unique users by their userId
-
-                querySnapshot.forEach((docSnap) => {
-                    const storyData = docSnap.data();
-                    if (storyData.userId) {
-                        uniqueUsers.set(storyData.userId, {
-                            displayName: storyData.displayName || storyData.userId,
-                            userId: storyData.userId
+                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
+                const uniqueUsers = new Map();
+                
+                stories.forEach(story => {
+                    if (story.userId) {
+                        uniqueUsers.set(story.userId, {
+                            displayName: story.displayName || story.userId,
+                            userId: story.userId
                         });
                     }
                 });
-
-                userListContainer.innerHTML = ''; // Clear loading indicator
-
+                
+                userListContainer.innerHTML = '';
+                
                 if (uniqueUsers.size === 0) {
                     userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No users found who have posted stories.</p>';
                     return;
                 }
-
+                
                 uniqueUsers.forEach(userData => {
                     const listItem = document.createElement('div');
                     listItem.className = 'user-list-item';
@@ -1624,8 +1555,8 @@
                     `;
                     userListContainer.appendChild(listItem);
                 });
-
-                // Add event listeners to the new buttons
+                
+                // Add event listeners to the buttons
                 document.querySelectorAll('.view-user-stories-btn').forEach(button => {
                     button.addEventListener('click', (event) => {
                         const targetUserId = event.target.dataset.userId;
@@ -1633,96 +1564,78 @@
                         viewUserStoriesAsAdmin(targetUserId, targetDisplayName);
                     });
                 });
-
+                
             } catch (error) {
                 console.error("Error loading all user profiles:", error);
-                userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list. Please check your browser\'s console (F12) for details. It might be a missing Firestore index or security rule issue.</p>';
+                userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list.</p>';
             }
         }
 
-        // Function to view a specific user's stories in the admin panel
-        async function viewUserStoriesAsAdmin(targetUserId, targetDisplayName) {
+        // View a specific user's stories in admin panel
+        function viewUserStoriesAsAdmin(targetUserId, targetDisplayName) {
             const userListContainer = document.getElementById('userListContainer');
             const adminUserStoriesView = document.getElementById('adminUserStoriesView');
             const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
             const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
             const adminSpecificUserStoriesContainer = document.getElementById('adminSpecificUserStoriesContainer');
 
-            userListContainer.style.display = 'none'; // Hide the all users list
-            adminUserStoriesView.style.display = 'block'; // Show specific user stories view
+            userListContainer.style.display = 'none';
+            adminUserStoriesView.style.display = 'block';
 
             currentAdminUserDisplayNameSpan.textContent = targetDisplayName;
             currentAdminUserIdSpan.textContent = targetUserId;
             adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading stories for this user...</p>';
 
-            if (!db) {
-                console.warn("Firestore not initialized. Cannot load user's stories for admin view.");
-                adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error: Firestore not ready.</p>';
-                return;
-            }
-
             try {
-                const storiesCollectionRef = collection(db, `artifacts/${appId}/public/data/stories`);
-                // Query for stories by a specific user.
-                // NOTE: If you want to order these stories by timestamp, you will need to create a composite index in Firestore.
-                // Go to Firebase Console -> Firestore Database -> Indexes tab.
-                // Create a new index for Collection ID: 'stories', fields: 'userId' (Ascending), 'timestamp' (Descending).
-                const q = query(storiesCollectionRef, where('userId', '==', targetUserId)); // Removed orderBy to avoid index error
+                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
+                const userStories = stories.filter(story => story.userId === targetUserId);
                 
-                onSnapshot(q, (snapshot) => {
-                    adminSpecificUserStoriesContainer.innerHTML = ''; // Clear existing stories
-
-                    if (snapshot.empty) {
-                        adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">This user has not posted any stories.</p>';
-                        return;
-                    }
-
-                    snapshot.forEach((docItem) => {
-                        const story = docItem.data();
-                        const storyId = docItem.id;
-                        const storyItem = document.createElement('div');
-                        storyItem.className = 'story-item';
-                        storyItem.dataset.storyId = storyId;
-                        storyItem.dataset.userId = story.userId;
-                        const timestamp = story.timestamp ? new Date(story.timestamp.toDate()).toLocaleString() : 'Unknown Date';
-
-                        storyItem.innerHTML = `
-                            <p class="story-text">${story.text}</p>
-                            <div class="story-meta">Shared by: ${story.displayName || story.userId} on ${timestamp}</div>
-                            <div class="story-actions">
-                                <button data-story-id="${storyId}" class="delete-story-btn">Delete Story (Admin)</button>
-                            </div>
-                        `;
-                        adminSpecificUserStoriesContainer.appendChild(storyItem);
-                    });
-
-                    // Add event listeners for delete buttons in admin view
-                    document.querySelectorAll('#adminSpecificUserStoriesContainer .delete-story-btn').forEach(button => {
-                        button.addEventListener('click', (event) => {
-                            const storyIdToDelete = event.target.dataset.storyId;
-                            confirmDeleteStory(storyIdToDelete); // Use existing confirmDeleteStory
-                        });
-                    });
-                }, (error) => {
-                    console.error("Error fetching specific user stories for admin:", error);
-                    adminSpecificUserStoriesContainer.innerHTML = `<p style="text-align: center; color: var(--status-danger);">Error loading stories. Please check your browser's console (F12) for details. It might be a missing Firestore index or security rule issue.</p>`;
+                adminSpecificUserStoriesContainer.innerHTML = '';
+                
+                if (userStories.length === 0) {
+                    adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">This user has not posted any stories.</p>';
+                    return;
+                }
+                
+                userStories.forEach(story => {
+                    const storyItem = document.createElement('div');
+                    storyItem.className = 'story-item';
+                    storyItem.dataset.storyId = story.id;
+                    storyItem.dataset.userId = story.userId;
+                    const timestamp = story.timestamp ? new Date(story.timestamp).toLocaleString() : 'Unknown Date';
+                    
+                    storyItem.innerHTML = `
+                        <p class="story-text">${story.text}</p>
+                        <div class="story-meta">Shared by: ${story.displayName || story.userId} on ${timestamp}</div>
+                        <div class="story-actions">
+                            <button data-story-id="${story.id}" class="delete-story-btn">Delete Story (Admin)</button>
+                        </div>
+                    `;
+                    adminSpecificUserStoriesContainer.appendChild(storyItem);
                 });
-
+                
+                // Add event listeners for delete buttons
+                document.querySelectorAll('#adminSpecificUserStoriesContainer .delete-story-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const storyIdToDelete = event.target.dataset.storyId;
+                        confirmDeleteStory(storyIdToDelete);
+                    });
+                });
+                
             } catch (error) {
-                console.error("Error setting up listener for specific user stories:", error);
-                adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error setting up stories listener. Please try again later.</p>';
+                console.error("Error fetching specific user stories for admin:", error);
+                adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
             }
         }
 
-        // Function to go back to all users list in admin panel
+        // Back to all users list
         function backToAllUsers() {
-            document.getElementById('userListContainer').style.display = 'flex'; // Show the all users list
-            document.getElementById('adminUserStoriesView').style.display = 'none'; // Hide specific user stories view
-            loadAllUserProfiles(); // Reload the list just in case
+            document.getElementById('userListContainer').style.display = 'flex';
+            document.getElementById('adminUserStoriesView').style.display = 'none';
+            loadAllUserProfiles();
         }
 
-
-        // Function to start editing a story (for "What If" page)
+        // Start editing a story
         function startEditStory(storyId, currentText) {
             const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
             if (!storyItem) return;
@@ -1737,7 +1650,7 @@
             storyTextP.replaceWith(textarea);
 
             // Replace buttons
-            storyActionsDiv.innerHTML = ''; // Clear existing buttons
+            storyActionsDiv.innerHTML = '';
 
             const saveButton = document.createElement('button');
             saveButton.textContent = 'Save';
@@ -1752,31 +1665,31 @@
             storyActionsDiv.appendChild(cancelButton);
         }
 
-        // Function to save an edited story
-        async function saveStory(storyId, newText, originalPElement) {
-            if (!db) {
-                console.error("Firestore not initialized.");
-                showConfirmModal('Error: Firestore not ready for saving.');
-                return;
-            }
+        // Save an edited story
+        function saveStory(storyId, newText, originalPElement) {
             if (!newText.trim()) {
                 showConfirmModal('Story cannot be empty.');
                 return;
             }
+            
             try {
-                const storyRef = doc(db, `artifacts/${appId}/public/data/stories`, storyId);
-                await updateDoc(storyRef, {
-                    text: newText,
-                    timestamp: serverTimestamp() // Update timestamp on edit
-                });
-                showConfirmModal('Story updated successfully!');
+                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
+                const storyIndex = stories.findIndex(story => story.id === storyId);
+                
+                if (storyIndex !== -1) {
+                    stories[storyIndex].text = newText;
+                    stories[storyIndex].timestamp = new Date().toISOString();
+                    localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
+                    showConfirmModal('Story updated successfully!');
+                    loadSharedStories();
+                }
             } catch (error) {
-                console.error("Error updating document: ", error);
+                console.error("Error updating story:", error);
                 showConfirmModal('Failed to update story. Please try again.');
             }
         }
 
-        // Function to cancel editing a story
+        // Cancel editing a story
         function cancelEditStory(storyId, originalText, textareaElement) {
             const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
             if (!storyItem) return;
@@ -1790,7 +1703,7 @@
             textareaElement.replaceWith(originalP);
 
             // Re-add original buttons
-            storyActionsDiv.innerHTML = ''; // Clear existing buttons
+            storyActionsDiv.innerHTML = '';
             const editButton = document.createElement('button');
             editButton.textContent = 'Edit';
             editButton.className = 'edit-story-btn';
@@ -1804,7 +1717,7 @@
             storyActionsDiv.appendChild(deleteButton);
         }
 
-        // Function to confirm deletion of a story
+        // Confirm story deletion
         async function confirmDeleteStory(storyId) {
             const confirmed = await showConfirmModal('Are you sure you want to delete this story?');
             if (confirmed) {
@@ -1812,25 +1725,22 @@
             }
         }
 
-        // Function to delete a story
-        async function deleteStory(storyId) {
-            if (!db) {
-                console.error("Firestore not initialized.");
-                showConfirmModal('Error: Firestore not ready for deleting.');
-                return;
-            }
+        // Delete a story
+        function deleteStory(storyId) {
             try {
-                const storyRef = doc(db, `artifacts/${appId}/public/data/stories`, storyId);
-                await deleteDoc(storyRef);
+                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
+                const updatedStories = stories.filter(story => story.id !== storyId);
+                localStorage.setItem(STORIES_KEY, JSON.stringify(updatedStories));
                 showConfirmModal('Story deleted successfully!');
+                loadSharedStories();
             } catch (error) {
-                console.error("Error deleting document: ", error);
+                console.error("Error deleting story:", error);
                 showConfirmModal('Failed to delete story. Please try again.');
             }
         }
 
-        // Function to handle story submission
-        async function handleStorySubmit(event) {
+        // Handle story submission
+        function handleStorySubmit(event) {
             event.preventDefault();
             const storyTextarea = document.getElementById('storyText');
             const storyText = storyTextarea.value.trim();
@@ -1840,101 +1750,83 @@
                 return;
             }
 
-            if (!db || !userId) {
-                showConfirmModal('Firebase not initialized or user not authenticated. Please try again.');
-                console.error("Firestore not ready for submission.");
-                return;
-            }
-
             try {
-                const storiesCollectionRef = collection(db, `artifacts/${appId}/public/data/stories`);
-                await addDoc(storiesCollectionRef, {
+                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
+                const newStory = {
+                    id: 'story_' + Date.now(),
                     text: storyText,
-                    userId: userId, // Store the actual Firebase UID for ownership checks
-                    displayName: userDisplayName, // Store the display name for showing to others
-                    timestamp: serverTimestamp() // Firestore server timestamp
-                });
-                storyTextarea.value = ''; // Clear textarea
+                    userId: userId,
+                    displayName: userDisplayName,
+                    timestamp: new Date().toISOString()
+                };
+                
+                stories.push(newStory);
+                localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
+                
+                storyTextarea.value = '';
                 showConfirmModal('Story submitted successfully!');
+                loadSharedStories();
             } catch (error) {
-                console.error("Error adding document: ", error);
+                console.error("Error adding story:", error);
                 showConfirmModal('Failed to add story. Please try again.');
             }
         }
 
-        // Function to load shared stories for the current user
+        // Load shared stories
         function loadSharedStories() {
             const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
-            if (!db || !userId) {
-                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error: Stories cannot be loaded. Firebase not ready or user not authenticated.</p>';
-                console.error("Firestore DB or userId not available when trying to load stories.");
-                return;
-            }
-
             sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading your stories...</p>';
-
+            
             try {
-                // Query only stories belonging to the current user.
-                // NOTE: If you want to order these stories by timestamp, you will need to create a composite index in Firestore.
-                // Go to Firebase Console -> Firestore Database -> Indexes tab.
-                // Create a new index for Collection ID: 'stories', fields: 'userId' (Ascending), 'timestamp' (Descending).
-                const q = query(collection(db, `artifacts/${appId}/public/data/stories`), 
-                                where('userId', '==', userId)); // Removed orderBy to avoid index error
-
-                onSnapshot(q, (snapshot) => {
-                    sharedStoriesContainer.innerHTML = ''; // Clear existing stories
-
-                    if (snapshot.empty) {
-                        sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">You have not posted any stories yet.</p>';
-                        return;
-                    }
-
-                    snapshot.forEach((docItem) => {
-                        const story = docItem.data();
-                        const storyId = docItem.id;
-                        const storyItem = document.createElement('div');
-                        storyItem.className = 'story-item';
-                        storyItem.dataset.storyId = storyId;
-                        storyItem.dataset.userId = story.userId; // Store userId for verification
-
-                        const timestamp = story.timestamp ? new Date(story.timestamp.toDate()).toLocaleString() : 'Unknown Date';
-
-                        storyItem.innerHTML = `
-                            <p class="story-text">${story.text}</p>
-                            <div class="story-meta">Shared by: ${story.displayName || story.userId} on ${timestamp}</div>
-                            <div class="story-actions">
-                                <button data-story-id="${storyId}" class="edit-story-btn">Edit</button>
-                                <button data-story-id="${storyId}" class="delete-story-btn">Delete</button>
-                            </div>
-                        `;
-                        sharedStoriesContainer.appendChild(storyItem);
-                    });
-
-                    // Add event listeners for edit and delete buttons
-                    document.querySelectorAll('.edit-story-btn').forEach(button => {
-                        button.addEventListener('click', (event) => {
-                            const storyId = event.target.dataset.storyId;
-                            const storyText = event.target.closest('.story-item').querySelector('.story-text').textContent;
-                            startEditStory(storyId, storyText);
-                        });
-                    });
-
-                    document.querySelectorAll('.delete-story-btn').forEach(button => {
-                        button.addEventListener('click', (event) => {
-                            const storyId = event.target.dataset.storyId;
-                            confirmDeleteStory(storyId);
-                        });
-                    });
-                }, (error) => {
-                    console.error("Error fetching stories from Firestore:", error); // More specific log
-                    sharedStoriesContainer.innerHTML = `<p style="text-align: center; color: var(--status-danger);">Error loading stories. Please check your browser's console (F12) for details. It might be a missing Firestore index or security rule issue.</p>`;
+                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
+                const userStories = stories.filter(story => story.userId === userId);
+                
+                sharedStoriesContainer.innerHTML = '';
+                
+                if (userStories.length === 0) {
+                    sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">You have not posted any stories yet.</p>';
+                    return;
+                }
+                
+                userStories.forEach(story => {
+                    const storyItem = document.createElement('div');
+                    storyItem.className = 'story-item';
+                    storyItem.dataset.storyId = story.id;
+                    storyItem.dataset.userId = story.userId;
+                    const timestamp = story.timestamp ? new Date(story.timestamp).toLocaleString() : 'Unknown Date';
+                    
+                    storyItem.innerHTML = `
+                        <p class="story-text">${story.text}</p>
+                        <div class="story-meta">Shared by: ${story.displayName || story.userId} on ${timestamp}</div>
+                        <div class="story-actions">
+                            <button data-story-id="${story.id}" class="edit-story-btn">Edit</button>
+                            <button data-story-id="${story.id}" class="delete-story-btn">Delete</button>
+                        </div>
+                    `;
+                    sharedStoriesContainer.appendChild(storyItem);
                 });
+                
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.edit-story-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const storyId = event.target.dataset.storyId;
+                        const storyText = event.target.closest('.story-item').querySelector('.story-text').textContent;
+                        startEditStory(storyId, storyText);
+                    });
+                });
+
+                document.querySelectorAll('.delete-story-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const storyId = event.target.dataset.storyId;
+                        confirmDeleteStory(storyId);
+                    });
+                });
+                
             } catch (error) {
-                console.error("Error setting up stories listener (initial query build):", error); // More specific log
-                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error setting up stories listener. Please try again later.</p>';
+                console.error("Error loading stories:", error);
+                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
             }
         }
-
 
         // Initialize background particles
         function initDynamicBackground() {
@@ -2008,24 +1900,24 @@
             }
         }
 
-        // Define player data (can be fetched from a server later)
+        // Define player data
         const playersData = [
             { name: 'Naga Saki', status: 'online', tattiScore: 80, description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.' },
             { name: 'Ali Khan', status: 'offline', tattiScore: 99, description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.' },
             { name: 'Nxt Figo', status: 'offline', tattiScore: 75, description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.' }
         ];
 
-        // Function to update analytics numbers and draw chart
+        // Update analytics numbers and draw chart
         function updateAnalyticsAndChart() {
             const playerDescriptionsContainer = document.getElementById('playerDescriptions');
-            playerDescriptionsContainer.innerHTML = ''; // Clear previous descriptions
+            playerDescriptionsContainer.innerHTML = '';
 
             // Sort players by Tatti Score in descending order
             const sortedPlayers = [...playersData].sort((a, b) => b.tattiScore - a.tattiScore);
 
             const chartData = [];
             const chartLabels = [];
-            const chartColors = ['#00f0ff', '#8a2be2', '#ff00d0', '#00e676', '#ff9100', '#ff1744']; // More colors for variety
+            const chartColors = ['#00f0ff', '#8a2be2', '#ff00d0', '#00e676', '#ff9100', '#ff1744'];
 
             sortedPlayers.forEach((player, index) => {
                 // Add data for the bar chart
@@ -2035,7 +1927,7 @@
                 // Create and append player description card
                 const descCard = document.createElement('div');
                 descCard.className = 'player-description-card';
-                descCard.style.display = 'block'; // Always display all descriptions now
+                descCard.style.display = 'block';
                 descCard.innerHTML = `
                     <h3>${player.name} Performance Analysis:</h3>
                     <p>${player.description}</p>
@@ -2046,14 +1938,14 @@
             drawBarChart('playerBarChart', chartData, chartLabels, chartColors);
         }
 
-        // Function to handle page switching
+        // Handle page switching
         function setupPageSwitching() {
             const navLinks = document.querySelectorAll('.main-nav .nav-link');
             const pageContents = document.querySelectorAll('.page-content');
 
             navLinks.forEach(link => {
                 link.addEventListener('click', (event) => {
-                    event.preventDefault(); // Prevent default link behavior
+                    event.preventDefault();
 
                     // Remove 'active' class from all nav links
                     navLinks.forEach(nav => nav.classList.remove('active'));
@@ -2072,7 +1964,7 @@
                         if (targetId === 'analytics-page') {
                             updateAnalyticsAndChart();
                         } else if (targetId === 'admin-page') {
-                            updateAdminPanelUI(); // Call updateAdminPanelUI when admin page is active
+                            updateAdminPanelUI();
                         }
                     }
                 });
@@ -2089,7 +1981,7 @@
             }
         }
 
-        // Function to handle display name submission from welcome modal
+        // Handle welcome display name submission
         async function handleWelcomeDisplayNameSubmit() {
             const welcomeDisplayNameInput = document.getElementById('welcomeDisplayNameInput');
             const name = welcomeDisplayNameInput.value.trim();
@@ -2103,23 +1995,16 @@
             if (success) {
                 hideWelcomeModal();
                 showMainContent();
-                loadSharedStories(); // Load stories after display name is set and main content is visible
+                loadSharedStories();
             }
         }
 
         // Initial setup on DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             initDynamicBackground();
-            setupPageSwitching(); // Setup page switching
-            
-            // Initialize Firebase and load stories
-            await initializeFirebase();
+            setupPageSwitching();
+            initializeApp();
 
-            // Initial chart draw and description update (important if analytics is default or first viewed)
-            // This will only run if the analytics page is the initial active page AND display name is already set
-            if (document.querySelector('.nav-link.active').dataset.target === 'analytics-page' && userDisplayName && userDisplayName !== userId) {
-                updateAnalyticsAndChart(); 
-            }
             // Add a resize event listener to redraw the chart when the window is resized
             window.addEventListener('resize', updateAnalyticsAndChart);
 
