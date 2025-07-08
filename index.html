@@ -20,7 +20,7 @@
             --text-secondary: #a0b8c8;
             --status-success: #00e676;
             --status-warning: #ff9100;
-            --status-danger: #ff1744;
+            --status-danger': #ff1744;
             --highlight-effect: rgba(0, 240, 255, 0.15);
         }
 
@@ -3456,8 +3456,8 @@
                 chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
                 const payload = { contents: chatHistory };
-                // Using an empty API key so Canvas can automatically provide it
-                const apiKey = ""; 
+                // Using the provided API key for external access
+                const apiKey = "AIzaSyBjSGBeVq7JBvvS2SgIQXv3xQmx9cxzCkg"; 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
@@ -3485,6 +3485,7 @@
             } catch (error) {
                 console.error("Error generating AI story:", error);
                 showConfirmModal("An error occurred while connecting to AI. Please check your network or try again later.");
+                console.error("Full error details:", error); // Log full error
             } finally {
                 // Hide loading indicator and enable button
                 aiLoader.style.display = 'none';
