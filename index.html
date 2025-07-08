@@ -1192,7 +1192,6 @@
         <a href="#" class="nav-link active" data-target="dashboard-page"><i class="fas fa-home"></i> Dashboard</a>
         <a href="#" class="nav-link" data-target="analytics-page"><i class="fas fa-chart-line"></i> Analytics</a>
         <a href="#" class="nav-link" data-target="what-if-page"><i class="fas fa-question-circle"></i> What If</a>
-        <a href="#" class="nav-link" id="adminPanelLink" data-target="admin-page"><i class="fas fa-user-shield"></i> Admin Panel</a>
         <a href="#" class="nav-link" data-target="settings-page"><i class="fas fa-cog"></i> Settings</a>
     </nav>
 
@@ -1333,38 +1332,6 @@
             </div>
         </div>
 
-        <!-- Admin Page Content -->
-        <div id="admin-page" class="dashboard page-content">
-            <div class="admin-content">
-                <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
-                <p>Yahan aap sabhi users ke display names aur unki unique IDs dekh sakte hain.</p>
-                
-                <!-- Admin PIN Section (initially visible if not admin) -->
-                <div id="adminPinSection" class="admin-pin-section">
-                    <h3>Enter Admin PIN</h3>
-                    <input type="password" id="adminPinInput" placeholder="Enter PIN to gain admin access">
-                    <button id="grantAdminBtn">Grant Admin Access</button>
-                </div>
-
-                <!-- Admin User List Section (initially hidden) -->
-                <div id="adminUserListSection" style="display: none;">
-                    <div id="userListContainer" class="user-list">
-                        <p style="text-align: center; color: var(--text-secondary);">Loading users...</p>
-                    </div>
-                    <div id="adminUserStoriesView" class="admin-stories-view" style="display: none;">
-                        <h3>Stories by <span id="currentAdminUserDisplayName"></span> (<span id="currentAdminUserId"></span>)</h3>
-                        <div id="adminSpecificUserStoriesContainer">
-                            <p style="text-align: center; color: var(--text-secondary);">Loading stories...</p>
-                        </div>
-                        <div class="back-button-container">
-                            <button id="backToAllUsersBtn">Back to All Users</button>
-                        </div>
-                    </div>
-                    <button id="revokeAdminBtn">Revoke Admin Access</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Settings Page Content -->
         <div id="settings-page" class="dashboard page-content">
             <div class="analytics-content">
@@ -1390,6 +1357,36 @@
                             <i class="fas fa-dragon"></i><br>
                             Anime
                         </button>
+                    </div>
+                </div>
+
+                <!-- Admin Panel Content - Moved Here -->
+                <div class="admin-content" style="margin-top: 40px;">
+                    <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
+                    <p>Yahan aap sabhi users ke display names aur unki unique IDs dekh sakte hain.</p>
+                    
+                    <!-- Admin PIN Section (initially visible if not admin) -->
+                    <div id="adminPinSection" class="admin-pin-section">
+                        <h3>Enter Admin PIN</h3>
+                        <input type="password" id="adminPinInput" placeholder="Enter PIN to gain admin access">
+                        <button id="grantAdminBtn">Grant Admin Access</button>
+                    </div>
+
+                    <!-- Admin User List Section (initially hidden) -->
+                    <div id="adminUserListSection" style="display: none;">
+                        <div id="userListContainer" class="user-list">
+                            <p style="text-align: center; color: var(--text-secondary);">Loading users...</p>
+                        </div>
+                        <div id="adminUserStoriesView" class="admin-stories-view" style="display: none;">
+                            <h3>Stories by <span id="currentAdminUserDisplayName"></span> (<span id="currentAdminUserId"></span>)</h3>
+                            <div id="adminSpecificUserStoriesContainer">
+                                <p style="text-align: center; color: var(--text-secondary);">Loading stories...</p>
+                            </div>
+                            <div class="back-button-container">
+                                <button id="backToAllUsersBtn">Back to All Users</button>
+                            </div>
+                        </div>
+                        <button id="revokeAdminBtn">Revoke Admin Access</button>
                     </div>
                 </div>
             </div>
@@ -1524,6 +1521,9 @@
         // Helper function for modal/content visibility with transitions
         function toggleVisibility(element, show, displayType = 'flex', transitionDuration = 300) {
             console.log(`Toggling visibility for element: ${element.id || element.className}. Show: ${show}, Display Type: ${displayType}`); // Debug Log
+            if (element.id === 'main-content') { // Specific log for main-content
+                console.log(`Main content visibility: ${show ? 'SHOWING' : 'HIDING'}`);
+            }
             if (show) {
                 element.style.display = displayType;
                 // Force reflow to ensure display property is applied before transition starts
@@ -1805,7 +1805,8 @@
                 document.getElementById('displayNameInput').value = userDisplayName;
                 applyTheme(currentTheme); // Apply loaded theme
 
-                updateAdminPanelUI(); // Update admin UI based on loaded status
+                // updateAdminPanelUI(); // This will be called when settings page is activated
+                console.log('Calling showMainContent() after loading profile.'); // Debug Log
                 showMainContent(); // Show main content after loading profile
                 console.log('loadUserProfileFirebase completed successfully.'); // Debug Log
                 
@@ -2239,7 +2240,7 @@
             const userListContainer = document.getElementById('userListContainer');
             const adminUserStoriesView = document.getElementById('adminUserStoriesView');
             const revokeAdminBtn = document.getElementById('revokeAdminBtn');
-            const adminPanelLink = document.getElementById('adminPanelLink');
+            // const adminPanelLink = document.getElementById('adminPanelLink'); // Removed as it's now always visible
 
             if (isAdmin) {
                 adminPinSection.style.display = 'none';
@@ -2247,14 +2248,14 @@
                 revokeAdminBtn.style.display = 'block';
                 userListContainer.style.display = 'flex';
                 adminUserStoriesView.style.display = 'none';
-                adminPanelLink.style.display = 'block'; // Show admin link if admin
+                // adminPanelLink.style.display = 'block'; // Removed as it's now always visible
                 loadAllUserProfilesFirebase(); // Load users only if admin
             } else {
                 adminPinSection.style.display = 'flex';
                 adminUserListSection.style.display = 'none';
                 revokeAdminBtn.style.display = 'none';
                 adminUserStoriesView.style.display = 'none';
-                adminPanelLink.style.display = 'none'; // Hide admin link if not admin
+                // adminPanelLink.style.display = 'none'; // Removed as it's now always visible
                 userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Enter PIN to view user list.</p>';
                 // Ensure no listeners are active for admin data if not admin
                 database.ref('users').off('value', handleAllUsersSnapshot);
@@ -2371,8 +2372,8 @@
                             updateAnalyticsAndChart();
                         } else if (targetId === 'what-if-page') {
                             loadSharedStoriesFirebase(); // Load stories when What If page is active
-                        } else if (targetId === 'admin-page') {
-                            updateAdminPanelUI(); // Update admin UI when Admin page is active
+                        } else if (targetId === 'settings-page') { // Changed from admin-page to settings-page
+                            updateAdminPanelUI(); // Update admin UI when Admin section within Settings page is active
                         }
                     }
                 });
