@@ -1046,7 +1046,7 @@
 
         .theme-options {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid for themes */
             gap: 15px;
             margin-top: 15px;
         }
@@ -1080,11 +1080,300 @@
             box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.3);
         }
 
+        /* Polls Page Specific Styling */
+        .polls-content {
+            background: var(--card-color);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .polls-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .polls-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .poll-form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .poll-form label {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .poll-form input[type="text"],
+        .poll-form textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .poll-options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .poll-option-item {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            gap: 10px;
+            align-items: center;
+        }
+
+        .poll-option-item input {
+            flex: 1;
+            min-width: 120px; /* Ensure inputs don't get too small */
+        }
+
+        .poll-option-item button {
+            background-color: var(--status-danger);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .poll-option-item button:hover {
+            background-color: #c0392b;
+        }
+
+        .add-option-btn {
+            background: var(--accent-blue);
+            color: var(--darker-bg);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .add-option-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .create-poll-btn {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 240, 255, 0.3);
+            margin-top: 20px;
+        }
+
+        .create-poll-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 240, 255, 0.4);
+        }
+
+        /* Loading indicator for poll creation */
+        #createPollLoader {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+        }
+        #createPollLoader i {
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        .polls-list {
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .polls-list h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .poll-item {
+            background: var(--surface-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .poll-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .poll-question {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 15px;
+        }
+
+        .poll-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .poll-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--card-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            position: relative; /* For progress bar */
+            overflow: hidden; /* For progress bar */
+        }
+
+        .poll-option:hover:not(.voted) { /* Only hover if not already voted */
+            background-color: rgba(0, 240, 255, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        .poll-option.voted {
+            border-color: var(--status-success); /* Highlight voted option */
+            background-color: rgba(0, 230, 118, 0.1);
+        }
+
+        .poll-option input[type="radio"] {
+            margin-right: 5px;
+            accent-color: var(--accent-purple); /* Style radio button */
+            z-index: 1; /* Ensure radio button is clickable */
+            position: relative;
+        }
+
+        .poll-option img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            flex-shrink: 0; /* Prevent image from shrinking */
+            z-index: 1; /* Ensure image is above progress bar */
+            position: relative;
+        }
+
+        .poll-option span {
+            flex-grow: 1;
+            font-size: 1rem;
+            color: var(--text-primary);
+            z-index: 1; /* Ensure text is above progress bar */
+            position: relative;
+        }
+
+        .poll-vote-count {
+            font-weight: bold;
+            color: var(--accent-pink);
+            min-width: 30px;
+            text-align: right;
+            z-index: 1; /* Ensure count is above progress bar */
+            position: relative;
+        }
+
+        /* Progress bar styling */
+        .poll-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.2), rgba(138, 43, 226, 0.2));
+            width: 0%; /* Will be set by JS */
+            transition: width 0.5s ease-out;
+            z-index: 0; /* Behind other content */
+        }
+
+        .poll-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .poll-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .poll-actions button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .poll-actions .delete-poll-btn {
+            background-color: var(--status-danger);
+            color: white;
+        }
+        .poll-actions .delete-poll-btn:hover {
+            background-color: #c0392b;
+        }
+
         /* Responsive design */
         @media (max-width: 768px) {
             .main-nav {
                 flex-wrap: wrap;
                 padding: 10px;
+                justify-content: center;
             }
             
             .main-nav a {
@@ -1169,6 +1458,15 @@
             .theme-options {
                 grid-template-columns: 1fr;
             }
+
+            .poll-option-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .poll-option-item input {
+                width: 100%; /* Full width on small screens */
+                min-width: unset;
+            }
         }
     </style>
 </head>
@@ -1192,6 +1490,8 @@
         <a href="#" class="nav-link active" data-target="dashboard-page"><i class="fas fa-home"></i> Dashboard</a>
         <a href="#" class="nav-link" data-target="analytics-page"><i class="fas fa-chart-line"></i> Analytics</a>
         <a href="#" class="nav-link" data-target="what-if-page"><i class="fas fa-question-circle"></i> What If</a>
+        <a href="#" class="nav-link" data-target="community-stories-page"><i class="fas fa-users"></i> Community Stories</a>
+        <a href="#" class="nav-link" data-target="polls-page"><i class="fas fa-poll"></i> Polls</a>
         <a href="#" class="nav-link" data-target="settings-page"><i class="fas fa-cog"></i> Settings</a>
     </nav>
 
@@ -1224,11 +1524,11 @@
                     <div class="profile-content">
                         <h3>Pros:</h3>
                         <ul>
-                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Apni mummy ki bohot respect karta hai.</li>
+                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Respects their mother a lot.</li>
                         </ul>
                         <h3>Cons:</h3>
                         <ul>
-                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> Par galti bohot karta hai.</li>
+                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> But makes many mistakes.</li>
                         </ul>
                     </div>
                 </div>
@@ -1252,11 +1552,11 @@
                     <div class="profile-content">
                         <h3>Pros:</h3>
                         <ul>
-                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Uske bohot saare papa hai.</li>
+                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Has many fathers.</li>
                         </ul>
                         <h3>Cons:</h3>
                         <ul>
-                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> Par wo sirf Shailu, Ishan, Rounak ko papa bolta hai.</li>
+                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> But only calls Shailu, Ishan, Rounak 'father'.</li>
                         </ul>
                     </div>
                 </div>
@@ -1281,11 +1581,11 @@
                     <div class="profile-content">
                         <h3>Pros:</h3>
                         <ul>
-                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Sab uski respect karte hai.</li>
+                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Everyone respects them.</li>
                         </ul>
                         <h3>Cons:</h3>
                         <ul>
-                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> Sanya uski best friend hai.</li>
+                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> Sanya is their best friend.</li>
                         </ul>
                     </div>
                 </div>
@@ -1296,7 +1596,7 @@
         <div id="analytics-page" class="dashboard page-content">
             <div class="analytics-content">
                 <h2><i class="fas fa-chart-line"></i> Tatti Analytics</h2>
-                <p>Yahan aap apne players ke performance aur stats dekh sakte hain.</p>
+                <p>Here you can view your players' performance and stats.</p>
                 
                 <div class="chart-container">
                     <canvas id="playerBarChart"></canvas>
@@ -1313,20 +1613,75 @@
         <!-- What If Page Content -->
         <div id="what-if-page" class="dashboard page-content">
             <div class="what-if-content">
-                <h2><i class="fas fa-feather-alt"></i> Apni Story Share Karein</h2>
-                <p>Yahan aap apni "What If" stories share kar sakte hain. Aapki stories aapki unique ID se link hongi, aur aap sirf apni stories ko edit ya delete kar payenge.</p>
+                <h2><i class="fas fa-feather-alt"></i> Share Your Story</h2>
+                <p>Here you can share your "What If" stories. Your stories will be linked to your unique ID, and you will only be able to edit or delete your own stories.</p>
                 
                 <form id="storyForm" class="story-form">
-                    <label for="storyText">Apni Story Likhein:</label>
-                    <textarea id="storyText" placeholder="Apni kahani yahan likhein..." required></textarea>
-                    <button type="submit">Story Submit Karein</button>
+                    <label for="storyText">Write Your Story:</label>
+                    <textarea id="storyText" placeholder="Write your story here..." required></textarea>
+                    <button type="submit">Submit Story</button>
                 </form>
 
                 <div class="stories-list">
-                    <h3>Shared Stories</h3>
+                    <h3>Your Shared Stories</h3>
                     <div id="sharedStoriesContainer">
                         <!-- Stories will be dynamically loaded here -->
                         <p style="text-align: center; color: var(--text-secondary);">Loading stories...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Stories Page Content -->
+        <div id="community-stories-page" class="dashboard page-content">
+            <div class="what-if-content">
+                <h2><i class="fas fa-globe"></i> Community Stories</h2>
+                <p>Here you can view all shared stories from other users. You will only be able to edit or delete your own stories.</p>
+                
+                <div class="stories-list">
+                    <h3>All Shared Stories</h3>
+                    <div id="allSharedStoriesContainer">
+                        <!-- All stories will be dynamically loaded here -->
+                        <p style="text-align: center; color: var(--text-secondary);">Loading community stories...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Polls Page Content -->
+        <div id="polls-page" class="dashboard page-content">
+            <div class="polls-content">
+                <h2><i class="fas fa-poll"></i> Create & Participate in Polls</h2>
+                <p>Here you can create new polls and participate in polls from other users.</p>
+                
+                <form id="pollForm" class="poll-form">
+                    <h3>Create a New Poll</h3>
+                    <label for="pollQuestion">Poll Question:</label>
+                    <input type="text" id="pollQuestion" placeholder="Enter your poll question" required>
+
+                    <label>Poll Options (Minimum 2):</label>
+                    <div id="pollOptionsContainer" class="poll-options-container">
+                        <div class="poll-option-item">
+                            <input type="text" class="poll-option-text" placeholder="Option 1 Text" required>
+                            <input type="text" class="poll-option-image-url" placeholder="Option 1 Image URL (Optional)">
+                            <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
+                        </div>
+                        <div class="poll-option-item">
+                            <input type="text" class="poll-option-text" placeholder="Option 2 Text" required>
+                            <input type="text" class="poll-option-image-url" placeholder="Option 2 Image URL (Optional)">
+                            <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" id="addOptionBtn" class="add-option-btn"><i class="fas fa-plus-circle"></i> Add Option</button>
+                    <button type="submit" class="create-poll-btn">Create Poll</button>
+                    <div id="createPollLoader"><i class="fas fa-spinner fa-spin"></i> Creating poll...</div>
+                </form>
+
+                <div class="polls-list">
+                    <h3>Active Polls</h3>
+                    <div id="activePollsContainer">
+                        <!-- Active polls will be dynamically loaded here -->
+                        <p style="text-align: center; color: var(--text-secondary);">Loading polls...</p>
                     </div>
                 </div>
             </div>
@@ -1336,7 +1691,7 @@
         <div id="settings-page" class="dashboard page-content">
             <div class="analytics-content">
                 <h2><i class="fas fa-cog"></i> Settings</h2>
-                <p>Yahan aap apni app ki settings manage kar sakte hain.</p>
+                <p>Here you can manage your app settings.</p>
                 
                 <div class="theme-selector">
                     <h3>Select Theme:</h3>
@@ -1363,7 +1718,7 @@
                 <!-- Admin Panel Content - Moved Here -->
                 <div class="admin-content" style="margin-top: 40px;">
                     <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
-                    <p>Yahan aap sabhi users ke display names aur unki unique IDs dekh sakte hain.</p>
+                    <p>Here you can view the display names and unique IDs of all users.</p>
                     
                     <!-- Admin PIN Section (initially visible if not admin) -->
                     <div id="adminPinSection" class="admin-pin-section">
@@ -1920,12 +2275,40 @@
             });
         }
 
-        // Handler for Firebase stories snapshot
+        // Function to load ALL shared stories from Firebase (for community page)
+        function loadAllStoriesFirebase() {
+            console.log('Loading ALL shared stories from Firebase for community page.'); // Debug Log
+            const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
+            allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading community stories...</p>';
+
+            // Detach any previous listeners to prevent duplicates
+            storiesRef.off('value', handleAllStoriesSnapshotForCommunity);
+
+            // Attach a new listener for all stories
+            storiesRef.on('value', handleAllStoriesSnapshotForCommunity, (error) => {
+                console.error("Error loading all stories from Firebase:", error);
+                allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading community stories.</p>';
+            });
+        }
+
+        // Handler for Firebase stories snapshot (generic, can be used for both personal and community)
         function handleStoriesSnapshot(snapshot) {
-            console.log('Stories snapshot received.'); // Debug Log
+            console.log('Stories snapshot received (for personal stories).'); // Debug Log
             const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
+            displayStories(snapshot, sharedStoriesContainer, true); // true for personal stories (allow edit/delete)
+        }
+
+        // Handler for Firebase all stories snapshot (for community stories)
+        function handleAllStoriesSnapshotForCommunity(snapshot) {
+            console.log('All stories snapshot received (for community stories).'); // Debug Log
+            const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
+            displayStories(snapshot, allSharedStoriesContainer, false); // false for community stories (no edit/delete buttons)
+        }
+
+        // Reusable function to display stories in a given container
+        function displayStories(snapshot, containerElement, showActions) {
             const storiesData = snapshot.val();
-            sharedStoriesContainer.innerHTML = ''; // Clear existing stories
+            containerElement.innerHTML = ''; // Clear existing stories
 
             if (storiesData) {
                 const storiesArray = Object.keys(storiesData).map(key => ({
@@ -1934,7 +2317,7 @@
                 })).sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
 
                 if (storiesArray.length === 0) {
-                    sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">You have not posted any stories yet.</p>';
+                    containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No stories found.</p>';
                     return;
                 }
 
@@ -1945,21 +2328,39 @@
                     storyItem.dataset.userId = story.userId;
                     const timestamp = story.timestamp ? new Date(story.timestamp).toLocaleString() : 'Unknown Date';
                     
+                    let actionsHtml = '';
+                    // Only show edit/delete if it's the current user's story or if admin, AND showActions is true
+                    if (showActions && (story.userId === userId || isAdmin)) {
+                        actionsHtml = `
+                            <div class="story-actions">
+                                <button data-story-id="${story.id}" class="edit-story-btn">Edit</button>
+                                <button data-story-id="${story.id}" class="delete-story-btn">Delete</button>
+                            </div>
+                        `;
+                    } else if (!showActions && isAdmin) { // For admin in community view, allow delete
+                         actionsHtml = `
+                            <div class="story-actions">
+                                <button data-story-id="${story.id}" class="delete-story-btn">Delete (Admin)</button>
+                            </div>
+                        `;
+                    }
+
                     storyItem.innerHTML = `
                         <p class="story-text" contenteditable="false">${story.text}</p>
                         <div class="story-meta">Shared by: ${story.displayName || 'Anonymous'} on ${timestamp}</div>
-                        <div class="story-actions">
-                            <button data-story-id="${story.id}" class="edit-story-btn">Edit</button>
-                            <button data-story-id="${story.id}" class="delete-story-btn">Delete</button>
-                        </div>
+                        ${actionsHtml}
                     `;
-                    sharedStoriesContainer.appendChild(storyItem);
+                    containerElement.appendChild(storyItem);
                 });
-                attachStoryActionListeners(); // Attach listeners after rendering
+                // Attach listeners only if actions are potentially visible (for personal stories or admin in community)
+                if (showActions || isAdmin) {
+                    attachStoryActionListeners(containerElement); 
+                }
             } else {
-                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">You have not posted any stories yet.</p>';
+                containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No stories found.</p>';
             }
         }
+
 
         // Function to update a story in Firebase
         async function updateStoryInFirebase(storyId, newText) {
@@ -2013,9 +2414,9 @@
         }
 
         // Attach event listeners for dynamically created story action buttons
-        function attachStoryActionListeners() {
-            console.log('Attaching story action listeners.'); // Debug Log
-            document.querySelectorAll('.edit-story-btn').forEach(button => {
+        function attachStoryActionListeners(container) {
+            console.log('Attaching story action listeners to container:', container.id); // Debug Log
+            container.querySelectorAll('.edit-story-btn').forEach(button => {
                 button.onclick = null; // Remove previous listeners
                 button.addEventListener('click', (event) => {
                     const storyId = event.target.dataset.storyId;
@@ -2036,7 +2437,7 @@
                 });
             });
 
-            document.querySelectorAll('.delete-story-btn').forEach(button => {
+            container.querySelectorAll('.delete-story-btn').forEach(button => {
                 button.onclick = null; // Remove previous listeners
                 button.addEventListener('click', (event) => {
                     const storyId = event.target.dataset.storyId;
@@ -2059,14 +2460,44 @@
                 await updateStoryInFirebase(storyId, newText);
                 storyTextElement.contentEditable = false;
                 storyTextElement.closest('.story-item').classList.remove('editing');
-                loadSharedStoriesFirebase(); // Reload all stories to update UI
+                // Reload relevant stories based on which page we are on
+                if (document.getElementById('what-if-page').classList.contains('active-page')) {
+                    loadSharedStoriesFirebase();
+                } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
+                    loadAllStoriesFirebase();
+                } else if (document.getElementById('admin-page').classList.contains('active-page')) {
+                    // If editing from admin view, reload specific user's stories or all users list
+                    // This scenario is more complex as it depends on whether we are viewing a specific user's stories or the general user list
+                    // For simplicity, we'll just reload the admin user list, which will then allow re-selection of the user
+                    // A more robust solution would involve storing the current admin-viewed userId
+                    const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
+                    const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
+                    if (currentAdminUserIdSpan.textContent) {
+                        viewUserStoriesAsAdmin(currentAdminUserIdSpan.textContent, currentAdminUserDisplayNameSpan.textContent);
+                    } else {
+                        loadAllUserProfilesFirebase();
+                    }
+                }
             });
 
             actionsDiv.querySelector('.cancel-edit-btn').addEventListener('click', () => {
                 storyTextElement.textContent = originalText; // Revert text
                 storyTextElement.contentEditable = false;
                 storyTextElement.closest('.story-item').classList.remove('editing');
-                loadSharedStoriesFirebase(); // Reload all stories to revert UI
+                // Reload relevant stories based on which page we are on
+                if (document.getElementById('what-if-page').classList.contains('active-page')) {
+                    loadSharedStoriesFirebase();
+                } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
+                    loadAllStoriesFirebase();
+                } else if (document.getElementById('admin-page').classList.contains('active-page')) {
+                    const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
+                    const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
+                    if (currentAdminUserIdSpan.textContent) {
+                        viewUserStoriesAsAdmin(currentAdminUserIdSpan.textContent, currentAdminUserDisplayNameSpan.textContent);
+                    } else {
+                        loadAllUserProfilesFirebase();
+                    }
+                }
             });
         }
         
@@ -2343,6 +2774,250 @@
             drawBarChart('playerBarChart', chartData, chartLabels, chartColors);
         }
 
+        // --- Polls Functions ---
+
+        // Reference to the 'polls' node in Firebase
+        const pollsRef = database.ref('polls');
+
+        // Function to add a new poll to Firebase
+        async function addPollToFirebase(question, options) {
+            console.log('Attempting to add poll to Firebase.'); // Debug Log
+            const currentUserId = getOrCreateUserId();
+            if (!currentUserId) {
+                showConfirmModal('Please set your display name first to create polls.');
+                return;
+            }
+
+            const createPollBtn = document.getElementById('create-poll-btn');
+            const createPollLoader = document.getElementById('createPollLoader');
+            createPollBtn.disabled = true;
+            createPollLoader.style.display = 'block';
+
+            try {
+                const newPollRef = pollsRef.push(); // Generates a unique key
+                const pollData = {
+                    question: question,
+                    options: options.map(opt => ({ text: opt.text, imageUrl: opt.imageUrl || '' })), // Store text and image URL
+                    votes: {}, // Initialize votes for each option
+                    creatorId: currentUserId,
+                    creatorDisplayName: userDisplayName,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+
+                // Initialize vote counts for each option
+                options.forEach((_, index) => {
+                    pollData.votes[index] = 0;
+                });
+
+                await newPollRef.set(pollData);
+                console.log('Poll added to Firebase!');
+                document.getElementById('pollQuestion').value = ''; // Clear question
+                const pollOptionsContainer = document.getElementById('pollOptionsContainer');
+                // Reset options to default two empty inputs
+                pollOptionsContainer.innerHTML = `
+                    <div class="poll-option-item">
+                        <input type="text" class="poll-option-text" placeholder="Option 1 Text" required>
+                        <input type="text" class="poll-option-image-url" placeholder="Option 1 Image URL (Optional)">
+                        <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
+                    </div>
+                    <div class="poll-option-item">
+                        <input type="text" class="poll-option-text" placeholder="Option 2 Text" required>
+                        <input type="text" class="poll-option-image-url" placeholder="Option 2 Image URL (Optional)">
+                        <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
+                    </div>
+                `; 
+                attachRemoveOptionListeners(); // Re-attach listeners for new options
+                showConfirmModal('Poll created successfully!');
+            } catch (error) {
+                console.error('Error adding poll to Firebase:', error);
+                showConfirmModal('Failed to create poll. Please try again.');
+            } finally {
+                createPollBtn.disabled = false;
+                createPollLoader.style.display = 'none';
+            }
+        }
+
+        // Function to load all polls from Firebase
+        function loadPollsFirebase() {
+            console.log('Loading polls from Firebase.'); // Debug Log
+            const activePollsContainer = document.getElementById('activePollsContainer');
+            activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading polls...</p>';
+
+            // Detach any previous listeners
+            pollsRef.off('value', handlePollsSnapshot);
+
+            // Attach a new listener for all polls
+            pollsRef.on('value', handlePollsSnapshot, (error) => {
+                console.error("Error loading polls from Firebase:", error);
+                activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading polls.</p>';
+            });
+        }
+
+        // Handler for Firebase polls snapshot
+        function handlePollsSnapshot(snapshot) {
+            console.log('Polls snapshot received.'); // Debug Log
+            const activePollsContainer = document.getElementById('activePollsContainer');
+            const pollsData = snapshot.val();
+            activePollsContainer.innerHTML = ''; // Clear existing polls
+
+            if (pollsData) {
+                const pollsArray = Object.keys(pollsData).map(key => ({
+                    id: key,
+                    ...pollsData[key]
+                })).sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+
+                if (pollsArray.length === 0) {
+                    activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No active polls found.</p>';
+                    return;
+                }
+
+                pollsArray.forEach(poll => {
+                    const pollItem = document.createElement('div');
+                    pollItem.className = 'poll-item';
+                    pollItem.dataset.pollId = poll.id;
+
+                    let optionsHtml = '';
+                    let totalVotes = 0;
+                    // Calculate total votes
+                    if (poll.votes) {
+                        totalVotes = Object.values(poll.votes).reduce((sum, count) => sum + count, 0);
+                    }
+
+                    poll.options.forEach((option, index) => {
+                        const voteCount = poll.votes ? (poll.votes[index] || 0) : 0;
+                        const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100).toFixed(1) : 0;
+                        const imageUrl = option.imageUrl || 'https://placehold.co/50x50/1a2539/e0f7ff?text=No+Img'; // Placeholder for no image
+
+                        const isVoted = poll.votedBy && poll.votedBy[userId] === index;
+                        const isDisabled = poll.votedBy && poll.votedBy[userId] !== undefined; // Disable if any option is voted
+
+                        optionsHtml += `
+                            <label class="poll-option ${isVoted ? 'voted' : ''}">
+                                <div class="poll-progress-bar" style="width: ${percentage}%;"></div>
+                                <input type="radio" name="poll-${poll.id}" value="${index}" data-poll-id="${poll.id}" ${isVoted ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+                                <img src="${imageUrl}" alt="Option Image" onerror="this.onerror=null;this.src='https://placehold.co/50x50/1a2539/e0f7ff?text=No+Img';">
+                                <span>${option.text}</span>
+                                <span class="poll-vote-count">${voteCount} votes (${percentage}%)</span>
+                            </label>
+                        `;
+                    });
+
+                    let actionsHtml = '';
+                    // Only creator or admin can delete polls
+                    if (poll.creatorId === userId || isAdmin) {
+                        actionsHtml = `
+                            <div class="poll-actions">
+                                <button data-poll-id="${poll.id}" class="delete-poll-btn">Delete Poll</button>
+                            </div>
+                        `;
+                    }
+
+                    pollItem.innerHTML = `
+                        <div class="poll-question">${poll.question}</div>
+                        <div class="poll-options">
+                            ${optionsHtml}
+                        </div>
+                        <div class="poll-meta">Created by: ${poll.creatorDisplayName || 'Anonymous'} on ${new Date(poll.timestamp).toLocaleString()}</div>
+                        ${actionsHtml}
+                    `;
+                    activePollsContainer.appendChild(pollItem);
+                });
+                attachPollActionListeners(); // Attach listeners after rendering
+            } else {
+                activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No active polls found.</p>';
+            }
+        }
+
+        // Function to handle a vote on a poll
+        async function handlePollVote(pollId, optionIndex) {
+            console.log(`User ${userId} voting on poll ${pollId}, option ${optionIndex}`); // Debug Log
+            const pollRef = database.ref('polls/' + pollId);
+
+            try {
+                const snapshot = await pollRef.once('value');
+                const poll = snapshot.val();
+
+                if (!poll) {
+                    showConfirmModal('Poll not found.');
+                    return;
+                }
+
+                // Check if user has already voted
+                if (poll.votedBy && poll.votedBy[userId]) {
+                    showConfirmModal('You have already voted on this poll.');
+                    return;
+                }
+
+                // Increment vote count for the selected option
+                const newVotes = { ...poll.votes };
+                newVotes[optionIndex] = (newVotes[optionIndex] || 0) + 1;
+
+                // Record that this user has voted
+                const newVotedBy = { ...poll.votedBy, [userId]: optionIndex };
+
+                await pollRef.update({
+                    votes: newVotes,
+                    votedBy: newVotedBy
+                });
+                console.log('Vote cast successfully!');
+                showConfirmModal('Your vote has been recorded!');
+                loadPollsFirebase(); // Reload polls to show updated results and disable voting
+            } catch (error) {
+                console.error('Error casting vote:', error);
+                showConfirmModal('Failed to cast vote. Please try again.');
+            }
+        }
+
+        // Function to delete a poll from Firebase
+        async function deletePollFromFirebase(pollId) {
+            console.log(`Deleting poll: ${pollId}`); // Debug Log
+            const currentUserId = getOrCreateUserId();
+            try {
+                const pollRef = database.ref('polls/' + pollId);
+                const snapshot = await pollRef.once('value');
+                const poll = snapshot.val();
+
+                // Allow deletion if current user is the creator, or if admin
+                if (poll && (poll.creatorId === currentUserId || isAdmin)) {
+                    await pollRef.remove();
+                    console.log('Poll deleted from Firebase!');
+                    showConfirmModal('Poll deleted successfully!');
+                } else {
+                    console.warn('Unauthorized attempt to delete poll or poll not found.');
+                    showConfirmModal('You are not authorized to delete this poll.');
+                }
+            } catch (error) {
+                console.error('Error deleting poll from Firebase:', error);
+                showConfirmModal('Failed to delete poll. Please try again.');
+            }
+        }
+
+        // Attach event listeners for poll interactions
+        function attachPollActionListeners() {
+            console.log('Attaching poll action listeners.'); // Debug Log
+            document.querySelectorAll('.poll-option input[type="radio"]').forEach(radio => {
+                radio.onclick = null; // Remove previous listeners
+                // Only attach listener if not already voted
+                if (!radio.disabled) {
+                    radio.addEventListener('change', (event) => {
+                        const pollId = event.target.dataset.pollId;
+                        const optionIndex = parseInt(event.target.value);
+                        handlePollVote(pollId, optionIndex);
+                    });
+                }
+            });
+
+            document.querySelectorAll('.delete-poll-btn').forEach(button => {
+                button.onclick = null; // Remove previous listeners
+                button.addEventListener('click', (event) => {
+                    const pollId = event.target.dataset.pollId;
+                    showConfirmModal('Are you sure you want to delete this poll?', async () => {
+                        await deletePollFromFirebase(pollId);
+                    });
+                });
+            });
+        }
+
         // Handle page switching
         function setupPageSwitching() {
             console.log('Setting up page switching.'); // Debug Log
@@ -2372,6 +3047,10 @@
                             updateAnalyticsAndChart();
                         } else if (targetId === 'what-if-page') {
                             loadSharedStoriesFirebase(); // Load stories when What If page is active
+                        } else if (targetId === 'community-stories-page') { // New case for community stories
+                            loadAllStoriesFirebase(); // Load all stories when community page is active
+                        } else if (targetId === 'polls-page') { // New case for polls page
+                            loadPollsFirebase(); // Load polls when polls page is active
                         } else if (targetId === 'settings-page') { // Changed from admin-page to settings-page
                             updateAdminPanelUI(); // Update admin UI when Admin section within Settings page is active
                         }
@@ -2409,6 +3088,10 @@
                 // After successful login/display name setup, ensure stories are loaded if on that page
                 if (document.getElementById('what-if-page').classList.contains('active-page')) {
                     loadSharedStoriesFirebase();
+                } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
+                    loadAllStoriesFirebase();
+                } else if (document.getElementById('polls-page').classList.contains('active-page')) {
+                    loadPollsFirebase();
                 }
             }
         }
@@ -2476,6 +3159,48 @@
             }
         }
 
+        // Attach listeners for adding/removing poll options
+        function attachAddRemoveOptionListeners() {
+            const addOptionBtn = document.getElementById('addOptionBtn');
+            const pollOptionsContainer = document.getElementById('pollOptionsContainer');
+
+            addOptionBtn.onclick = null; // Remove previous listeners
+            addOptionBtn.addEventListener('click', () => {
+                const optionCount = pollOptionsContainer.children.length + 1;
+                const newOptionItem = document.createElement('div');
+                newOptionItem.className = 'poll-option-item';
+                newOptionItem.innerHTML = `
+                    <input type="text" class="poll-option-text" placeholder="Option ${optionCount} Text" required>
+                    <input type="text" class="poll-option-image-url" placeholder="Option ${optionCount} Image URL (Optional)">
+                    <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
+                `;
+                pollOptionsContainer.appendChild(newOptionItem);
+                attachRemoveOptionListeners(); // Re-attach listeners for all remove buttons
+            });
+
+            attachRemoveOptionListeners(); // Initial attachment for existing remove buttons
+        }
+
+        function attachRemoveOptionListeners() {
+            document.querySelectorAll('.remove-option-btn').forEach(button => {
+                button.onclick = null; // Remove previous listeners
+                button.addEventListener('click', (event) => {
+                    const pollOptionsContainer = document.getElementById('pollOptionsContainer');
+                    if (pollOptionsContainer.children.length > 2) { // Ensure at least 2 options remain
+                        event.target.closest('.poll-option-item').remove();
+                        // Re-label options after removal
+                        Array.from(pollOptionsContainer.children).forEach((item, index) => {
+                            item.querySelector('.poll-option-text').placeholder = `Option ${index + 1} Text`;
+                            item.querySelector('.poll-option-image-url').placeholder = `Option ${index + 1} Image URL (Optional)`;
+                        });
+                    } else {
+                        showConfirmModal('A poll must have at least two options.');
+                    }
+                });
+            });
+        }
+
+
         // Initial setup on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOMContentLoaded fired. Initializing app...'); // Debug Log
@@ -2542,6 +3267,46 @@
             if (backToAllUsersBtn) {
                 backToAllUsersBtn.addEventListener('click', backToAllUsers);
             }
+
+            // Polls specific event listeners
+            const pollForm = document.getElementById('pollForm');
+            if (pollForm) {
+                pollForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const pollQuestion = document.getElementById('pollQuestion').value.trim();
+                    const pollOptionInputs = document.querySelectorAll('.poll-option-item');
+                    
+                    const options = [];
+                    let hasEmptyOptionText = false;
+                    pollOptionInputs.forEach(item => {
+                        const textInput = item.querySelector('.poll-option-text');
+                        const imageUrlInput = item.querySelector('.poll-option-image-url');
+                        const optionText = textInput.value.trim();
+                        const optionImageUrl = imageUrlInput.value.trim();
+
+                        if (!optionText) {
+                            hasEmptyOptionText = true;
+                        }
+                        options.push({ text: optionText, imageUrl: optionImageUrl });
+                    });
+
+                    if (!pollQuestion) {
+                        showConfirmModal('Please enter a poll question.');
+                        return;
+                    }
+                    if (options.length < 2) {
+                        showConfirmModal('Please add at least two poll options.');
+                        return;
+                    }
+                    if (hasEmptyOptionText) {
+                        showConfirmModal('Please ensure all poll options have text.');
+                        return;
+                    }
+
+                    await addPollToFirebase(pollQuestion, options);
+                });
+            }
+            attachAddRemoveOptionListeners(); // Attach listeners for add/remove option buttons
         });
     </script>
 </body>
