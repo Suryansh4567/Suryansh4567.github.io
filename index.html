@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tatti Players - Profiles</title>
+    <title>Tatti Players - Profiles (Firebase)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* CSS remains the same as in the original */
@@ -195,10 +195,6 @@
         .main-nav a:hover {
             color: var(--text-primary);
             background: rgba(0, 240, 255, 0.1);
-        }
-
-        .main-nav a:hover::before {
-            transform: translateX(100%);
         }
 
         .main-nav a.active {
@@ -464,26 +460,7 @@
             margin-top: 30px;
         }
         
-        .chart-legend {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
+        /* Removed .chart-legend, .legend-item, .legend-color styles */
 
         /* Removed .analytics-grid styling for player score cards */
 
@@ -779,6 +756,12 @@
             min-height: 80px;
             resize: vertical;
             margin-bottom: 10px;
+        }
+        .story-item p[contenteditable="true"] {
+            border: 1px solid var(--accent-blue);
+            padding: 10px;
+            border-radius: 5px;
+            background-color: var(--surface-color);
         }
 
         /* Welcome Modal Specific Styling */
@@ -1229,7 +1212,7 @@
                     
                     <div class="profile-header">
                         <div class="profile-image">
-                            <img src="naga.png" alt="Naga Saki">
+                            <img src="https://placehold.co/80x80/00f0ff/0c1524?text=NS" alt="Naga Saki" onerror="this.onerror=null;this.src='https://placehold.co/80x80/0c1524/00f0ff?text=NS';">
                         </div>
                         <div class="profile-info">
                             <h2>Naga Saki <span class="profile-status status-online">Online</span></h2>
@@ -1257,7 +1240,7 @@
                     
                     <div class="profile-header">
                         <div class="profile-image">
-                            <img src="Screenshot 2025-07-08 063752.png" alt="Ali Khan">
+                            <img src="https://placehold.co/80x80/8a2be2/0c1524?text=AK" alt="Ali Khan" onerror="this.onerror=null;this.src='https://placehold.co/80x80/0c1524/8a2be2?text=AK';">
                         </div>
                         <div class="profile-info">
                             <h2>Ali Khan <span class="profile-status status-offline">Offline</span></h2>
@@ -1285,7 +1268,7 @@
                     
                     <div class="profile-header">
                         <div class="profile-image">
-                            <!-- Image removed as requested, using a Font Awesome icon as fallback -->
+                            <!-- Using a Font Awesome icon as fallback -->
                             <i class="fas fa-user-circle"></i>
                         </div>
                         <div class="profile-info">
@@ -1318,7 +1301,7 @@
                 
                 <div class="chart-container">
                     <canvas id="playerBarChart"></canvas>
-                    <div id="chartLegend" class="chart-legend"></div>
+                    <!-- Removed the chart legend div from here -->
                 </div>
 
                 <!-- Player Description Container -->
@@ -1435,20 +1418,39 @@
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
+        console.log("JavaScript script tag started."); // Debug Log
+
+        // Firebase Configuration (provided by user)
+        const firebaseConfig = {
+            apiKey: "AIzaSyARthJvOkPjkj2xoA1hE1pjRbRK83N15Cg",
+            authDomain: "tatti-player.firebaseapp.com",
+            databaseURL: "https://tatti-player-default-rtdb.firebaseio.com",
+            projectId: "tatti-player",
+            storageBucket: "tatti-player.firebasestorage.app",
+            messagingSenderId: "657586845911",
+            appId: "1:657586845911:web:70b7028b55854a7873d892",
+            measurementId: "G-X68Q8MLMZ3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(); // Get a reference to the database service
+        console.log("Firebase initialized."); // Debug Log
+
         // Global variables
-        let userId;
-        let userDisplayName = "";
-        let isAdmin = false;
-        let currentTheme = 'original';
+        let userId; // Will be set from localStorage or generated
+        let userDisplayName = ""; // Will be loaded from Firebase or set by user
+        let isAdmin = false; // Will be loaded from Firebase
+        let currentTheme = 'original'; // Will be loaded from Firebase
+
+        // Local storage key for initial userId (used until Firebase Auth is implemented)
+        const USER_ID_LOCAL_KEY = 'tatti_userId';
         
-        // Local storage keys
-        const USER_ID_KEY = 'tatti_userId';
-        const USER_PROFILE_KEY = 'tatti_userProfile';
-        const STORIES_KEY = 'tatti_stories';
-        const THEME_KEY = 'tatti_theme';
-        
-        // Define admin PIN
+        // Define admin PIN (for demonstration purposes, should be handled securely in a real app)
         const ADMIN_PIN = "859534"; 
 
         // Theme configurations
@@ -1521,6 +1523,7 @@
 
         // Helper function for modal/content visibility with transitions
         function toggleVisibility(element, show, displayType = 'flex', transitionDuration = 300) {
+            console.log(`Toggling visibility for element: ${element.id || element.className}. Show: ${show}, Display Type: ${displayType}`); // Debug Log
             if (show) {
                 element.style.display = displayType;
                 // Force reflow to ensure display property is applied before transition starts
@@ -1536,25 +1539,10 @@
             }
         }
 
-        // --- UI Visibility Functions ---
-        function showWelcomeModal() {
-            const welcomeModal = document.getElementById('welcomeModal');
-            toggleVisibility(welcomeModal, true, 'flex');
-        }
-
-        function hideWelcomeModal() {
-            const welcomeModal = document.getElementById('welcomeModal');
-            toggleVisibility(welcomeModal, false);
-        }
-
-        function showMainContent() {
-            const mainContent = document.querySelector('.main-content');
-            toggleVisibility(mainContent, true, 'grid'); // main-content uses grid display
-        }
-
         // Custom Confirmation Modal Logic
         let confirmModalResolve;
-        function showConfirmModal(message) {
+        function showConfirmModal(message, onConfirmCallback = null) {
+            console.log(`Showing confirmation modal with message: "${message}"`); // Debug Log
             return new Promise((resolve) => {
                 const modal = document.getElementById('customConfirmModal');
                 const confirmMessage = document.getElementById('confirmMessage');
@@ -1564,14 +1552,15 @@
                 confirmMessage.textContent = message;
                 toggleVisibility(modal, true, 'flex');
 
-                confirmModalResolve = resolve; // Store resolve function
+                confirmModalResolve = resolve; // Store resolve function for later use
 
                 // Remove previous listeners to prevent multiple calls
                 confirmYesBtn.onclick = null;
                 confirmNoBtn.onclick = null;
 
-                confirmYesBtn.onclick = () => {
+                confirmYesBtn.onclick = async () => {
                     toggleVisibility(modal, false);
+                    if (onConfirmCallback) await onConfirmCallback();
                     confirmModalResolve(true);
                 };
                 confirmNoBtn.onclick = () => {
@@ -1583,6 +1572,7 @@
 
         // Apply theme to the document
         function applyTheme(themeName) {
+            console.log(`Applying theme: ${themeName}`); // Debug Log
             const theme = themes[themeName];
             if (!theme) return;
 
@@ -1601,11 +1591,9 @@
                 }
             });
 
-            // Save theme to local storage
-            localStorage.setItem(THEME_KEY, themeName);
             currentTheme = themeName;
             
-            // Redraw chart with new theme colors
+            // Redraw chart with new theme colors if analytics page is active
             if (document.getElementById('analytics-page').classList.contains('active-page')) {
                 updateAnalyticsAndChart();
             }
@@ -1629,6 +1617,7 @@
 
         // Enhanced function to draw the bar chart with colors and legend
         function drawBarChart(canvasId, data, labels, colors) {
+            console.log(`Drawing bar chart for ${canvasId}`); // Debug Log
             const canvas = document.getElementById(canvasId);
             if (!canvas) {
                 console.error(`Canvas with ID '${canvasId}' not found.`);
@@ -1636,10 +1625,10 @@
             }
             
             const ctx = canvas.getContext('2d');
-            const legendContainer = document.getElementById('chartLegend');
+            // const legendContainer = document.getElementById('chartLegend'); // Removed as per user request
             
-            // Clear previous legend
-            legendContainer.innerHTML = '';
+            // Clear previous legend (no longer needed but keeping for context)
+            // legendContainer.innerHTML = ''; 
             
             // Adjust canvas size for high-DPI screens and responsiveness
             const dpr = window.devicePixelRatio || 1;
@@ -1718,7 +1707,8 @@
                 ctx.font = '14px Arial';
                 ctx.fillText(labels[i], x + barWidth / 2, chartHeight - 15);
                 
-                // Add legend item
+                // Removed legend item creation as per user request
+                /*
                 const legendItem = document.createElement('div');
                 legendItem.className = 'legend-item';
                 legendItem.innerHTML = `
@@ -1726,6 +1716,7 @@
                     <span>${labels[i]}</span>
                 `;
                 legendContainer.appendChild(legendItem);
+                */
             }
             
             // Y-axis label
@@ -1739,142 +1730,380 @@
             ctx.restore();
         }
 
-        // Initialize the app
-        function initializeApp() {
-            // Check local storage for existing user
-            const storedUserId = localStorage.getItem(USER_ID_KEY);
-            const storedProfile = JSON.parse(localStorage.getItem(USER_PROFILE_KEY)) || {};
-            const storedTheme = localStorage.getItem(THEME_KEY) || 'original';
-            
-            if (storedUserId) {
-                userId = storedUserId;
-                userDisplayName = storedProfile.displayName || userId;
-                isAdmin = storedProfile.isAdmin || false;
+        // --- Firebase Functions ---
+
+        // Function to get or create a unique user ID
+        // In a real application, this would be handled by Firebase Authentication
+        function getOrCreateUserId() {
+            let id = localStorage.getItem(USER_ID_LOCAL_KEY);
+            if (!id) {
+                id = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem(USER_ID_LOCAL_KEY, id);
+                console.log('Generated new userId:', id); // Debug Log
+            } else {
+                console.log('Retrieved userId from localStorage:', id); // Debug Log
+            }
+            return id;
+        }
+
+        // Function to save user display name to Firebase
+        async function saveUserDisplayNameFirebase(name) {
+            console.log(`Attempting to save display name: ${name}`); // Debug Log
+            const currentUserId = getOrCreateUserId();
+            if (!currentUserId) {
+                console.error("User ID not available to save display name.");
+                return false;
+            }
+            try {
+                await database.ref('users/' + currentUserId + '/profile').update({
+                    displayName: name
+                });
+                userDisplayName = name; // Update global variable
+                document.getElementById('displayUserId').textContent = userDisplayName;
+                console.log('Display name saved to Firebase!');
+                return true;
+            } catch (error) {
+                console.error('Error saving display name to Firebase:', error);
+                showConfirmModal('Failed to save display name. Please try again.');
+                return false;
+            }
+        }
+
+        // Function to load user profile (display name, isAdmin) from Firebase
+        async function loadUserProfileFirebase() {
+            console.log('loadUserProfileFirebase started.'); // Debug Log
+            const currentUserId = getOrCreateUserId();
+            if (!currentUserId) {
+                console.log('No currentUserId, showing welcome modal.'); // Debug Log
+                showWelcomeModal();
+                return;
+            }
+
+            try {
+                console.log('Attempting to load profile for userId:', currentUserId); // Debug Log
+                const snapshot = await database.ref('users/' + currentUserId + '/profile').once('value');
+                const profile = snapshot.val();
+                
+                if (profile) {
+                    userDisplayName = profile.displayName || currentUserId;
+                    isAdmin = profile.isAdmin || false;
+                    currentTheme = profile.theme || 'original'; // Load theme from profile
+                    console.log('Profile loaded:', profile); // Debug Log
+                    console.log('User Display Name:', userDisplayName); // Debug Log
+                    console.log('Is Admin:', isAdmin); // Debug Log
+                    console.log('Current Theme:', currentTheme); // Debug Log
+                } else {
+                    // If no profile exists, set display name to ID and prompt for a better one
+                    userDisplayName = currentUserId;
+                    isAdmin = false;
+                    currentTheme = 'original';
+                    console.log('No profile found for userId, showing welcome modal.'); // Debug Log
+                    showWelcomeModal(); // Prompt for display name
+                }
                 
                 document.getElementById('displayUserId').textContent = userDisplayName;
                 document.getElementById('displayNameInput').value = userDisplayName;
+                applyTheme(currentTheme); // Apply loaded theme
+
+                updateAdminPanelUI(); // Update admin UI based on loaded status
+                showMainContent(); // Show main content after loading profile
+                console.log('loadUserProfileFirebase completed successfully.'); // Debug Log
                 
-                // Apply stored theme
-                applyTheme(storedTheme);
-                
-                updateAdminPanelUI();
-                showMainContent();
-                loadSharedStories();
-            } else {
-                // Generate a random user ID
-                userId = generateRandomId();
-                localStorage.setItem(USER_ID_KEY, userId);
-                
-                // Show welcome modal to set display name
+            } catch (error) {
+                console.error('Error loading user profile from Firebase:', error); // Debug Log
+                document.getElementById('displayUserId').textContent = 'Error loading profile';
+                // Even on error, try to show main content or welcome modal
+                console.log('Error in loadUserProfileFirebase, showing welcome modal.'); // Debug Log
                 showWelcomeModal();
             }
         }
 
-        // Generate a random ID
-        function generateRandomId() {
-            return 'user_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        // Save user profile to local storage
-        function saveUserProfile() {
-            const profile = {
-                displayName: userDisplayName,
-                isAdmin: isAdmin
-            };
-            localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(profile));
-        }
-
-        // Save user display name
-        async function saveUserDisplayName(name) {
-            if (!name.trim()) {
-                showConfirmModal('Display name cannot be empty.');
-                return false;
-            }
-            
-            userDisplayName = name;
-            document.getElementById('displayUserId').textContent = userDisplayName;
-            saveUserProfile();
-            
-            showConfirmModal('Display name saved successfully!');
-            loadSharedStories();
-            return true;
-        }
-
-        // Grant admin access
-        function grantAdminAccess() {
-            const enteredPin = document.getElementById('adminPinInput').value.trim();
-            if (enteredPin === ADMIN_PIN) {
-                isAdmin = true;
-                saveUserProfile();
+        // Function to grant admin access in Firebase
+        async function grantAdminAccessFirebase(userIdToGrant) {
+            console.log(`Granting admin access for: ${userIdToGrant}`); // Debug Log
+            try {
+                await database.ref('users/' + userIdToGrant + '/profile/isAdmin').set(true);
+                isAdmin = true; // Update global variable
+                console.log('Admin access granted to ' + userIdToGrant);
                 updateAdminPanelUI();
                 showConfirmModal('Admin access granted successfully!');
-                document.getElementById('adminPinInput').value = ''; // Clear PIN
-            } else {
-                showConfirmModal('Incorrect PIN. Please try again.');
+            } catch (error) {
+                console.error('Error granting admin access:', error);
+                showConfirmModal('Failed to grant admin access. Please try again.');
             }
         }
 
-        // Revoke admin access
-        async function revokeAdminAccess() {
-            const confirmed = await showConfirmModal('Are you sure you want to revoke your admin access?');
-            if (confirmed) {
-                isAdmin = false;
-                saveUserProfile();
+        // Function to revoke admin access in Firebase
+        async function revokeAdminAccessFirebase(userIdToRevoke) {
+            console.log(`Revoking admin access for: ${userIdToRevoke}`); // Debug Log
+            try {
+                await database.ref('users/' + userIdToRevoke + '/profile/isAdmin').remove(); // Remove the isAdmin field
+                isAdmin = false; // Update global variable
+                console.log('Admin access revoked for ' + userIdToRevoke);
                 updateAdminPanelUI();
                 showConfirmModal('Admin access revoked.');
+            } catch (error) {
+                console.error('Error revoking admin access:', error);
+                showConfirmModal('Failed to revoke admin access. Please try again.');
             }
         }
 
-        // Update admin panel UI
-        function updateAdminPanelUI() {
-            const adminPinSection = document.getElementById('adminPinSection');
-            const adminUserListSection = document.getElementById('adminUserListSection');
-            const userListContainer = document.getElementById('userListContainer');
-            const adminUserStoriesView = document.getElementById('adminUserStoriesView');
-            const revokeAdminBtn = document.getElementById('revokeAdminBtn');
+        // Function to check admin access from Firebase (used for UI elements)
+        async function checkAdminAccessFirebase(userIdToCheck) {
+            console.log(`Checking admin access for: ${userIdToCheck}`); // Debug Log
+            if (!userIdToCheck) return false;
+            try {
+                const snapshot = await database.ref('users/' + userIdToCheck + '/profile/isAdmin').once('value');
+                return snapshot.val() === true;
+            } catch (error) {
+                console.error('Error checking admin access:', error);
+                return false;
+            }
+        }
 
-            if (isAdmin) {
-                adminPinSection.style.display = 'none';
-                adminUserListSection.style.display = 'block';
-                revokeAdminBtn.style.display = 'block';
-                userListContainer.style.display = 'flex';
-                adminUserStoriesView.style.display = 'none';
-                loadAllUserProfiles();
+        // Function to save theme to Firebase
+        async function saveThemeFirebase(themeName) {
+            console.log(`Saving theme to Firebase: ${themeName}`); // Debug Log
+            const currentUserId = getOrCreateUserId();
+            if (!currentUserId) return;
+            try {
+                await database.ref('users/' + currentUserId + '/profile/theme').set(themeName);
+                console.log('Theme saved to Firebase:', themeName);
+            } catch (error) {
+                console.error('Error saving theme to Firebase:', error);
+            }
+        }
+
+        // Reference to the 'stories' node in Firebase
+        const storiesRef = database.ref('stories');
+
+        // Function to add a new story to Firebase
+        async function addStoryToFirebase(storyText) {
+            console.log('Attempting to add story to Firebase.'); // Debug Log
+            const currentUserId = getOrCreateUserId();
+            if (!currentUserId) {
+                showConfirmModal('Please set your display name first to share stories.');
+                return;
+            }
+            try {
+                const newStoryRef = storiesRef.push(); // Generates a unique key
+                await newStoryRef.set({
+                    userId: currentUserId,
+                    displayName: userDisplayName, // Use the globally updated display name
+                    text: storyText,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP // Firebase server timestamp
+                });
+                console.log('Story added to Firebase!');
+                document.getElementById('storyText').value = ''; // Clear form
+                showConfirmModal('Story submitted successfully!');
+            } catch (error) {
+                console.error('Error adding story to Firebase:', error);
+                showConfirmModal('Failed to add story. Please try again.');
+            }
+        }
+
+        // Function to load shared stories from Firebase for the current user
+        function loadSharedStoriesFirebase() {
+            console.log('Loading shared stories from Firebase.'); // Debug Log
+            const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
+            sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading your stories...</p>';
+            const currentUserId = getOrCreateUserId();
+
+            // Detach any previous listeners to prevent duplicates
+            storiesRef.off('value', handleStoriesSnapshot);
+
+            // Attach a new listener, filtering by current user's ID
+            storiesRef.orderByChild('userId').equalTo(currentUserId).on('value', handleStoriesSnapshot, (error) => {
+                console.error("Error loading stories from Firebase:", error);
+                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
+            });
+        }
+
+        // Handler for Firebase stories snapshot
+        function handleStoriesSnapshot(snapshot) {
+            console.log('Stories snapshot received.'); // Debug Log
+            const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
+            const storiesData = snapshot.val();
+            sharedStoriesContainer.innerHTML = ''; // Clear existing stories
+
+            if (storiesData) {
+                const storiesArray = Object.keys(storiesData).map(key => ({
+                    id: key,
+                    ...storiesData[key]
+                })).sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+
+                if (storiesArray.length === 0) {
+                    sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">You have not posted any stories yet.</p>';
+                    return;
+                }
+
+                storiesArray.forEach(story => {
+                    const storyItem = document.createElement('div');
+                    storyItem.className = 'story-item';
+                    storyItem.dataset.storyId = story.id;
+                    storyItem.dataset.userId = story.userId;
+                    const timestamp = story.timestamp ? new Date(story.timestamp).toLocaleString() : 'Unknown Date';
+                    
+                    storyItem.innerHTML = `
+                        <p class="story-text" contenteditable="false">${story.text}</p>
+                        <div class="story-meta">Shared by: ${story.displayName || 'Anonymous'} on ${timestamp}</div>
+                        <div class="story-actions">
+                            <button data-story-id="${story.id}" class="edit-story-btn">Edit</button>
+                            <button data-story-id="${story.id}" class="delete-story-btn">Delete</button>
+                        </div>
+                    `;
+                    sharedStoriesContainer.appendChild(storyItem);
+                });
+                attachStoryActionListeners(); // Attach listeners after rendering
             } else {
-                adminPinSection.style.display = 'flex';
-                adminUserListSection.style.display = 'none';
-                revokeAdminBtn.style.display = 'none';
-                userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Enter PIN to view user list.</p>';
-                adminUserStoriesView.style.display = 'none';
+                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">You have not posted any stories yet.</p>';
             }
         }
 
-        // Load all user profiles for admin panel
-        function loadAllUserProfiles() {
+        // Function to update a story in Firebase
+        async function updateStoryInFirebase(storyId, newText) {
+            console.log(`Updating story ${storyId} with new text: "${newText}"`); // Debug Log
+            const currentUserId = getOrCreateUserId();
+            try {
+                const storyRef = database.ref('stories/' + storyId);
+                const snapshot = await storyRef.once('value');
+                const story = snapshot.val();
+
+                if (story && story.userId === currentUserId) { // Ensure only the owner can edit
+                    await storyRef.update({
+                        text: newText,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP // Update timestamp on edit
+                    });
+                    console.log('Story updated in Firebase!');
+                    showConfirmModal('Story updated successfully!');
+                } else {
+                    console.warn('Unauthorized attempt to edit story or story not found.');
+                    showConfirmModal('You are not authorized to edit this story.');
+                }
+            } catch (error) {
+                console.error('Error updating story in Firebase:', error);
+                showConfirmModal('Failed to update story. Please try again.');
+            }
+        }
+
+        // Function to delete a story from Firebase
+        async function deleteStoryFromFirebase(storyId) {
+            console.log(`Deleting story: ${storyId}`); // Debug Log
+            const currentUserId = getOrCreateUserId();
+            try {
+                const storyRef = database.ref('stories/' + storyId);
+                const snapshot = await storyRef.once('value');
+                const story = snapshot.val();
+
+                // Allow deletion if current user is the owner, or if admin
+                const isAdminUser = isAdmin; // Use the global isAdmin status
+                if (story && (story.userId === currentUserId || isAdminUser)) {
+                    await storyRef.remove();
+                    console.log('Story deleted from Firebase!');
+                    showConfirmModal('Story deleted successfully!');
+                } else {
+                    console.warn('Unauthorized attempt to delete story or story not found.');
+                    showConfirmModal('You are not authorized to delete this story.');
+                }
+            } catch (error) {
+                console.error('Error deleting story from Firebase:', error);
+                showConfirmModal('Failed to delete story. Please try again.');
+            }
+        }
+
+        // Attach event listeners for dynamically created story action buttons
+        function attachStoryActionListeners() {
+            console.log('Attaching story action listeners.'); // Debug Log
+            document.querySelectorAll('.edit-story-btn').forEach(button => {
+                button.onclick = null; // Remove previous listeners
+                button.addEventListener('click', (event) => {
+                    const storyId = event.target.dataset.storyId;
+                    const storyItem = event.target.closest('.story-item');
+                    const storyTextElement = storyItem.querySelector('.story-text');
+                    const originalText = storyTextElement.textContent;
+
+                    storyTextElement.contentEditable = true;
+                    storyTextElement.focus();
+                    storyItem.classList.add('editing'); // Add a class for styling during edit
+
+                    const actionsDiv = storyItem.querySelector('.story-actions');
+                    actionsDiv.innerHTML = `
+                        <button class="save-story-btn" data-story-id="${storyId}">Save</button>
+                        <button class="cancel-edit-btn" data-story-id="${storyId}">Cancel</button>
+                    `;
+                    attachEditSaveCancelListeners(storyId, storyTextElement, actionsDiv, originalText);
+                });
+            });
+
+            document.querySelectorAll('.delete-story-btn').forEach(button => {
+                button.onclick = null; // Remove previous listeners
+                button.addEventListener('click', (event) => {
+                    const storyId = event.target.dataset.storyId;
+                    showConfirmModal('Are you sure you want to delete this story?', async () => {
+                        await deleteStoryFromFirebase(storyId);
+                    });
+                });
+            });
+        }
+
+        // Attach listeners for save/cancel buttons during story editing
+        function attachEditSaveCancelListeners(storyId, storyTextElement, actionsDiv, originalText) {
+            console.log('Attaching edit/save/cancel listeners.'); // Debug Log
+            actionsDiv.querySelector('.save-story-btn').addEventListener('click', async () => {
+                const newText = storyTextElement.textContent.trim();
+                if (!newText) {
+                    showConfirmModal('Story cannot be empty.');
+                    return;
+                }
+                await updateStoryInFirebase(storyId, newText);
+                storyTextElement.contentEditable = false;
+                storyTextElement.closest('.story-item').classList.remove('editing');
+                loadSharedStoriesFirebase(); // Reload all stories to update UI
+            });
+
+            actionsDiv.querySelector('.cancel-edit-btn').addEventListener('click', () => {
+                storyTextElement.textContent = originalText; // Revert text
+                storyTextElement.contentEditable = false;
+                storyTextElement.closest('.story-item').classList.remove('editing');
+                loadSharedStoriesFirebase(); // Reload all stories to revert UI
+            });
+        }
+        
+        // Load all user profiles for admin panel from Firebase
+        function loadAllUserProfilesFirebase() {
+            console.log('Loading all user profiles for admin panel.'); // Debug Log
             const userListContainer = document.getElementById('userListContainer');
             userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading users...</p>';
             
-            try {
-                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
-                const uniqueUsers = new Map();
-                
-                stories.forEach(story => {
-                    if (story.userId) {
-                        uniqueUsers.set(story.userId, {
-                            displayName: story.displayName || story.userId,
-                            userId: story.userId
-                        });
-                    }
-                });
-                
-                userListContainer.innerHTML = '';
-                
-                if (uniqueUsers.size === 0) {
-                    userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No users found who have posted stories.</p>';
+            // Detach previous listeners
+            database.ref('users').off('value', handleAllUsersSnapshot);
+
+            // Attach new listener
+            database.ref('users').on('value', handleAllUsersSnapshot, (error) => {
+                console.error("Error loading all user profiles from Firebase:", error);
+                userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list.</p>';
+            });
+        }
+
+        // Handler for Firebase all users snapshot
+        function handleAllUsersSnapshot(snapshot) {
+            console.log('All users snapshot received.'); // Debug Log
+            const userListContainer = document.getElementById('userListContainer');
+            const usersData = snapshot.val();
+            userListContainer.innerHTML = ''; // Clear existing list
+
+            if (usersData) {
+                const usersArray = Object.keys(usersData).map(key => ({
+                    userId: key,
+                    displayName: usersData[key].profile?.displayName || key // Use displayName if available, else userId
+                }));
+
+                if (usersArray.length === 0) {
+                    userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No users found.</p>';
                     return;
                 }
                 
-                uniqueUsers.forEach(userData => {
+                usersArray.forEach(userData => {
                     const listItem = document.createElement('div');
                     listItem.className = 'user-list-item';
                     listItem.innerHTML = `
@@ -1887,6 +2116,7 @@
                 
                 // Add event listeners to the buttons
                 document.querySelectorAll('.view-user-stories-btn').forEach(button => {
+                    button.onclick = null; // Remove previous listeners
                     button.addEventListener('click', (event) => {
                         const targetUserId = event.target.dataset.userId;
                         const targetDisplayName = event.target.dataset.displayName;
@@ -1894,14 +2124,14 @@
                     });
                 });
                 
-            } catch (error) {
-                console.error("Error loading all user profiles:", error);
-                userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list.</p>';
+            } else {
+                userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No users found.</p>';
             }
         }
 
-        // View a specific user's stories in admin panel
+        // View a specific user's stories in admin panel from Firebase
         function viewUserStoriesAsAdmin(targetUserId, targetDisplayName) {
+            console.log(`Viewing stories for admin user: ${targetDisplayName} (${targetUserId})`); // Debug Log
             const userListContainer = document.getElementById('userListContainer');
             const adminUserStoriesView = document.getElementById('adminUserStoriesView');
             const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
@@ -1915,14 +2145,32 @@
             currentAdminUserIdSpan.textContent = targetUserId;
             adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading stories for this user...</p>';
 
-            try {
-                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
-                const userStories = stories.filter(story => story.userId === targetUserId);
-                
-                adminSpecificUserStoriesContainer.innerHTML = '';
+            // Detach previous listeners
+            storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
+
+            // Attach new listener for specific user stories
+            storiesRef.orderByChild('userId').equalTo(targetUserId).on('value', (snapshot) => {
+                handleAdminSpecificUserStoriesSnapshot(snapshot, adminSpecificUserStoriesContainer);
+            }, (error) => {
+                console.error("Error fetching specific user stories for admin:", error);
+                adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
+            });
+        }
+
+        // Handler for Firebase admin specific user stories snapshot
+        function handleAdminSpecificUserStoriesSnapshot(snapshot, containerElement) {
+            console.log('Admin specific user stories snapshot received.'); // Debug Log
+            const userStoriesData = snapshot.val();
+            containerElement.innerHTML = '';
+            
+            if (userStoriesData) {
+                const userStories = Object.keys(userStoriesData).map(key => ({
+                    id: key,
+                    ...userStoriesData[key]
+                })).sort((a, b) => b.timestamp - a.timestamp);
                 
                 if (userStories.length === 0) {
-                    adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">This user has not posted any stories.</p>';
+                    containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">This user has not posted any stories.</p>';
                     return;
                 }
                 
@@ -1940,43 +2188,92 @@
                             <button data-story-id="${story.id}" class="delete-story-btn">Delete Story (Admin)</button>
                         </div>
                     `;
-                    adminSpecificUserStoriesContainer.appendChild(storyItem);
+                    containerElement.appendChild(storyItem);
                 });
                 
                 // Add event listeners for delete buttons
                 document.querySelectorAll('#adminSpecificUserStoriesContainer .delete-story-btn').forEach(button => {
+                    button.onclick = null; // Remove previous listeners
                     button.addEventListener('click', (event) => {
                         const storyIdToDelete = event.target.dataset.storyId;
-                        confirmDeleteStory(storyIdToDelete);
+                        showConfirmModal('Are you sure you want to delete this story for ALL users?', async () => {
+                            await deleteStoryFromFirebase(storyIdToDelete);
+                        });
                     });
                 });
                 
-            } catch (error) {
-                console.error("Error fetching specific user stories for admin:", error);
-                adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
+            } else {
+                containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">This user has not posted any stories.</p>';
             }
         }
 
         // Back to all users list
         function backToAllUsers() {
+            console.log('Back to all users.'); // Debug Log
             document.getElementById('userListContainer').style.display = 'flex';
             document.getElementById('adminUserStoriesView').style.display = 'none';
-            loadAllUserProfiles();
+            // Detach the specific user stories listener
+            storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
+            loadAllUserProfilesFirebase(); // Reload the list of all users
         }
 
-        // Start editing a story
+        // Initialize the app
+        async function initializeApp() {
+            console.log('initializeApp started.'); // Debug Log
+            userId = getOrCreateUserId(); // Ensure userId is set early
+            console.log('User ID:', userId); // Debug Log
+            await loadUserProfileFirebase(); // Load profile, which also sets display name, admin status, and theme
+            console.log('loadUserProfileFirebase completed.'); // Debug Log
+
+            initDynamicBackground();
+            setupPageSwitching();
+            setupThemeSelection();
+            console.log('App initialization complete.'); // Debug Log
+        }
+
+        // Update admin panel UI based on global isAdmin status
+        function updateAdminPanelUI() {
+            console.log(`Updating Admin Panel UI. isAdmin: ${isAdmin}`); // Debug Log
+            const adminPinSection = document.getElementById('adminPinSection');
+            const adminUserListSection = document.getElementById('adminUserListSection');
+            const userListContainer = document.getElementById('userListContainer');
+            const adminUserStoriesView = document.getElementById('adminUserStoriesView');
+            const revokeAdminBtn = document.getElementById('revokeAdminBtn');
+            const adminPanelLink = document.getElementById('adminPanelLink');
+
+            if (isAdmin) {
+                adminPinSection.style.display = 'none';
+                adminUserListSection.style.display = 'block';
+                revokeAdminBtn.style.display = 'block';
+                userListContainer.style.display = 'flex';
+                adminUserStoriesView.style.display = 'none';
+                adminPanelLink.style.display = 'block'; // Show admin link if admin
+                loadAllUserProfilesFirebase(); // Load users only if admin
+            } else {
+                adminPinSection.style.display = 'flex';
+                adminUserListSection.style.display = 'none';
+                revokeAdminBtn.style.display = 'none';
+                adminUserStoriesView.style.display = 'none';
+                adminPanelLink.style.display = 'none'; // Hide admin link if not admin
+                userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Enter PIN to view user list.</p>';
+                // Ensure no listeners are active for admin data if not admin
+                database.ref('users').off('value', handleAllUsersSnapshot);
+                storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
+            }
+        }
+
+        // Start editing a story (UI logic)
         function startEditStory(storyId, currentText) {
+            console.log(`Starting edit for story: ${storyId}`); // Debug Log
             const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
             if (!storyItem) return;
 
             const storyTextP = storyItem.querySelector('.story-text');
             const storyActionsDiv = storyItem.querySelector('.story-actions');
 
-            // Replace text with textarea
-            const textarea = document.createElement('textarea');
-            textarea.value = currentText;
-            textarea.className = 'edit-story-textarea';
-            storyTextP.replaceWith(textarea);
+            storyTextP.contentEditable = true;
+            storyTextP.focus();
+            storyItem.classList.add('editing');
 
             // Replace buttons
             storyActionsDiv.innerHTML = '';
@@ -1984,208 +2281,21 @@
             const saveButton = document.createElement('button');
             saveButton.textContent = 'Save';
             saveButton.className = 'save-story-btn';
-            saveButton.addEventListener('click', () => saveStory(storyId, textarea.value, storyTextP));
-            storyActionsDiv.appendChild(saveButton);
+            saveButton.addEventListener('click', () => updateStoryInFirebase(storyId, storyTextP.textContent.trim()));
+            actionsDiv.appendChild(saveButton);
 
             const cancelButton = document.createElement('button');
             cancelButton.textContent = 'Cancel';
             cancelButton.className = 'cancel-edit-btn';
-            cancelButton.addEventListener('click', () => cancelEditStory(storyId, currentText, textarea));
-            storyActionsDiv.appendChild(cancelButton);
+            cancelButton.addEventListener('click', () => {
+                storyTextP.textContent = currentText; // Revert text
+                storyTextP.contentEditable = false;
+                storyItem.classList.remove('editing');
+                loadSharedStoriesFirebase(); // Reload to revert UI
+            });
+            actionsDiv.appendChild(cancelButton);
         }
 
-        // Save an edited story
-        function saveStory(storyId, newText, originalPElement) {
-            if (!newText.trim()) {
-                showConfirmModal('Story cannot be empty.');
-                return;
-            }
-            
-            try {
-                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
-                const storyIndex = stories.findIndex(story => story.id === storyId);
-                
-                if (storyIndex !== -1) {
-                    stories[storyIndex].text = newText;
-                    stories[storyIndex].timestamp = new Date().toISOString();
-                    localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
-                    showConfirmModal('Story updated successfully!');
-                    loadSharedStories();
-                }
-            } catch (error) {
-                console.error("Error updating story:", error);
-                showConfirmModal('Failed to update story. Please try again.');
-            }
-        }
-
-        // Cancel editing a story
-        function cancelEditStory(storyId, originalText, textareaElement) {
-            const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
-            if (!storyItem) return;
-
-            const storyActionsDiv = storyItem.querySelector('.story-actions');
-            
-            // Revert textarea back to p tag
-            const originalP = document.createElement('p');
-            originalP.className = 'story-text';
-            originalP.textContent = originalText;
-            textareaElement.replaceWith(originalP);
-
-            // Re-add original buttons
-            storyActionsDiv.innerHTML = '';
-            const editButton = document.createElement('button');
-            editButton.textContent = 'Edit';
-            editButton.className = 'edit-story-btn';
-            editButton.addEventListener('click', () => startEditStory(storyId, originalText));
-            storyActionsDiv.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'delete-story-btn';
-            deleteButton.addEventListener('click', () => confirmDeleteStory(storyId));
-            storyActionsDiv.appendChild(deleteButton);
-        }
-
-        // Confirm story deletion
-        async function confirmDeleteStory(storyId) {
-            const confirmed = await showConfirmModal('Are you sure you want to delete this story?');
-            if (confirmed) {
-                deleteStory(storyId);
-            }
-        }
-
-        // Delete a story
-        function deleteStory(storyId) {
-            try {
-                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
-                const updatedStories = stories.filter(story => story.id !== storyId);
-                localStorage.setItem(STORIES_KEY, JSON.stringify(updatedStories));
-                showConfirmModal('Story deleted successfully!');
-                loadSharedStories();
-            } catch (error) {
-                console.error("Error deleting story:", error);
-                showConfirmModal('Failed to delete story. Please try again.');
-            }
-        }
-
-        // Handle story submission
-        function handleStorySubmit(event) {
-            event.preventDefault();
-            const storyTextarea = document.getElementById('storyText');
-            const storyText = storyTextarea.value.trim();
-
-            if (!storyText) {
-                showConfirmModal('Please write your story before submitting.');
-                return;
-            }
-
-            try {
-                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
-                const newStory = {
-                    id: 'story_' + Date.now(),
-                    text: storyText,
-                    userId: userId,
-                    displayName: userDisplayName,
-                    timestamp: new Date().toISOString()
-                };
-                
-                stories.push(newStory);
-                localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
-                
-                storyTextarea.value = '';
-                showConfirmModal('Story submitted successfully!');
-                loadSharedStories();
-            } catch (error) {
-                console.error("Error adding story:", error);
-                showConfirmModal('Failed to add story. Please try again.');
-            }
-        }
-
-        // Load shared stories
-        function loadSharedStories() {
-            const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
-            sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading your stories...</p>';
-            
-            try {
-                const stories = JSON.parse(localStorage.getItem(STORIES_KEY)) || [];
-                const userStories = stories.filter(story => story.userId === userId);
-                
-                sharedStoriesContainer.innerHTML = '';
-                
-                if (userStories.length === 0) {
-                    sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">You have not posted any stories yet.</p>';
-                    return;
-                }
-                
-                userStories.forEach(story => {
-                    const storyItem = document.createElement('div');
-                    storyItem.className = 'story-item';
-                    storyItem.dataset.storyId = story.id;
-                    storyItem.dataset.userId = story.userId;
-                    const timestamp = story.timestamp ? new Date(story.timestamp).toLocaleString() : 'Unknown Date';
-                    
-                    storyItem.innerHTML = `
-                        <p class="story-text">${story.text}</p>
-                        <div class="story-meta">Shared by: ${story.displayName || story.userId} on ${timestamp}</div>
-                        <div class="story-actions">
-                            <button data-story-id="${story.id}" class="edit-story-btn">Edit</button>
-                            <button data-story-id="${story.id}" class="delete-story-btn">Delete</button>
-                        </div>
-                    `;
-                    sharedStoriesContainer.appendChild(storyItem);
-                });
-                
-                // Add event listeners for edit and delete buttons
-                document.querySelectorAll('.edit-story-btn').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const storyId = event.target.dataset.storyId;
-                        const storyText = event.target.closest('.story-item').querySelector('.story-text').textContent;
-                        startEditStory(storyId, storyText);
-                    });
-                });
-
-                document.querySelectorAll('.delete-story-btn').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const storyId = event.target.dataset.storyId;
-                        confirmDeleteStory(storyId);
-                    });
-                });
-                
-            } catch (error) {
-                console.error("Error loading stories:", error);
-                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
-            }
-        }
-
-        // Initialize background particles
-        function initDynamicBackground() {
-            const bg = document.getElementById('dynamic-bg');
-            const particleCount = 30;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'dynamic-particle';
-                
-                const size = Math.random() * 10 + 5;
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
-                const duration = Math.random() * 20 + 15;
-                const delay = Math.random() * 5;
-                
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${x}%`;
-                particle.style.top = `${y}%`;
-                particle.style.animationDuration = `${duration}s`;
-                particle.style.animationDelay = `${delay}s`;
-                
-                const colors = ['var(--accent-blue)', 'var(--accent-purple)', 'var(--accent-pink)'];
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                
-                bg.appendChild(particle);
-            }
-        }
-        
         // Define player data
         const playersData = [
             { name: 'Naga Saki', status: 'online', tattiScore: 80, description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.' },
@@ -2195,6 +2305,7 @@
 
         // Update analytics numbers and draw chart
         function updateAnalyticsAndChart() {
+            console.log('Updating analytics and chart.'); // Debug Log
             const playerDescriptionsContainer = document.getElementById('playerDescriptions');
             playerDescriptionsContainer.innerHTML = '';
 
@@ -2233,12 +2344,14 @@
 
         // Handle page switching
         function setupPageSwitching() {
+            console.log('Setting up page switching.'); // Debug Log
             const navLinks = document.querySelectorAll('.main-nav .nav-link');
             const pageContents = document.querySelectorAll('.page-content');
 
             navLinks.forEach(link => {
                 link.addEventListener('click', (event) => {
                     event.preventDefault();
+                    console.log(`Nav link clicked: ${event.currentTarget.dataset.target}`); // Debug Log
 
                     // Remove 'active' class from all nav links
                     navLinks.forEach(nav => nav.classList.remove('active'));
@@ -2256,8 +2369,10 @@
                         // Only update analytics/chart if the analytics page is being shown
                         if (targetId === 'analytics-page') {
                             updateAnalyticsAndChart();
+                        } else if (targetId === 'what-if-page') {
+                            loadSharedStoriesFirebase(); // Load stories when What If page is active
                         } else if (targetId === 'admin-page') {
-                            updateAdminPanelUI();
+                            updateAdminPanelUI(); // Update admin UI when Admin page is active
                         }
                     }
                 });
@@ -2270,12 +2385,14 @@
                 const targetPage = document.getElementById(targetId);
                 if (targetPage) {
                     targetPage.classList.add('active-page');
+                    console.log(`Initial active page set to: ${targetId}`); // Debug Log
                 }
             }
         }
 
         // Handle welcome display name submission
         async function handleWelcomeDisplayNameSubmit() {
+            console.log('Welcome display name submission initiated.'); // Debug Log
             const welcomeDisplayNameInput = document.getElementById('welcomeDisplayNameInput');
             const name = welcomeDisplayNameInput.value.trim();
 
@@ -2284,30 +2401,84 @@
                 return;
             }
 
-            const success = await saveUserDisplayName(name);
+            const success = await saveUserDisplayNameFirebase(name);
             if (success) {
                 hideWelcomeModal();
                 showMainContent();
-                loadSharedStories();
+                // After successful login/display name setup, ensure stories are loaded if on that page
+                if (document.getElementById('what-if-page').classList.contains('active-page')) {
+                    loadSharedStoriesFirebase();
+                }
             }
+        }
+
+        // Hide Welcome Modal
+        function hideWelcomeModal() {
+            console.log('Hiding welcome modal'); // Debug Log
+            const welcomeModal = document.getElementById('welcomeModal');
+            toggleVisibility(welcomeModal, false);
+        }
+
+        // Show Welcome Modal
+        function showWelcomeModal() {
+            console.log('Showing welcome modal'); // Debug Log
+            const welcomeModal = document.getElementById('welcomeModal');
+            toggleVisibility(welcomeModal, true, 'flex');
+        }
+
+        // Show Main Content
+        function showMainContent() {
+            console.log('Showing main content'); // Debug Log
+            const mainContent = document.querySelector('.main-content');
+            toggleVisibility(mainContent, true, 'grid'); // main-content uses grid display
         }
 
         // Handle theme selection
         function setupThemeSelection() {
+            console.log('Setting up theme selection.'); // Debug Log
             document.querySelectorAll('.theme-btn').forEach(button => {
-                button.addEventListener('click', (event) => {
+                button.addEventListener('click', async (event) => {
                     const themeName = event.currentTarget.dataset.theme;
                     applyTheme(themeName);
+                    await saveThemeFirebase(themeName);
                 });
             });
         }
 
+        // Initialize background particles
+        function initDynamicBackground() {
+            console.log('Initializing dynamic background.'); // Debug Log
+            const bg = document.getElementById('dynamic-bg');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'dynamic-particle';
+                
+                const size = Math.random() * 10 + 5;
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const duration = Math.random() * 20 + 15;
+                const delay = Math.random() * 5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${x}%`;
+                particle.style.top = `${y}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                const colors = ['var(--accent-blue)', 'var(--accent-purple)', 'var(--accent-pink)'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                bg.appendChild(particle);
+            }
+        }
+
         // Initial setup on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
-            initDynamicBackground();
-            setupPageSwitching();
-            setupThemeSelection();
-            initializeApp();
+            console.log('DOMContentLoaded fired. Initializing app...'); // Debug Log
+            initializeApp(); // Start the app initialization process
 
             // Add a resize event listener to redraw the chart when the window is resized
             window.addEventListener('resize', updateAnalyticsAndChart);
@@ -2315,7 +2486,17 @@
             // Add event listener for story form submission
             const storyForm = document.getElementById('storyForm');
             if (storyForm) {
-                storyForm.addEventListener('submit', handleStorySubmit);
+                storyForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const storyTextarea = document.getElementById('storyText');
+                    const storyText = storyTextarea.value.trim();
+
+                    if (!storyText) {
+                        showConfirmModal('Please write your story before submitting.');
+                        return;
+                    }
+                    await addStoryToFirebase(storyText);
+                });
             }
 
             // Add event listener for saving display name in header
@@ -2323,7 +2504,7 @@
             if (saveDisplayNameBtn) {
                 saveDisplayNameBtn.addEventListener('click', async () => {
                     const name = document.getElementById('displayNameInput').value.trim();
-                    await saveUserDisplayName(name);
+                    await saveUserDisplayNameFirebase(name);
                 });
             }
 
@@ -2336,12 +2517,24 @@
             // Add event listeners for admin panel buttons
             const grantAdminBtn = document.getElementById('grantAdminBtn');
             if (grantAdminBtn) {
-                grantAdminBtn.addEventListener('click', grantAdminAccess);
+                grantAdminBtn.addEventListener('click', async () => {
+                    const enteredPin = document.getElementById('adminPinInput').value.trim();
+                    if (enteredPin === ADMIN_PIN) {
+                        await grantAdminAccessFirebase(userId);
+                        document.getElementById('adminPinInput').value = ''; // Clear PIN
+                    } else {
+                        showConfirmModal('Incorrect PIN. Please try again.');
+                    }
+                });
             }
 
             const revokeAdminBtn = document.getElementById('revokeAdminBtn');
             if (revokeAdminBtn) {
-                revokeAdminBtn.addEventListener('click', revokeAdminAccess);
+                revokeAdminBtn.addEventListener('click', async () => {
+                    await showConfirmModal('Are you sure you want to revoke your admin access?', async () => {
+                        await revokeAdminAccessFirebase(userId);
+                    });
+                });
             }
 
             const backToAllUsersBtn = document.getElementById('backToAllUsersBtn');
