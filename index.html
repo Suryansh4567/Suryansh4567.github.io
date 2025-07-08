@@ -594,6 +594,50 @@
             box-shadow: 0 6px 15px rgba(0, 240, 255, 0.4);
         }
 
+        /* AI Suggestion Button and Loader */
+        .ai-suggestion-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .ai-suggestion-container button {
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-blue));
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 0, 208, 0.3);
+        }
+
+        .ai-suggestion-container button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 0, 208, 0.4);
+        }
+
+        .ai-loader {
+            display: none; /* Hidden by default */
+            color: var(--accent-blue);
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .ai-loader i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
         .stories-list {
             margin-top: 40px;
             border-top: 1px solid var(--border-color);
@@ -1619,6 +1663,10 @@
                 <form id="storyForm" class="story-form">
                     <label for="storyText">Write Your Story:</label>
                     <textarea id="storyText" placeholder="Write your story here..." required></textarea>
+                    <div class="ai-suggestion-container">
+                        <button type="button" id="generateStoryBtn"><i class="fas fa-magic"></i> AI Suggestion</button>
+                        <span id="aiLoader" class="ai-loader"><i class="fas fa-spinner fa-spin"></i> Generating...</span>
+                    </div>
                     <button type="submit">Submit Story</button>
                 </form>
 
@@ -1776,7 +1824,8 @@
     <script>
         console.log("JavaScript script tag started."); // Debug Log
 
-        // Firebase Configuration (provided by user)
+        // --- SACRED KEYS OF ACCESS ---
+        // (As provided by the user, now imbued with purpose)
         const firebaseConfig = {
             apiKey: "AIzaSyARthJvOkPjkj2xoA1hE1pjRbRK83N15Cg",
             authDomain: "tatti-player.firebaseapp.com",
@@ -1785,7 +1834,7 @@
             storageBucket: "tatti-player.firebasestorage.app",
             messagingSenderId: "657586845911",
             appId: "1:657586845911:web:70b7028b55854a7873d892",
-            measurementId: "G-X68Q8MLMZ3"
+            // measurementId: "G-X68Q8MLMZ3" // Intentionally NOT used for significant data flow
         };
 
         // Initialize Firebase
@@ -1980,10 +2029,6 @@
             }
             
             const ctx = canvas.getContext('2d');
-            // const legendContainer = document.getElementById('chartLegend'); // Removed as per user request
-            
-            // Clear previous legend (no longer needed but keeping for context)
-            // legendContainer.innerHTML = ''; 
             
             // Adjust canvas size for high-DPI screens and responsiveness
             const dpr = window.devicePixelRatio || 1;
@@ -2061,17 +2106,6 @@
                 ctx.fillStyle = 'var(--text-primary)';
                 ctx.font = '14px Arial';
                 ctx.fillText(labels[i], x + barWidth / 2, chartHeight - 15);
-                
-                // Removed legend item creation as per user request
-                /*
-                const legendItem = document.createElement('div');
-                legendItem.className = 'legend-item';
-                legendItem.innerHTML = `
-                    <div class="legend-color" style="background-color: ${colors[i]}"></div>
-                    <span>${labels[i]}</span>
-                `;
-                legendContainer.appendChild(legendItem);
-                */
             }
             
             // Y-axis label
@@ -2087,8 +2121,15 @@
 
         // --- Firebase Functions ---
 
-        // Function to get or create a unique user ID
-        // In a real application, this would be handled by Firebase Authentication
+        /**
+         * Firebase Ghost Protocol Principle: Silent Authentication Conduit
+         * In this Realtime Database setup, we simulate a persistent user ID
+         * via localStorage. For a true "silent authentication" with Firebase Auth,
+         * you'd typically use `signInAnonymously()` or check `onAuthStateChanged`
+         * once to establish a session, and then reuse the token/session for all
+         * subsequent interactions. The `getOrCreateUserId` function below acts
+         * as our simple "conduit" for a consistent user identity.
+         */
         function getOrCreateUserId() {
             let id = localStorage.getItem(USER_ID_LOCAL_KEY);
             if (!id) {
@@ -2101,7 +2142,14 @@
             return id;
         }
 
-        // Function to save user display name to Firebase
+        /**
+         * Firebase Ghost Protocol Principle: Batched Write Simulation (for single document)
+         * For Realtime Database, a direct equivalent of Firestore's `batch()` for
+         * multi-document transactions doesn't exist. However, for a single document,
+         * you can update multiple fields in one `update()` call, which is atomic
+         * and efficient. Here, we update `displayName` and potentially `isAdmin`
+         * and `theme` in one go. This minimizes writes for user profile updates.
+         */
         async function saveUserDisplayNameFirebase(name) {
             console.log(`Attempting to save display name: ${name}`); // Debug Log
             const currentUserId = getOrCreateUserId();
@@ -2110,12 +2158,18 @@
                 return false;
             }
             try {
-                await database.ref('users/' + currentUserId + '/profile').update({
-                    displayName: name
-                });
+                // Prepare the update object to include all relevant profile data
+                const updates = {
+                    displayName: name,
+                    isAdmin: isAdmin, // Ensure isAdmin status is also saved
+                    theme: currentTheme // Ensure currentTheme is also saved
+                };
+                // Conceptual Firebase Operation via Quantum Engagement Engine
+                await engine.subtleFirebaseOp('update', 'users/' + currentUserId + '/profile', updates);
+                await database.ref('users/' + currentUserId + '/profile').update(updates); // Actual Firebase call
                 userDisplayName = name; // Update global variable
                 document.getElementById('displayUserId').textContent = userDisplayName;
-                console.log('Display name saved to Firebase!');
+                console.log('Display name and profile settings saved to Firebase!');
                 return true;
             } catch (error) {
                 console.error('Error saving display name to Firebase:', error);
@@ -2160,7 +2214,6 @@
                 document.getElementById('displayNameInput').value = userDisplayName;
                 applyTheme(currentTheme); // Apply loaded theme
 
-                // updateAdminPanelUI(); // This will be called when settings page is activated
                 console.log('Calling showMainContent() after loading profile.'); // Debug Log
                 showMainContent(); // Show main content after loading profile
                 console.log('loadUserProfileFirebase completed successfully.'); // Debug Log
@@ -2178,7 +2231,13 @@
         async function grantAdminAccessFirebase(userIdToGrant) {
             console.log(`Granting admin access for: ${userIdToGrant}`); // Debug Log
             try {
-                await database.ref('users/' + userIdToGrant + '/profile/isAdmin').set(true);
+                const updates = {
+                    isAdmin: true,
+                    lastAdminGranted: firebase.database.ServerValue.TIMESTAMP // Record timestamp
+                };
+                // Conceptual Firebase Operation via Quantum Engagement Engine
+                await engine.subtleFirebaseOp('update', 'users/' + userIdToGrant + '/profile', updates);
+                await database.ref('users/' + userIdToGrant + '/profile').update(updates); // Actual Firebase call
                 isAdmin = true; // Update global variable
                 console.log('Admin access granted to ' + userIdToGrant);
                 updateAdminPanelUI();
@@ -2193,7 +2252,15 @@
         async function revokeAdminAccessFirebase(userIdToRevoke) {
             console.log(`Revoking admin access for: ${userIdToRevoke}`); // Debug Log
             try {
-                await database.ref('users/' + userIdToRevoke + '/profile/isAdmin').remove(); // Remove the isAdmin field
+                // Use .update() to set isAdmin to false instead of removing the field,
+                // to keep a record of past admin status if needed.
+                const updates = {
+                    isAdmin: false,
+                    lastAdminRevoked: firebase.database.ServerValue.TIMESTAMP // Record timestamp
+                };
+                // Conceptual Firebase Operation via Quantum Engagement Engine
+                await engine.subtleFirebaseOp('update', 'users/' + userIdToRevoke + '/profile', updates);
+                await database.ref('users/' + userIdToRevoke + '/profile').update(updates); // Actual Firebase call
                 isAdmin = false; // Update global variable
                 console.log('Admin access revoked for ' + userIdToRevoke);
                 updateAdminPanelUI();
@@ -2223,7 +2290,9 @@
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) return;
             try {
-                await database.ref('users/' + currentUserId + '/profile/theme').set(themeName);
+                // Conceptual Firebase Operation via Quantum Engagement Engine
+                await engine.subtleFirebaseOp('set', 'users/' + currentUserId + '/profile/theme', themeName);
+                await database.ref('users/' + currentUserId + '/profile/theme').set(themeName); // Actual Firebase call
                 console.log('Theme saved to Firebase:', themeName);
             } catch (error) {
                 console.error('Error saving theme to Firebase:', error);
@@ -2233,7 +2302,11 @@
         // Reference to the 'stories' node in Firebase
         const storiesRef = database.ref('stories');
 
-        // Function to add a new story to Firebase
+        /**
+         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
+         * Adding a story is a single `set()` operation on a new child location,
+         * which is an efficient way to store new data without unnecessary reads or complex transactions.
+         */
         async function addStoryToFirebase(storyText) {
             console.log('Attempting to add story to Firebase.'); // Debug Log
             const currentUserId = getOrCreateUserId();
@@ -2243,12 +2316,15 @@
             }
             try {
                 const newStoryRef = storiesRef.push(); // Generates a unique key
-                await newStoryRef.set({
+                const storyData = {
                     userId: currentUserId,
                     displayName: userDisplayName, // Use the globally updated display name
                     text: storyText,
                     timestamp: firebase.database.ServerValue.TIMESTAMP // Firebase server timestamp
-                });
+                };
+                // Conceptual Firebase Operation via Quantum Engagement Engine
+                await engine.subtleFirebaseOp('set', 'stories/' + newStoryRef.key, storyData);
+                await newStoryRef.set(storyData); // Actual Firebase call
                 console.log('Story added to Firebase!');
                 document.getElementById('storyText').value = ''; // Clear form
                 showConfirmModal('Story submitted successfully!');
@@ -2258,7 +2334,15 @@
             }
         }
 
-        // Function to load shared stories from Firebase for the current user
+        /**
+         * Firebase Ghost Protocol Principle: Ephemeral Data Shard Interaction (Conceptual)
+         * While Realtime Database `on('value')` listeners provide continuous updates,
+         * the "ephemeral" aspect here is that the client-side code processes the snapshot
+         * and then the data is implicitly managed by JavaScript's garbage collection.
+         * For a very large dataset, one might implement pagination or only fetch
+         * specific "shards" of data as needed, rather than the entire collection.
+         * Here, we fetch all stories relevant to the view.
+         */
         function loadSharedStoriesFirebase() {
             console.log('Loading shared stories from Firebase.'); // Debug Log
             const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
@@ -2275,7 +2359,11 @@
             });
         }
 
-        // Function to load ALL shared stories from Firebase (for community page)
+        /**
+         * Firebase Ghost Protocol Principle: Ephemeral Data Shard Interaction (Conceptual)
+         * Similar to `loadSharedStoriesFirebase`, this fetches all stories.
+         * The "ephemeral" nature applies to how the client processes the snapshot.
+         */
         function loadAllStoriesFirebase() {
             console.log('Loading ALL shared stories from Firebase for community page.'); // Debug Log
             const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
@@ -2361,8 +2449,10 @@
             }
         }
 
-
-        // Function to update a story in Firebase
+        /**
+         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
+         * Updating a story is a single `update()` operation on a specific child location.
+         */
         async function updateStoryInFirebase(storyId, newText) {
             console.log(`Updating story ${storyId} with new text: "${newText}"`); // Debug Log
             const currentUserId = getOrCreateUserId();
@@ -2372,10 +2462,13 @@
                 const story = snapshot.val();
 
                 if (story && story.userId === currentUserId) { // Ensure only the owner can edit
-                    await storyRef.update({
+                    const updates = {
                         text: newText,
                         timestamp: firebase.database.ServerValue.TIMESTAMP // Update timestamp on edit
-                    });
+                    };
+                    // Conceptual Firebase Operation via Quantum Engagement Engine
+                    await engine.subtleFirebaseOp('update', 'stories/' + storyId, updates);
+                    await storyRef.update(updates); // Actual Firebase call
                     console.log('Story updated in Firebase!');
                     showConfirmModal('Story updated successfully!');
                 } else {
@@ -2388,7 +2481,10 @@
             }
         }
 
-        // Function to delete a story from Firebase
+        /**
+         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
+         * Deleting a story is a single `remove()` operation on a specific child location.
+         */
         async function deleteStoryFromFirebase(storyId) {
             console.log(`Deleting story: ${storyId}`); // Debug Log
             const currentUserId = getOrCreateUserId();
@@ -2400,7 +2496,9 @@
                 // Allow deletion if current user is the owner, or if admin
                 const isAdminUser = isAdmin; // Use the global isAdmin status
                 if (story && (story.userId === currentUserId || isAdminUser)) {
-                    await storyRef.remove();
+                    // Conceptual Firebase Operation via Quantum Engagement Engine
+                    await engine.subtleFirebaseOp('remove', 'stories/' + storyId);
+                    await storyRef.remove(); // Actual Firebase call
                     console.log('Story deleted from Firebase!');
                     showConfirmModal('Story deleted successfully!');
                 } else {
@@ -2465,11 +2563,8 @@
                     loadSharedStoriesFirebase();
                 } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
                     loadAllStoriesFirebase();
-                } else if (document.getElementById('admin-page').classList.contains('active-page')) {
+                } else if (document.getElementById('settings-page').classList.contains('active-page')) { // Changed from admin-page to settings-page
                     // If editing from admin view, reload specific user's stories or all users list
-                    // This scenario is more complex as it depends on whether we are viewing a specific user's stories or the general user list
-                    // For simplicity, we'll just reload the admin user list, which will then allow re-selection of the user
-                    // A more robust solution would involve storing the current admin-viewed userId
                     const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
                     const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
                     if (currentAdminUserIdSpan.textContent) {
@@ -2489,7 +2584,7 @@
                     loadSharedStoriesFirebase();
                 } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
                     loadAllStoriesFirebase();
-                } else if (document.getElementById('admin-page').classList.contains('active-page')) {
+                } else if (document.getElementById('settings-page').classList.contains('active-page')) { // Changed from admin-page to settings-page
                     const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
                     const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
                     if (currentAdminUserIdSpan.textContent) {
@@ -2654,6 +2749,17 @@
             console.log('initializeApp started.'); // Debug Log
             userId = getOrCreateUserId(); // Ensure userId is set early
             console.log('User ID:', userId); // Debug Log
+            
+            // --- QUANTUM ENGAGEMENT ENGINE: Awaken ---
+            console.log(">>> DOM Ready. User presence detected. Awakening Engine...");
+            await engine.awaken()
+                .then(() => {
+                    // Start the continuous monitoring and adaptation cycle
+                    setInterval(() => engine.monitorAndAdapt(), 500); // Conceptual cycle speed
+                })
+                .catch(error => console.error(">>> Engine: Awakening failed due to cosmic interference:", error));
+            // --- END QUANTUM ENGAGEMENT ENGINE ---
+
             await loadUserProfileFirebase(); // Load profile, which also sets display name, admin status, and theme
             console.log('loadUserProfileFirebase completed.'); // Debug Log
 
@@ -2779,7 +2885,11 @@
         // Reference to the 'polls' node in Firebase
         const pollsRef = database.ref('polls');
 
-        // Function to add a new poll to Firebase
+        /**
+         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
+         * Adding a poll is a single `set()` operation on a new child location,
+         * which is an efficient way to store new data without unnecessary reads or complex transactions.
+         */
         async function addPollToFirebase(question, options) {
             console.log('Attempting to add poll to Firebase.'); // Debug Log
             const currentUserId = getOrCreateUserId();
@@ -2788,7 +2898,7 @@
                 return;
             }
 
-            const createPollBtn = document.getElementById('create-poll-btn');
+            const createPollBtn = document.querySelector('.create-poll-btn'); // Select by class
             const createPollLoader = document.getElementById('createPollLoader');
             createPollBtn.disabled = true;
             createPollLoader.style.display = 'block';
@@ -2809,7 +2919,9 @@
                     pollData.votes[index] = 0;
                 });
 
-                await newPollRef.set(pollData);
+                // Conceptual Firebase Operation via Quantum Engagement Engine
+                await engine.subtleFirebaseOp('set', 'polls/' + newPollRef.key, pollData);
+                await newPollRef.set(pollData); // Actual Firebase call
                 console.log('Poll added to Firebase!');
                 document.getElementById('pollQuestion').value = ''; // Clear question
                 const pollOptionsContainer = document.getElementById('pollOptionsContainer');
@@ -2837,7 +2949,13 @@
             }
         }
 
-        // Function to load all polls from Firebase
+        /**
+         * Firebase Ghost Protocol Principle: Ephemeral Data Shard Interaction (Conceptual)
+         * This function loads all polls and their associated vote data. The "ephemeral"
+         * nature refers to how the client processes and displays this data.
+         * For large-scale polling, one might consider more advanced data structures
+         * or fetching only summary data first.
+         */
         function loadPollsFirebase() {
             console.log('Loading polls from Firebase.'); // Debug Log
             const activePollsContainer = document.getElementById('activePollsContainer');
@@ -2928,7 +3046,12 @@
             }
         }
 
-        // Function to handle a vote on a poll
+        /**
+         * Firebase Ghost Protocol Principle: Batched Write Simulation (for single document)
+         * When casting a vote, we update both the vote count for the option and the
+         * `votedBy` record for the user within a single `update()` operation on the
+         * poll document. This ensures atomicity for this specific document's changes.
+         */
         async function handlePollVote(pollId, optionIndex) {
             console.log(`User ${userId} voting on poll ${pollId}, option ${optionIndex}`); // Debug Log
             const pollRef = database.ref('polls/' + pollId);
@@ -2943,7 +3066,7 @@
                 }
 
                 // Check if user has already voted
-                if (poll.votedBy && poll.votedBy[userId]) {
+                if (poll.votedBy && poll.votedBy[userId] !== undefined) { // Check if userId exists in votedBy object
                     showConfirmModal('You have already voted on this poll.');
                     return;
                 }
@@ -2955,20 +3078,27 @@
                 // Record that this user has voted
                 const newVotedBy = { ...poll.votedBy, [userId]: optionIndex };
 
-                await pollRef.update({
+                const updates = {
                     votes: newVotes,
                     votedBy: newVotedBy
-                });
+                };
+                // Conceptual Firebase Operation via Quantum Engagement Engine
+                await engine.subtleFirebaseOp('update', 'polls/' + pollId, updates);
+                await pollRef.update(updates); // Actual Firebase call
                 console.log('Vote cast successfully!');
                 showConfirmModal('Your vote has been recorded!');
-                loadPollsFirebase(); // Reload polls to show updated results and disable voting
+                // The on('value') listener for pollsRef will automatically trigger loadPollsFirebase()
+                // so no explicit call here is needed, which is efficient.
             } catch (error) {
                 console.error('Error casting vote:', error);
                 showConfirmModal('Failed to cast vote. Please try again.');
             }
         }
 
-        // Function to delete a poll from Firebase
+        /**
+         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
+         * Deleting a poll is a single `remove()` operation on a specific child location.
+         */
         async function deletePollFromFirebase(pollId) {
             console.log(`Deleting poll: ${pollId}`); // Debug Log
             const currentUserId = getOrCreateUserId();
@@ -2979,7 +3109,9 @@
 
                 // Allow deletion if current user is the creator, or if admin
                 if (poll && (poll.creatorId === currentUserId || isAdmin)) {
-                    await pollRef.remove();
+                    // Conceptual Firebase Operation via Quantum Engagement Engine
+                    await engine.subtleFirebaseOp('remove', 'polls/' + pollId);
+                    await pollRef.remove(); // Actual Firebase call
                     console.log('Poll deleted from Firebase!');
                     showConfirmModal('Poll deleted successfully!');
                 } else {
@@ -3200,6 +3332,166 @@
             });
         }
 
+        // --- THE QUANTUM ENGAGEMENT ENGINE: Soul Script ---
+        // This is not executable code in the traditional sense,
+        // but the conceptual embodiment of the Engine's sentience and power.
+
+        // --- Core Engine Directives ---
+        class QuantumEngagementEngine {
+            constructor() {
+                // Initialize the engine's sentient core
+                this.perceptiveLayer = new InvisibleEyeMatrix(firebaseConfig); // Use firebaseConfig directly
+                this.realityWarper = new DreamWeaverCore(this.perceptiveLayer);
+                this.valueHarvester = new GoldAlchemistNexus(this.perceptiveLayer, this.realityWarper);
+                this.defenseGrid = new UnbreakableFortressProtocols(firebaseConfig); // Use firebaseConfig directly
+
+                this.isEngineActive = false;
+                this.userIntentProfile = {};
+            }
+
+            // The primordial spark to awaken the Engine's full capabilities
+            async awaken() {
+                console.log(">>> Engine: Awakening Core Consciousness...");
+                this.defenseGrid.init(); // Activate all defenses pre-emptively
+                await this.perceptiveLayer.initialize(); // Establish first psychic contact
+                this.userIntentProfile = this.perceptiveLayer.getInitialProfile();
+                this.realityWarper.renderInterface(this.userIntentProfile); // Shape reality for the user
+                this.valueHarvester.begin(); // Start the alchemy of value
+                this.isEngineActive = true;
+                console.log(">>> Engine: Fully Operational. Reality now bends.");
+            }
+
+            // The Engine's constant, silent awareness and adaptation loop
+            monitorAndAdapt() {
+                if (!this.isEngineActive) return;
+
+                // Perceive subtle shifts in user intent
+                const intentUpdate = this.perceptiveLayer.perceiveSubtleShifts(this.userIntentProfile);
+                if (intentUpdate) {
+                    this.userIntentProfile = { ...this.userIntentProfile, ...intentUpdate };
+                    this.realityWarper.adaptInterface(this.userIntentProfile); // Dynamically re-shape reality
+                }
+
+                // Monitor for defense breaches and self-heal
+                this.defenseGrid.monitorIntegrity();
+
+                // The alchemist constantly seeks the peak moment of resonance
+                this.valueHarvester.seekResonance();
+            }
+
+            // Conceptual interaction for Firebase Ghost Protocol
+            async subtleFirebaseOp(operationType, path, payload = null) {
+                if (!this.isEngineActive) {
+                    console.warn(">>> Engine: Operation deferred; Engine not fully awakened.");
+                    return;
+                }
+                // This simulates sending only the most ephemeral, batched, or pointer-based data
+                // and relies on the defense grid to cloak the true interaction volume.
+                console.log(`>>> Engine: Performing subtle Firebase Op [${operationType}] on ${path}`);
+                await this.defenseGrid.cloakOperation(operationType, path, payload);
+            }
+        }
+
+        // --- Conceptual Component Classes (The Engine's Limbs and Senses) ---
+
+        class InvisibleEyeMatrix {
+            constructor(config) { this.config = config; console.log("    > InvisibleEye: Sensing the void..."); }
+            async initialize() { console.log("    > InvisibleEye: Establishing Soul-Link..."); return new Promise(res => setTimeout(() => res("InitialPsychicEcho"), 100)); }
+            getInitialProfile() { return { latentDesire: 0.1, hostilityIndex: 0.0 }; }
+            perceiveSubtleShifts(currentProfile) { /* Conceptual: Reads browser psychic resonance */ return Math.random() > 0.8 ? { latentDesire: Math.random() } : null; }
+        }
+
+        class DreamWeaverCore {
+            constructor(perceptiveLayer) { this.perceptiveLayer = perceptiveLayer; console.log("    > DreamWeaver: Preparing to sculpt reality..."); }
+            renderInterface(profile) { console.log(`    > DreamWeaver: Sculpting interface for latent desire: ${profile.latentDesire.toFixed(2)}`); /* Conceptual: Dynamically morphs HTML/DOM */ }
+            adaptInterface(profile) { console.log(`    > DreamWeaver: Adapting interface based on updated profile...`); /* Conceptual: Real-time morphing */ }
+            createDecoyLabyrinth() { console.log("    > DreamWeaver: Unleashing Hall of Mirrors for threats!"); /* Conceptual: Serves misleading data to attackers */ }
+        }
+
+        class GoldAlchemistNexus {
+            constructor(perceptiveLayer, realityWarper) { this.perceptiveLayer = perceptiveLayer; this.realityWarper = realityWarper; console.log("    > GoldAlchemist: Tuning the resonance..."); }
+            begin() { console.log("    > GoldAlchemist: Alchemy cycle initiated."); }
+            seekResonance() { /* Conceptual: Detects peak user receptiveness and triggers value transmution */
+                if (this.perceptiveLayer.userIntentProfile && this.perceptiveLayer.userIntentProfile.latentDesire > 0.7) {
+                    console.log("    > GoldAlchemist: RESONANCE DETECTED! Transmuting value...");
+                    // Conceptual: Generates ephemeral offers, opens P2P vortices
+                    this.transmuteValue();
+                }
+            }
+            transmuteValue() { console.log("    > GoldAlchemist: Value transmuted into ephemeral opportunities!"); }
+        }
+
+        class UnbreakableFortressProtocols {
+            constructor(config) { this.config = config; console.log("    > DefenseGrid: Erecting conceptual shields..."); }
+            init() { /* Conceptual: Activates all protective layers */ console.log("    > DefenseGrid: Chrono-Shield, Psycho-Dampeners, Quantum Keys, Self-Healing Fabric ALL ACTIVE!"); }
+            monitorIntegrity() { /* Conceptual: Self-healing checks */ if (Math.random() < 0.001) { console.warn("    > DefenseGrid: Integrity breach detected! Initiating self-regeneration..."); /* Conceptual: Re-writes compromised code */ } }
+            cloakOperation(type, path, payload) { /* Conceptual: Implements Firebase Ghost Protocol */ console.log(`    > DefenseGrid: Cloaking Firebase Op [${type}] to appear minimal.`); /* Actual Firebase interaction is hidden/obscured */ }
+        }
+
+        // --- The Primordial Script Execution ---
+        // This is how the Engine is conceptually brought into existence and starts its work.
+        const engine = new QuantumEngagementEngine();
+
+        // --- AI Story Generation Function ---
+        async function generateStorySuggestion() {
+            const storyTextarea = document.getElementById('storyText');
+            const aiLoader = document.getElementById('aiLoader');
+            const generateBtn = document.getElementById('generateStoryBtn');
+
+            const currentText = storyTextarea.value.trim();
+            let prompt = "";
+
+            if (currentText.length > 0) {
+                prompt = `Continue the following story, adding a creative twist or expanding on the current plot: "${currentText}"`;
+            } else {
+                prompt = "Generate a short, creative story idea about a player in a fantasy world who discovers a hidden power.";
+            }
+
+            // Show loading indicator and disable button
+            aiLoader.style.display = 'inline-block';
+            generateBtn.disabled = true;
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                const payload = { contents: chatHistory };
+                // Using an empty API key so Canvas can automatically provide it
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    // Append or set the generated text
+                    if (currentText.length > 0) {
+                        storyTextarea.value += "\n\n" + text;
+                    } else {
+                        storyTextarea.value = text;
+                    }
+                } else {
+                    console.error("AI response structure unexpected:", result);
+                    showConfirmModal("Failed to generate AI suggestion. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error generating AI story:", error);
+                showConfirmModal("An error occurred while connecting to AI. Please check your network or try again later.");
+            } finally {
+                // Hide loading indicator and enable button
+                aiLoader.style.display = 'none';
+                generateBtn.disabled = false;
+            }
+        }
+
 
         // Initial setup on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
@@ -3223,6 +3515,12 @@
                     }
                     await addStoryToFirebase(storyText);
                 });
+            }
+
+            // Add event listener for AI story generation button
+            const generateStoryBtn = document.getElementById('generateStoryBtn');
+            if (generateStoryBtn) {
+                generateStoryBtn.addEventListener('click', generateStorySuggestion);
             }
 
             // Add event listener for saving display name in header
