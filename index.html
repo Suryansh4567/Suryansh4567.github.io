@@ -167,11 +167,16 @@
             font-size: 1.8rem;
             cursor: pointer;
             z-index: 101; /* Above header content */
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, transform 0.2s ease; /* Added transform */
         }
 
         .hamburger-btn:hover {
             color: var(--text-primary);
+        }
+
+        .hamburger-btn.clicked { /* Added for visual feedback */
+            color: var(--accent-pink);
+            transform: scale(1.1);
         }
 
         .side-drawer {
@@ -208,7 +213,7 @@
         }
 
         .drawer-overlay.visible {
-            display: block;
+            display: block; /* Ensure it becomes block for visibility */
             opacity: 1;
         }
 
@@ -1701,8 +1706,8 @@
                             <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
                         </div>
                         <div class="poll-option-item">
-                            <input type="text" class="poll-option-text" placeholder="Option 2 Text" required>
                             <input type="text" class="poll-option-image-url" placeholder="Option 2 Image URL (Optional)">
+                            <input type="text" class="poll-option-text" placeholder="Option 2 Text" required>
                             <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
                         </div>
                     </div>
@@ -1910,21 +1915,22 @@
 
         // Helper function for modal/content visibility with transitions
         function toggleVisibility(element, show, displayType = 'flex', transitionDuration = 300) {
-            console.log(`Toggling visibility for element: ${element.id || element.className}. Show: ${show}, Display Type: ${displayType}`); // Debug Log
-            if (element.id === 'main-content') { // Specific log for main-content
-                console.log(`Main content visibility: ${show ? 'SHOWING' : 'HIDING'}`);
-            }
+            console.log(`[toggleVisibility] Toggling visibility for element: #${element.id || element.className}. Show: ${show}, Display Type: ${displayType}.`); // Debug Log
+            
             if (show) {
                 element.style.display = displayType;
                 // Force reflow to ensure display property is applied before transition starts
                 element.offsetHeight; 
                 element.classList.add('visible');
                 element.style.pointerEvents = 'auto';
+                console.log(`[toggleVisibility] Element #${element.id || element.className} is now visible. Current display: ${element.style.display}, opacity: ${window.getComputedStyle(element).opacity}.`);
             } else {
                 element.classList.remove('visible');
                 element.style.pointerEvents = 'none';
+                console.log(`[toggleVisibility] Element #${element.id || element.className} is now hidden (transitioning). Current opacity: ${window.getComputedStyle(element).opacity}.`);
                 setTimeout(() => {
                     element.style.display = 'none';
+                    console.log(`[toggleVisibility] Element #${element.id || element.className} display set to 'none' after transition.`);
                 }, transitionDuration);
             }
         }
@@ -1932,7 +1938,7 @@
         // Custom Confirmation Modal Logic
         let confirmModalResolve;
         function showConfirmModal(message, onConfirmCallback = null) {
-            console.log(`Showing confirmation modal with message: "${message}"`); // Debug Log
+            console.log(`[showConfirmModal] Showing confirmation modal with message: "${message}".`); // Debug Log
             return new Promise((resolve) => {
                 const modal = document.getElementById('customConfirmModal');
                 const confirmMessage = document.getElementById('confirmMessage');
@@ -1962,7 +1968,7 @@
 
         // Apply theme to the document
         function applyTheme(themeName) {
-            console.log(`Applying theme: ${themeName}`); // Debug Log
+            console.log(`[applyTheme] Applying theme: ${themeName}.`); // Debug Log
             const theme = themes[themeName];
             if (!theme) return;
 
@@ -2007,10 +2013,10 @@
 
         // Enhanced function to draw the bar chart with colors and legend
         function drawBarChart(canvasId, data, labels, colors) {
-            console.log(`Drawing bar chart for ${canvasId}`); // Debug Log
+            console.log(`[drawBarChart] Drawing bar chart for ${canvasId}.`); // Debug Log
             const canvas = document.getElementById(canvasId);
             if (!canvas) {
-                console.error(`Canvas with ID '${canvasId}' not found.`);
+                console.error(`[drawBarChart] Canvas with ID '${canvasId}' not found.`);
                 return;
             }
             
@@ -2117,9 +2123,9 @@
             if (!id) {
                 id = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
                 localStorage.setItem(USER_ID_LOCAL_KEY, id);
-                console.log('Generated new userId:', id); // Debug Log
+                console.log('[getOrCreateUserId] Generated new userId:', id); // Debug Log
             } else {
-                console.log('Retrieved userId from localStorage:', id); // Debug Log
+                console.log('[getOrCreateUserId] Retrieved userId from localStorage:', id); // Debug Log
             }
             return id;
         }
@@ -2133,10 +2139,10 @@
          * and `theme` in one go. This minimizes writes for user profile updates.
          */
         async function saveUserDisplayNameFirebase(name) {
-            console.log(`Attempting to save display name: ${name}`); // Debug Log
+            console.log(`[saveUserDisplayNameFirebase] Attempting to save display name: ${name}.`); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) {
-                console.error("User ID not available to save display name.");
+                console.error("[saveUserDisplayNameFirebase] User ID not available to save display name.");
                 return false;
             }
             try {
@@ -2151,10 +2157,10 @@
                 await database.ref('users/' + currentUserId + '/profile').update(updates); // Actual Firebase call
                 userDisplayName = name; // Update global variable
                 document.getElementById('displayUserId').textContent = userDisplayName;
-                console.log('Display name and profile settings saved to Firebase!');
+                console.log('[saveUserDisplayNameFirebase] Display name and profile settings saved to Firebase!');
                 return true;
             } catch (error) {
-                console.error('Error saving display name to Firebase:', error);
+                console.error('[saveUserDisplayNameFirebase] Error saving display name to Firebase:', error);
                 showConfirmModal('Failed to save display name. Please try again.');
                 return false;
             }
@@ -2162,16 +2168,16 @@
 
         // Function to load user profile (display name, isAdmin) from Firebase
         async function loadUserProfileFirebase() {
-            console.log('loadUserProfileFirebase started.'); // Debug Log
+            console.log('[loadUserProfileFirebase] started.'); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) {
-                console.log('No currentUserId, showing welcome modal.'); // Debug Log
+                console.log('[loadUserProfileFirebase] No currentUserId, showing welcome modal.'); // Debug Log
                 showWelcomeModal();
                 return;
             }
 
             try {
-                console.log('Attempting to load profile for userId:', currentUserId); // Debug Log
+                console.log('[loadUserProfileFirebase] Attempting to load profile for userId:', currentUserId); // Debug Log
                 const snapshot = await database.ref('users/' + currentUserId + '/profile').once('value');
                 const profile = snapshot.val();
                 
@@ -2179,16 +2185,16 @@
                     userDisplayName = profile.displayName || currentUserId;
                     isAdmin = profile.isAdmin || false;
                     currentTheme = profile.theme || 'original'; // Load theme from profile
-                    console.log('Profile loaded:', profile); // Debug Log
-                    console.log('User Display Name:', userDisplayName); // Debug Log
-                    console.log('Is Admin:', isAdmin); // Debug Log
-                    console.log('Current Theme:', currentTheme); // Debug Log
+                    console.log('[loadUserProfileFirebase] Profile loaded:', profile); // Debug Log
+                    console.log('[loadUserProfileFirebase] User Display Name:', userDisplayName); // Debug Log
+                    console.log('[loadUserProfileFirebase] Is Admin:', isAdmin); // Debug Log
+                    console.log('[loadUserProfileFirebase] Current Theme:', currentTheme); // Debug Log
                 } else {
                     // If no profile exists, set display name to ID and prompt for a better one
                     userDisplayName = currentUserId;
                     isAdmin = false;
                     currentTheme = 'original';
-                    console.log('No profile found for userId, showing welcome modal.'); // Debug Log
+                    console.log('[loadUserProfileFirebase] No profile found for userId, showing welcome modal.'); // Debug Log
                     showWelcomeModal(); // Prompt for display name
                 }
                 
@@ -2196,22 +2202,22 @@
                 document.getElementById('displayNameInput').value = userDisplayName;
                 applyTheme(currentTheme); // Apply loaded theme
 
-                console.log('Calling showMainContent() after loading profile.'); // Debug Log
+                console.log('[loadUserProfileFirebase] Calling showMainContent() after loading profile.'); // Debug Log
                 showMainContent(); // Show main content after loading profile
-                console.log('loadUserProfileFirebase completed successfully.'); // Debug Log
+                console.log('[loadUserProfileFirebase] completed successfully.'); // Debug Log
                 
             } catch (error) {
-                console.error('Error loading user profile from Firebase:', error); // Debug Log
+                console.error('[loadUserProfileFirebase] Error loading user profile from Firebase:', error); // Debug Log
                 document.getElementById('displayUserId').textContent = 'Error loading profile';
                 // Even on error, try to show main content or welcome modal
-                console.log('Error in loadUserProfileFirebase, showing welcome modal.'); // Debug Log
+                console.log('[loadUserProfileFirebase] Error in loadUserProfileFirebase, showing welcome modal.'); // Debug Log
                 showWelcomeModal();
             }
         }
 
         // Function to grant admin access in Firebase
         async function grantAdminAccessFirebase(userIdToGrant) {
-            console.log(`Granting admin access for: ${userIdToGrant}`); // Debug Log
+            console.log(`[grantAdminAccessFirebase] Granting admin access for: ${userIdToGrant}.`); // Debug Log
             try {
                 const updates = {
                     isAdmin: true,
@@ -2221,18 +2227,18 @@
                 await engine.subtleFirebaseOp('update', 'users/' + userIdToGrant + '/profile', updates);
                 await database.ref('users/' + userIdToGrant + '/profile').update(updates); // Actual Firebase call
                 isAdmin = true; // Update global variable
-                console.log('Admin access granted to ' + userIdToGrant);
+                console.log('[grantAdminAccessFirebase] Admin access granted to ' + userIdToGrant);
                 updateAdminPanelUI();
                 showConfirmModal('Admin access granted successfully!');
             } catch (error) {
-                console.error('Error granting admin access:', error);
+                console.error('[grantAdminAccessFirebase] Error granting admin access:', error);
                 showConfirmModal('Failed to grant admin access. Please try again.');
             }
         }
 
         // Function to revoke admin access in Firebase
         async function revokeAdminAccessFirebase(userIdToRevoke) {
-            console.log(`Revoking admin access for: ${userIdToRevoke}`); // Debug Log
+            console.log(`[revokeAdminAccessFirebase] Revoking admin access for: ${userIdToRevoke}.`); // Debug Log
             try {
                 // Use .update() to set isAdmin to false instead of removing the field,
                 // to keep a record of past admin status if needed.
@@ -2244,40 +2250,40 @@
                 await engine.subtleFirebaseOp('update', 'users/' + userIdToRevoke + '/profile', updates);
                 await database.ref('users/' + userIdToRevoke + '/profile').update(updates); // Actual Firebase call
                 isAdmin = false; // Update global variable
-                console.log('Admin access revoked for ' + userIdToRevoke);
+                console.log('[revokeAdminAccessFirebase] Admin access revoked for ' + userIdToRevoke);
                 updateAdminPanelUI();
                 showConfirmModal('Admin access revoked.');
             } catch (error) {
-                console.error('Error revoking admin access:', error);
+                console.error('[revokeAdminAccessFirebase] Error revoking admin access:', error);
                 showConfirmModal('Failed to revoke admin access. Please try again.');
             }
         }
 
         // Function to check admin access from Firebase (used for UI elements)
         async function checkAdminAccessFirebase(userIdToCheck) {
-            console.log(`Checking admin access for: ${userIdToCheck}`); // Debug Log
+            console.log(`[checkAdminAccessFirebase] Checking admin access for: ${userIdToCheck}.`); // Debug Log
             if (!userIdToCheck) return false;
             try {
                 const snapshot = await database.ref('users/' + userIdToCheck + '/profile/isAdmin').once('value');
                 return snapshot.val() === true;
             } catch (error) {
-                console.error('Error checking admin access:', error);
+                console.error('[checkAdminAccessFirebase] Error checking admin access:', error);
                 return false;
             }
         }
 
         // Function to save theme to Firebase
         async function saveThemeFirebase(themeName) {
-            console.log(`Saving theme to Firebase: ${themeName}`); // Debug Log
+            console.log(`[saveThemeFirebase] Saving theme to Firebase: ${themeName}.`); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) return;
             try {
                 // Conceptual Firebase Operation via Quantum Engagement Engine
                 await engine.subtleFirebaseOp('set', 'users/' + currentUserId + '/profile/theme', themeName);
                 await database.ref('users/' + currentUserId + '/profile/theme').set(themeName); // Actual Firebase call
-                console.log('Theme saved to Firebase:', themeName);
+                console.log('[saveThemeFirebase] Theme saved to Firebase:', themeName);
             } catch (error) {
-                console.error('Error saving theme to Firebase:', error);
+                console.error('[saveThemeFirebase] Error saving theme to Firebase:', error);
             }
         }
 
@@ -2290,7 +2296,7 @@
          * which is an efficient way to store new data without unnecessary reads or complex transactions.
          */
         async function addStoryToFirebase(storyText) {
-            console.log('Attempting to add story to Firebase.'); // Debug Log
+            console.log('[addStoryToFirebase] Attempting to add story to Firebase.'); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) {
                 showConfirmModal('Please set your display name first to share stories.');
@@ -2325,11 +2331,11 @@
                 // Conceptual Firebase Operation via Quantum Engagement Engine
                 await engine.subtleFirebaseOp('set', 'stories/' + newStoryRef.key, storyData);
                 await newStoryRef.set(storyData); // Actual Firebase call
-                console.log('Story added to Firebase!');
+                console.log('[addStoryToFirebase] Story added to Firebase!');
                 document.getElementById('storyText').value = ''; // Clear form
                 showConfirmModal('Story submitted successfully!');
             } catch (error) {
-                console.error('Error adding story to Firebase:', error);
+                console.error('[addStoryToFirebase] Error adding story to Firebase:', error);
                 showConfirmModal('Failed to add story. Please try again.');
             }
         }
@@ -2344,7 +2350,7 @@
          * Here, we fetch all stories relevant to the view.
          */
         function loadSharedStoriesFirebase() {
-            console.log('Loading shared stories from Firebase.'); // Debug Log
+            console.log('[loadSharedStoriesFirebase] Loading shared stories from Firebase.'); // Debug Log
             const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
             sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading your stories...</p>';
             const currentUserId = getOrCreateUserId();
@@ -2354,7 +2360,7 @@
 
             // Attach a new listener, filtering by current user's ID
             storiesRef.orderByChild('userId').equalTo(currentUserId).on('value', handleStoriesSnapshot, (error) => {
-                console.error("Error loading stories from Firebase:", error);
+                console.error("[loadSharedStoriesFirebase] Error loading stories from Firebase:", error);
                 sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
             });
         }
@@ -2365,7 +2371,7 @@
          * The "ephemeral" nature applies to how the client processes the snapshot.
          */
         function loadAllStoriesFirebase() {
-            console.log('Loading ALL shared stories from Firebase for community page.'); // Debug Log
+            console.log('[loadAllStoriesFirebase] Loading ALL shared stories from Firebase for community page.'); // Debug Log
             const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
             allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading community stories...</p>';
 
@@ -2374,21 +2380,21 @@
 
             // Attach a new listener for all stories
             storiesRef.on('value', handleAllStoriesSnapshotForCommunity, (error) => {
-                console.error("Error loading all stories from Firebase:", error);
+                console.error("[loadAllStoriesFirebase] Error loading all stories from Firebase:", error);
                 allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading community stories.</p>';
             });
         }
 
         // Handler for Firebase stories snapshot (generic, can be used for both personal and community)
         function handleStoriesSnapshot(snapshot) {
-            console.log('Stories snapshot received (for personal stories).'); // Debug Log
+            console.log('[handleStoriesSnapshot] Stories snapshot received (for personal stories).'); // Debug Log
             const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
             displayStories(snapshot, sharedStoriesContainer, true); // true for personal stories (allow edit/delete)
         }
 
         // Handler for Firebase all stories snapshot (for community stories)
         function handleAllStoriesSnapshotForCommunity(snapshot) {
-            console.log('All stories snapshot received (for community stories).'); // Debug Log
+            console.log('[handleAllStoriesSnapshotForCommunity] All stories snapshot received (for community stories).'); // Debug Log
             const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
             displayStories(snapshot, allSharedStoriesContainer, false); // false for community stories (no edit/delete buttons)
         }
@@ -2454,7 +2460,7 @@
          * Updating a story is a single `update()` operation on a specific child location.
          */
         async function updateStoryInFirebase(storyId, newText) {
-            console.log(`Updating story ${storyId} with new text: "${newText}"`); // Debug Log
+            console.log(`[updateStoryInFirebase] Updating story ${storyId} with new text: "${newText}".`); // Debug Log
             const currentUserId = getOrCreateUserId();
             try {
                 const storyRef = database.ref('stories/' + storyId);
@@ -2469,14 +2475,14 @@
                     // Conceptual Firebase Operation via Quantum Engagement Engine
                     await engine.subtleFirebaseOp('update', 'stories/' + storyId, updates);
                     await storyRef.update(updates); // Actual Firebase call
-                    console.log('Story updated in Firebase!');
+                    console.log('[updateStoryInFirebase] Story updated in Firebase!');
                     showConfirmModal('Story updated successfully!');
                 } else {
-                    console.warn('Unauthorized attempt to edit story or story not found.');
+                    console.warn('[updateStoryInFirebase] Unauthorized attempt to edit story or story not found.');
                     showConfirmModal('You are not authorized to edit this story.');
                 }
             } catch (error) {
-                console.error('Error updating story in Firebase:', error);
+                console.error('[updateStoryInFirebase] Error updating story in Firebase:', error);
                 showConfirmModal('Failed to update story. Please try again.');
             }
         }
@@ -2486,7 +2492,7 @@
          * Deleting a story is a single `remove()` operation on a specific child location.
          */
         async function deleteStoryFromFirebase(storyId) {
-            console.log(`Deleting story: ${storyId}`); // Debug Log
+            console.log(`[deleteStoryFromFirebase] Deleting story: ${storyId}.`); // Debug Log
             const currentUserId = getOrCreateUserId();
             try {
                 const storyRef = database.ref('stories/' + storyId);
@@ -2499,21 +2505,21 @@
                     // Conceptual Firebase Operation via Quantum Engagement Engine
                     await engine.subtleFirebaseOp('remove', 'stories/' + storyId);
                     await storyRef.remove(); // Actual Firebase call
-                    console.log('Story deleted from Firebase!');
+                    console.log('[deleteStoryFromFirebase] Story deleted from Firebase!');
                     showConfirmModal('Story deleted successfully!');
                 } else {
-                    console.warn('Unauthorized attempt to delete story or story not found.');
+                    console.warn('[deleteStoryFromFirebase] Unauthorized attempt to delete story or story not found.');
                     showConfirmModal('You are not authorized to delete this story.');
                 }
             } catch (error) {
-                console.error('Error deleting story from Firebase:', error);
+                console.error('[deleteStoryFromFirebase] Error deleting story from Firebase:', error);
                 showConfirmModal('Failed to delete story. Please try again.');
             }
         }
 
         // Attach event listeners for dynamically created story action buttons
         function attachStoryActionListeners(container) {
-            console.log('Attaching story action listeners to container:', container.id); // Debug Log
+            console.log('[attachStoryActionListeners] Attaching story action listeners to container:', container.id); // Debug Log
             container.querySelectorAll('.edit-story-btn').forEach(button => {
                 button.onclick = null; // Remove previous listeners
                 button.addEventListener('click', (event) => {
@@ -2548,7 +2554,7 @@
 
         // Attach listeners for save/cancel buttons during story editing
         function attachEditSaveCancelListeners(storyId, storyTextElement, actionsDiv, originalText) {
-            console.log('Attaching edit/save/cancel listeners.'); // Debug Log
+            console.log('[attachEditSaveCancelListeners] Attaching edit/save/cancel listeners.'); // Debug Log
             actionsDiv.querySelector('.save-story-btn').addEventListener('click', async () => {
                 const newText = storyTextElement.textContent.trim();
                 if (!newText) {
@@ -2598,7 +2604,7 @@
         
         // Load all user profiles for admin panel from Firebase
         function loadAllUserProfilesFirebase() {
-            console.log('Loading all user profiles for admin panel.'); // Debug Log
+            console.log('[loadAllUserProfilesFirebase] Loading all user profiles for admin panel.'); // Debug Log
             const userListContainer = document.getElementById('userListContainer');
             userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading users...</p>';
             
@@ -2607,14 +2613,14 @@
 
             // Attach new listener
             database.ref('users').on('value', handleAllUsersSnapshot, (error) => {
-                console.error("Error loading all user profiles from Firebase:", error);
+                console.error("[loadAllUserProfilesFirebase] Error loading all user profiles from Firebase:", error);
                 userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list.</p>';
             });
         }
 
         // Handler for Firebase all users snapshot
         function handleAllUsersSnapshot(snapshot) {
-            console.log('All users snapshot received.'); // Debug Log
+            console.log('[handleAllUsersSnapshot] All users snapshot received.'); // Debug Log
             const userListContainer = document.getElementById('userListContainer');
             const usersData = snapshot.val();
             userListContainer.innerHTML = ''; // Clear existing list
@@ -2658,7 +2664,7 @@
 
         // View a specific user's stories in admin panel from Firebase
         function viewUserStoriesAsAdmin(targetUserId, targetDisplayName) {
-            console.log(`Viewing stories for admin user: ${targetDisplayName} (${targetUserId})`); // Debug Log
+            console.log(`[viewUserStoriesAsAdmin] Viewing stories for admin user: ${targetDisplayName} (${targetUserId}).`); // Debug Log
             const userListContainer = document.getElementById('userListContainer');
             const adminUserStoriesView = document.getElementById('adminUserStoriesView');
             const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
@@ -2679,14 +2685,14 @@
             storiesRef.orderByChild('userId').equalTo(targetUserId).on('value', (snapshot) => {
                 handleAdminSpecificUserStoriesSnapshot(snapshot, adminSpecificUserStoriesContainer);
             }, (error) => {
-                console.error("Error fetching specific user stories for admin:", error);
+                console.error("[viewUserStoriesAsAdmin] Error fetching specific user stories for admin:", error);
                 adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
             });
         }
 
         // Handler for Firebase admin specific user stories snapshot
         function handleAdminSpecificUserStoriesSnapshot(snapshot, containerElement) {
-            console.log('Admin specific user stories snapshot received.'); // Debug Log
+            console.log('[handleAdminSpecificUserStoriesSnapshot] Admin specific user stories snapshot received.'); // Debug Log
             const userStoriesData = snapshot.val();
             containerElement.innerHTML = '';
             
@@ -2736,7 +2742,7 @@
 
         // Back to all users list
         function backToAllUsers() {
-            console.log('Back to all users.'); // Debug Log
+            console.log('[backToAllUsers] Back to all users.'); // Debug Log
             document.getElementById('userListContainer').style.display = 'flex';
             document.getElementById('adminUserStoriesView').style.display = 'none';
             // Detach the specific user stories listener
@@ -2746,9 +2752,9 @@
 
         // Initialize the app
         async function initializeApp() {
-            console.log('initializeApp started.'); // Debug Log
+            console.log('[initializeApp] started.'); // Debug Log
             userId = getOrCreateUserId(); // Ensure userId is set early
-            console.log('User ID:', userId); // Debug Log
+            console.log('[initializeApp] User ID:', userId); // Debug Log
             
             // --- QUANTUM ENGAGEMENT ENGINE: Awaken ---
             console.log(">>> DOM Ready. User presence detected. Awakening Engine...");
@@ -2761,7 +2767,7 @@
             // --- END QUANTUM ENGAGEMENT ENGINE ---
 
             await loadUserProfileFirebase(); // Load profile, which also sets display name, admin status, and theme
-            console.log('loadUserProfileFirebase completed.'); // Debug Log
+            console.log('[initializeApp] loadUserProfileFirebase completed.'); // Debug Log
 
             initDynamicBackground();
             setupPageSwitching();
@@ -2771,12 +2777,12 @@
             renderPlayerProfiles(playersData);
             updateAnalyticsAndChart(); // Initial chart draw
 
-            console.log('App initialization complete.'); // Debug Log
+            console.log('[initializeApp] App initialization complete.'); // Debug Log
         }
 
         // Update admin panel UI based on global isAdmin status
         function updateAdminPanelUI() {
-            console.log(`Updating Admin Panel UI. isAdmin: ${isAdmin}`); // Debug Log
+            console.log(`[updateAdminPanelUI] Updating Admin Panel UI. isAdmin: ${isAdmin}.`); // Debug Log
             const adminPinSection = document.getElementById('adminPinSection');
             const adminUserListSection = document.getElementById('adminUserListSection');
             const userListContainer = document.getElementById('userListContainer');
@@ -2807,7 +2813,7 @@
 
         // Start editing a story (UI logic)
         function startEditStory(storyId, currentText) {
-            console.log(`Starting edit for story: ${storyId}`); // Debug Log
+            console.log(`[startEditStory] Starting edit for story: ${storyId}.`); // Debug Log
             const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
             if (!storyItem) return;
 
@@ -2825,7 +2831,7 @@
             saveButton.textContent = 'Save';
             saveButton.className = 'save-story-btn';
             saveButton.addEventListener('click', () => updateStoryInFirebase(storyId, storyTextP.textContent.trim()));
-            actionsDiv.appendChild(saveButton);
+            storyActionsDiv.appendChild(saveButton); // Corrected: use storyActionsDiv
 
             const cancelButton = document.createElement('button');
             cancelButton.textContent = 'Cancel';
@@ -2836,7 +2842,7 @@
                 storyItem.classList.remove('editing');
                 loadSharedStoriesFirebase(); // Reload to revert UI
             });
-            actionsDiv.appendChild(cancelButton);
+            storyActionsDiv.appendChild(cancelButton); // Corrected: use storyActionsDiv
         }
 
         // Define player data
@@ -2869,7 +2875,7 @@
 
         // Function to render player profiles (now using hardcoded data)
         async function renderPlayerProfiles(players) {
-            console.log('Rendering player profiles.'); // Debug Log
+            console.log('[renderPlayerProfiles] Rendering player profiles.'); // Debug Log
             const playerProfilesGrid = document.getElementById('playerProfilesGrid');
             playerProfilesGrid.innerHTML = ''; // Clear existing profiles
 
@@ -2929,7 +2935,7 @@
 
         // Update analytics numbers and draw chart
         function updateAnalyticsAndChart() {
-            console.log('Updating analytics and chart.'); // Debug Log
+            console.log('[updateAnalyticsAndChart] Updating analytics and chart.'); // Debug Log
             const playerDescriptionsContainer = document.getElementById('playerDescriptions');
             playerDescriptionsContainer.innerHTML = '';
 
@@ -2977,7 +2983,7 @@
          * which is an efficient way to store new data without unnecessary reads or complex transactions.
          */
         async function addPollToFirebase(question, options) {
-            console.log('Attempting to add poll to Firebase.'); // Debug Log
+            console.log('[addPollToFirebase] Attempting to add poll to Firebase.'); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) {
                 showConfirmModal('Please set your display name first to create polls.');
@@ -3025,7 +3031,7 @@
                 // Conceptual Firebase Operation via Quantum Engagement Engine
                 await engine.subtleFirebaseOp('set', 'polls/' + newPollRef.key, pollData);
                 await newPollRef.set(pollData); // Actual Firebase call
-                console.log('Poll added to Firebase!');
+                console.log('[addPollToFirebase] Poll added to Firebase!');
                 document.getElementById('pollQuestion').value = ''; // Clear question
                 const pollOptionsContainer = document.getElementById('pollOptionsContainer');
                 // Reset options to default two empty inputs
@@ -3036,15 +3042,15 @@
                         <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
                     </div>
                     <div class="poll-option-item">
-                        <input type="text" class="poll-option-text" placeholder="Option 2 Text" required>
                         <input type="text" class="poll-option-image-url" placeholder="Option 2 Image URL (Optional)">
+                        <input type="text" class="poll-option-text" placeholder="Option 2 Text" required>
                         <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
                     </div>
                 `; 
                 attachRemoveOptionListeners(); // Re-attach listeners for new options
                 showConfirmModal('Poll created successfully!');
             } catch (error) {
-                console.error('Error adding poll to Firebase:', error);
+                console.error('[addPollToFirebase] Error adding poll to Firebase:', error);
                 showConfirmModal('Failed to create poll. Please try again.');
             } finally {
                 createPollBtn.disabled = false;
@@ -3060,7 +3066,7 @@
          * or fetching only summary data first.
          */
         function loadPollsFirebase() {
-            console.log('Loading polls from Firebase.'); // Debug Log
+            console.log('[loadPollsFirebase] Loading polls from Firebase.'); // Debug Log
             const activePollsContainer = document.getElementById('activePollsContainer');
             activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading polls...</p>';
 
@@ -3069,14 +3075,14 @@
 
             // Attach a new listener for all polls
             pollsRef.on('value', handlePollsSnapshot, (error) => {
-                console.error("Error loading polls from Firebase:", error);
+                console.error("[loadPollsFirebase] Error loading polls from Firebase:", error);
                 activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading polls.</p>';
             });
         }
 
         // Handler for Firebase polls snapshot
         function handlePollsSnapshot(snapshot) {
-            console.log('Polls snapshot received.'); // Debug Log
+            console.log('[handlePollsSnapshot] Polls snapshot received.'); // Debug Log
             const activePollsContainer = document.getElementById('activePollsContainer');
             const pollsData = snapshot.val();
             activePollsContainer.innerHTML = ''; // Clear existing polls
@@ -3156,7 +3162,7 @@
          * poll document. This ensures atomicity for this specific document's changes.
          */
         async function handlePollVote(pollId, optionIndex) {
-            console.log(`User ${userId} voting on poll ${pollId}, option ${optionIndex}`); // Debug Log
+            console.log(`[handlePollVote] User ${userId} voting on poll ${pollId}, option ${optionIndex}.`); // Debug Log
             const pollRef = database.ref('polls/' + pollId);
 
             try {
@@ -3188,12 +3194,12 @@
                 // Conceptual Firebase Operation via Quantum Engagement Engine
                 await engine.subtleFirebaseOp('update', 'polls/' + pollId, updates);
                 await pollRef.update(updates); // Actual Firebase call
-                console.log('Vote cast successfully!');
+                console.log('[handlePollVote] Vote cast successfully!');
                 showConfirmModal('Your vote has been recorded!');
                 // The on('value') listener for pollsRef will automatically trigger loadPollsFirebase()
                 // so no explicit call here is needed, which is efficient.
             } catch (error) {
-                console.error('Error casting vote:', error);
+                console.error('[handlePollVote] Error casting vote:', error);
                 showConfirmModal('Failed to cast vote. Please try again.');
             }
         }
@@ -3203,7 +3209,7 @@
          * Deleting a poll is a single `remove()` operation on a specific child location.
          */
         async function deletePollFromFirebase(pollId) {
-            console.log(`Deleting poll: ${pollId}`); // Debug Log
+            console.log(`[deletePollFromFirebase] Deleting poll: ${pollId}.`); // Debug Log
             const currentUserId = getOrCreateUserId();
             try {
                 const pollRef = database.ref('polls/' + pollId);
@@ -3215,21 +3221,21 @@
                     // Conceptual Firebase Operation via Quantum Engagement Engine
                     await engine.subtleFirebaseOp('remove', 'polls/' + pollId);
                     await pollRef.remove(); // Actual Firebase call
-                    console.log('Poll deleted from Firebase!');
+                    console.log('[deletePollFromFirebase] Poll deleted from Firebase!');
                     showConfirmModal('Poll deleted successfully!');
                 } else {
-                    console.warn('Unauthorized attempt to delete poll or poll not found.');
+                    console.warn('[deletePollFromFirebase] Unauthorized attempt to delete poll or poll not found.');
                     showConfirmModal('You are not authorized to delete this poll.');
                 }
             } catch (error) {
-                console.error('Error deleting poll from Firebase:', error);
+                console.error('[deletePollFromFirebase] Error deleting poll from Firebase:', error);
                 showConfirmModal('Failed to delete poll. Please try again.');
             }
         }
 
         // Attach event listeners for poll interactions
         function attachPollActionListeners() {
-            console.log('Attaching poll action listeners.'); // Debug Log
+            console.log('[attachPollActionListeners] Attaching poll action listeners.'); // Debug Log
             document.querySelectorAll('.poll-option input[type="radio"]').forEach(radio => {
                 radio.onclick = null; // Remove previous listeners
                 // Only attach listener if not already voted
@@ -3253,33 +3259,65 @@
             });
         }
 
+        // --- Side Drawer Logic ---
+        // Moved closeDrawer function to a higher scope
+        const sideDrawer = document.getElementById('sideDrawer');
+        const hamburgerBtn = document.getElementById('hamburgerBtn'); // Defined globally for closeDrawer
+        const drawerOverlay = document.getElementById('drawerOverlay'); // Defined globally for closeDrawer
+
+        function closeDrawer() {
+            console.log('[Side Drawer Logic] closeDrawer function called.');
+            if (sideDrawer) { // Added null check for sideDrawer
+                sideDrawer.classList.remove('open');
+            }
+            if (hamburgerBtn) { // Added null check for hamburgerBtn
+                hamburgerBtn.classList.remove('clicked'); // Remove clicked class
+            }
+            if (drawerOverlay) { // Added null check for drawerOverlay
+                toggleVisibility(drawerOverlay, false);
+            }
+        }
+        // --- End Side Drawer Logic ---
+
+
         // Handle page switching
         function setupPageSwitching() {
-            console.log('Setting up page switching.'); // Debug Log
+            console.log('[setupPageSwitching] Setting up page switching.'); // Debug Log
             const navLinks = document.querySelectorAll('.main-nav .nav-link');
             const pageContents = document.querySelectorAll('.page-content');
 
             navLinks.forEach(link => {
                 link.addEventListener('click', (event) => {
                     event.preventDefault();
-                    console.log(`Nav link clicked: ${event.currentTarget.dataset.target}`); // Debug Log
+                    const targetId = event.currentTarget.dataset.target;
+                    console.log(`[setupPageSwitching] Nav link clicked: ${targetId}.`); // Debug Log
 
                     // Close the side drawer when a nav link is clicked
                     closeDrawer();
 
-                    // Remove 'active' class from all nav links
-                    navLinks.forEach(nav => nav.classList.remove('active'));
-                    // Remove 'active-page' class from all page contents
-                    pageContents.forEach(page => page.classList.remove('active-page'));
+                    // Remove 'active' class from all nav links and hide all page contents
+                    navLinks.forEach(nav => {
+                        if (nav.classList.contains('active')) {
+                            console.log(`[setupPageSwitching] Deactivating nav link: ${nav.dataset.target}.`);
+                            nav.classList.remove('active');
+                        }
+                    });
+                    pageContents.forEach(page => {
+                        if (page.classList.contains('active-page')) {
+                            console.log(`[setupPageSwitching] Deactivating page: ${page.id}.`);
+                            page.classList.remove('active-page');
+                        }
+                    });
 
                     // Add 'active' class to the clicked link
                     event.currentTarget.classList.add('active');
+                    console.log(`[setupPageSwitching] Activating nav link: ${targetId}.`);
 
                     // Add 'active-page' class to the target page
-                    const targetId = event.currentTarget.dataset.target;
                     const targetPage = document.getElementById(targetId);
                     if (targetPage) {
                         targetPage.classList.add('active-page');
+                        console.log(`[setupPageSwitching] Activating page: ${targetId}.`);
                         // Only update analytics/chart if the analytics page is being shown
                         if (targetId === 'analytics-page') {
                             updateAnalyticsAndChart();
@@ -3292,6 +3330,8 @@
                         } else if (targetId === 'settings-page') { // Changed from admin-page to settings-page
                             updateAdminPanelUI(); // Update admin UI when Admin section within Settings page is active
                         }
+                    } else {
+                        console.error(`[setupPageSwitching] Target page with ID '${targetId}' not found!`);
                     }
                 });
             });
@@ -3303,14 +3343,14 @@
                 const targetPage = document.getElementById(targetId);
                 if (targetPage) {
                     targetPage.classList.add('active-page');
-                    console.log(`Initial active page set to: ${targetId}`); // Debug Log
+                    console.log(`[setupPageSwitching] Initial active page set to: ${targetId}.`); // Debug Log
                 }
             }
         }
 
         // Handle welcome display name submission
         async function handleWelcomeDisplayNameSubmit() {
-            console.log('Welcome display name submission initiated.'); // Debug Log
+            console.log('[handleWelcomeDisplayNameSubmit] Welcome display name submission initiated.'); // Debug Log
             const welcomeDisplayNameInput = document.getElementById('welcomeDisplayNameInput');
             const name = welcomeDisplayNameInput.value.trim();
 
@@ -3336,28 +3376,28 @@
 
         // Hide Welcome Modal
         function hideWelcomeModal() {
-            console.log('Hiding welcome modal'); // Debug Log
+            console.log('[hideWelcomeModal] Hiding welcome modal.'); // Debug Log
             const welcomeModal = document.getElementById('welcomeModal');
             toggleVisibility(welcomeModal, false);
         }
 
         // Show Welcome Modal
         function showWelcomeModal() {
-            console.log('Showing welcome modal'); // Debug Log
+            console.log('[showWelcomeModal] Showing welcome modal.'); // Debug Log
             const welcomeModal = document.getElementById('welcomeModal');
             toggleVisibility(welcomeModal, true, 'flex');
         }
 
         // Show Main Content
         function showMainContent() {
-            console.log('Showing main content'); // Debug Log
+            console.log('[showMainContent] Showing main content.'); // Debug Log
             const mainContent = document.querySelector('.main-content');
             toggleVisibility(mainContent, true, 'grid'); // main-content uses grid display
         }
 
         // Handle theme selection
         function setupThemeSelection() {
-            console.log('Setting up theme selection.'); // Debug Log
+            console.log('[setupThemeSelection] Setting up theme selection.'); // Debug Log
             document.querySelectorAll('.theme-btn').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const themeName = event.currentTarget.dataset.theme;
@@ -3369,7 +3409,7 @@
 
         // Initialize background particles
         function initDynamicBackground() {
-            console.log('Initializing dynamic background.'); // Debug Log
+            console.log('[initDynamicBackground] Initializing dynamic background.'); // Debug Log
             const bg = document.getElementById('dynamic-bg');
             const particleCount = 30;
             
@@ -3589,7 +3629,7 @@
             decide: function(request) {
                 const threatLevel = ThreatIntel.score(request);
                 const THRESHOLD = 0.1; // Example threshold for denial
-                console.log(`AI Prediction: Threat Level = ${threatLevel.toFixed(4)}, Threshold = ${THRESHOLD}`);
+                console.log(`[aiprediction] AI Prediction: Threat Level = ${threatLevel.toFixed(4)}, Threshold = ${THRESHOLD}.`);
                 return threatLevel < THRESHOLD;
             }
         };
@@ -3610,7 +3650,7 @@
             }
 
             // Show loading indicator and disable button
-            aiLoader.style.display = 'inline-inline-block';
+            aiLoader.style.display = 'inline-block'; // Corrected to 'inline-block'
             generateBtn.disabled = true;
 
             try {
@@ -3641,13 +3681,13 @@
                         storyTextarea.value = text;
                     }
                 } else {
-                    console.error("AI response structure unexpected:", result);
+                    console.error("[generateStorySuggestion] AI response structure unexpected:", result);
                     showConfirmModal("Failed to generate AI suggestion. Please try again.");
                 }
             } catch (error) {
-                console.error("Error generating AI story:", error);
+                console.error("[generateStorySuggestion] Error generating AI story:", error);
                 showConfirmModal("An error occurred while connecting to AI. Please check your network or try again later.");
-                console.error("Full error details:", error); // Log full error
+                console.error("[generateStorySuggestion] Full error details:", error); // Log full error
             } finally {
                 // Hide loading indicator and enable button
                 aiLoader.style.display = 'none';
@@ -3679,11 +3719,11 @@
                     result.candidates[0].content.parts.length > 0) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                    console.error("Gemini API returned an unexpected response structure for essence:", result);
+                    console.error("[generateTattiEssence] Gemini API returned an unexpected response structure for essence:", result);
                     return "A player of mysterious essence.";
                 }
             } catch (error) {
-                console.error("Error generating Tatti Essence:", error);
+                console.error("[generateTattiEssence] Error generating Tatti Essence:", error);
                 return "A player of mysterious essence.";
             }
         }
@@ -3713,11 +3753,11 @@
                     result.candidates[0].content.parts.length > 0) {
                     return result.candidates[0].content.parts[0].text;
                 } else {
-                    console.error("Gemini API returned an unexpected response structure for description:", result);
+                    console.error("[generatePlayerDescription] Gemini API returned an unexpected response structure for description:", result);
                     return "A true legend in the making, with a style all their own.";
                 }
             } catch (error) {
-                console.error("Error generating Player Description:", error);
+                console.error("[generatePlayerDescription] Error generating Player Description:", error);
                 return "A true legend in the making, with a style all their own.";
             }
         }
@@ -3725,7 +3765,7 @@
 
         // Initial setup on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded fired. Initializing app...'); // Debug Log
+            console.log('[DOMContentLoaded] fired. Initializing app...'); // Debug Log
             initializeApp(); // Start the app initialization process
 
             // Add a resize event listener to redraw the chart when the window is resized
@@ -3837,26 +3877,45 @@
             attachAddRemoveOptionListeners(); // Attach listeners for add/remove option buttons
 
             // --- Side Drawer Logic ---
-            const hamburgerBtn = document.getElementById('hamburgerBtn');
-            const sideDrawer = document.getElementById('sideDrawer');
-            const drawerOverlay = document.getElementById('drawerOverlay');
+            // These elements are now globally defined at the top of the script block
+            // const hamburgerBtn = document.getElementById('hamburgerBtn');
+            // const sideDrawer = document.getElementById('sideDrawer');
+            // const drawerOverlay = document.getElementById('drawerOverlay');
 
-            hamburgerBtn.addEventListener('click', () => {
-                console.log('Hamburger button clicked. Opening drawer.');
-                sideDrawer.classList.add('open');
-                toggleVisibility(drawerOverlay, true, 'block'); // Use 'block' for overlay
-            });
+            console.log('[Side Drawer Logic] Elements found:', { hamburgerBtn, sideDrawer, drawerOverlay }); // Verify elements are found
 
-            drawerOverlay.addEventListener('click', () => {
-                console.log('Overlay clicked. Closing drawer.');
-                closeDrawer();
-            });
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', () => {
+                    console.log('[Side Drawer Logic] Hamburger button clicked. Toggling drawer.');
+                    if (sideDrawer) { // Added null check
+                        sideDrawer.classList.toggle('open');
+                    }
+                    hamburgerBtn.classList.toggle('clicked'); // Add/remove clicked class for visual feedback
 
-            function closeDrawer() {
-                sideDrawer.classList.remove('open');
-                toggleVisibility(drawerOverlay, false);
+                    if (sideDrawer && sideDrawer.classList.contains('open')) { // Added null check
+                        toggleVisibility(drawerOverlay, true, 'block'); // Use 'block' for overlay
+                        console.log('[Side Drawer Logic] Drawer is OPEN. Overlay should be visible.');
+                    } else {
+                        toggleVisibility(drawerOverlay, false);
+                        console.log('[Side Drawer Logic] Drawer is CLOSED. Overlay should be hidden.');
+                    }
+                    console.log('[Side Drawer Logic] Side Drawer classes after click:', sideDrawer ? sideDrawer.classList.value : 'N/A');
+                    console.log('[Side Drawer Logic] Drawer Overlay classes after click:', drawerOverlay ? drawerOverlay.classList.value : 'N/A');
+                });
+            } else {
+                console.error('[Side Drawer Logic] Hamburger button not found!');
             }
-            // --- End Side Drawer Logic ---
+
+            if (drawerOverlay) {
+                drawerOverlay.addEventListener('click', () => {
+                    console.log('[Side Drawer Logic] Overlay clicked. Closing drawer.');
+                    closeDrawer();
+                    console.log('[Side Drawer Logic] Side Drawer classes after overlay click:', sideDrawer ? sideDrawer.classList.value : 'N/A');
+                    console.log('[Side Drawer Logic] Drawer Overlay classes after overlay click:', drawerOverlay ? drawerOverlay.classList.value : 'N/A');
+                });
+            } else {
+                console.error('[Side Drawer Logic] Drawer Overlay not found!');
+            }
         });
     </script>
 </body>
