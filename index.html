@@ -18,11 +18,11 @@
             --surface-color: #121b2b;
             --card-color: #1a2539;
             --border-color: #2a3a54;
-            --text-primary: #e0f7ff;
-            --text-secondary: #a0b8c8;
-            --status-success: #00e676;
-            --status-warning: #ff9100;
-            --status-danger: #ff1744;
+            --text-primary': #e0f7ff;
+            --text-secondary': #a0b8c8;
+            --status-success': #00e676;
+            --status-warning': #ff9100;
+            --status-danger': #ff1744;
             --highlight-effect: rgba(0, 240, 255, 0.15);
         }
 
@@ -2773,7 +2773,7 @@
             setupPageSwitching();
             setupThemeSelection();
             
-            // Initial render of hardcoded players
+            // Initial render of players (now with AI generation enabled)
             renderPlayerProfiles(playersData);
             updateAnalyticsAndChart(); // Initial chart draw
 
@@ -2845,65 +2845,60 @@
             storyActionsDiv.appendChild(cancelButton); // Corrected: use storyActionsDiv
         }
 
-        // Define player data
+        // Define player data (original, without hardcoded essence/description)
         const playersData = [
             { 
                 name: 'Naga Saki', 
                 status: 'online', 
                 tattiScore: 80, 
-                description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.',
                 pros: ['Respects their mother a lot.'],
                 cons: ['But makes many mistakes.'],
-                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=NS'
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=NS' 
             },
             { 
                 name: 'Ali Khan', 
-                status: 'offline', 
+                status: 'online', 
                 tattiScore: 99, 
-                description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.',
                 pros: ['Has many fathers.'],
                 cons: ['But only calls Shailu, Ishan, Rounak \'father\'.'],
-                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=AK'
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=AK' 
             },
             { 
                 name: 'Nxt Figo', 
-                status: 'offline', 
+                status: 'online', 
                 tattiScore: 75, 
-                description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.',
                 pros: ['Everyone respects them.'],
                 cons: ['Sanya is their best friend.'],
-                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=NF'
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=NF' 
             },
             {
                 name: 'Rudy',
                 status: 'online',
                 tattiScore: 88,
-                description: 'Rudy, the "Punjab Ka Sher" of Indoor boxing, was born from the fierce spirit of Punjab. He\'s a famous boxer, known for his signature "Whoo Wooo Waa" cry and his unique choice of plastic underwear in public. Beyond the ring, he surprisingly possesses a keen understanding of data analytics.',
                 pros: ['Very famous boxer', 'Wears plastic underwear in public (unique style)', 'Knows data analytics'],
                 cons: ['They only analyze data, not implement solutions'],
-                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=R'
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=R' 
             },
             {
                 name: 'Yuvi',
                 status: 'online',
                 tattiScore: 92,
-                description: 'Yuvi, a boy from Indoor, resembles a hamster and possesses the unique power of cutting trees with his destructive teeth. His father, a Spider-Man villain named Electro, gifted him a handmade electric bullet.',
                 pros: ['Girlfriend is Prostitute Jiya', 'God gave him chainsaw teeth'],
                 cons: ['Latringboy beats him everyday'],
-                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=Y'
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=Y' 
             }
         ];
 
-        // Function to render player profiles (now using hardcoded data)
+        // Function to render player profiles (now using AI generation for essence and description)
         async function renderPlayerProfiles(players) {
             console.log('[renderPlayerProfiles] Rendering player profiles.'); // Debug Log
             const playerProfilesGrid = document.getElementById('playerProfilesGrid');
             playerProfilesGrid.innerHTML = ''; // Clear existing profiles
 
             for (const player of players) {
-                // Generate essence and description if not already present in the hardcoded data
-                const essence = player.tattiEssence || await generateTattiEssence(player.name);
-                const description = player.description || await generatePlayerDescription(player.name, essence);
+                // Generate essence and description dynamically using the AI
+                const essence = await generateTattiEssence(player.name);
+                const description = await generatePlayerDescription(player.name, essence);
 
                 // Build Pros list HTML
                 const prosHtml = player.pros && player.pros.length > 0 ? `
@@ -2983,9 +2978,11 @@
                 const descCard = document.createElement('div');
                 descCard.className = 'player-description-card';
                 descCard.style.display = 'block';
+                // Description will be dynamically generated by generatePlayerDescription in renderPlayerProfiles
+                // so we don't need to add it here.
                 descCard.innerHTML = `
                     <h3>${player.name} Performance Analysis:</h3>
-                    <p>${player.description}</p>
+                    <p>Loading description...</p> 
                 `;
                 playerDescriptionsContainer.appendChild(descCard);
             });
@@ -3671,7 +3668,7 @@
             }
 
             // Show loading indicator and disable button
-            aiLoader.style.display = 'inline-block'; // Corrected to 'inline-block'
+            aiLoader.style.display = 'inline-block';
             generateBtn.disabled = true;
 
             try {
@@ -3680,8 +3677,10 @@
 
                 const payload = { contents: chatHistory };
                 // Using the provided API key for external access
-                const apiKey = "AIzaSyBjSGBeVq7JBvvS2SgIQXv3xQmx9cxzCkg"; 
+                const apiKey = ""; // Set to empty string for Canvas to provide
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                console.log("[generateStorySuggestion] Sending request to AI API. URL:", apiUrl, "Payload:", payload); // Debug Log
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -3689,7 +3688,15 @@
                     body: JSON.stringify(payload)
                 });
 
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error(`[generateStorySuggestion] AI API responded with status ${response.status}:`, errorBody);
+                    showConfirmModal(`AI generation failed: ${response.statusText || 'Unknown error'}. Details in console.`);
+                    return;
+                }
+
                 const result = await response.json();
+                console.log("[generateStorySuggestion] AI API raw response:", result); // Debug Log full response
 
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
@@ -3701,14 +3708,14 @@
                     } else {
                         storyTextarea.value = text;
                     }
+                    console.log("[generateStorySuggestion] AI generated text successfully.");
                 } else {
-                    console.error("[generateStorySuggestion] AI response structure unexpected:", result);
-                    showConfirmModal("Failed to generate AI suggestion. Please try again.");
+                    console.error("[generateStorySuggestion] AI response structure unexpected or no candidates:", result);
+                    showConfirmModal("Failed to generate AI suggestion. Unexpected AI response. Details in console.");
                 }
             } catch (error) {
-                console.error("[generateStorySuggestion] Error generating AI story:", error);
-                showConfirmModal("An error occurred while connecting to AI. Please check your network or try again later.");
-                console.error("[generateStorySuggestion] Full error details:", error); // Log full error
+                console.error("[generateStorySuggestion] Error generating AI story (network/fetch error):", error);
+                showConfirmModal("An error occurred while connecting to AI. Please check your network or try again later. Details in console.");
             } finally {
                 // Hide loading indicator and enable button
                 aiLoader.style.display = 'none';
@@ -3727,25 +3734,38 @@
                 let chatHistory = [];
                 chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                 const payload = { contents: chatHistory };
-                const apiKey = "AIzaSyBjSGBeVq7JBvvS2SgIQXv3xQmx9cxzCkg"; // Using the provided API key
+                const apiKey = ""; // Set to empty string for Canvas to provide
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                console.log("[generateTattiEssence] Sending request to AI API. URL:", apiUrl, "Payload:", payload); // Debug Log
+
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error(`[generateTattiEssence] AI API responded with status ${response.status}:`, errorBody);
+                    return "A player of mysterious essence (API error)."; // Fallback
+                }
+
                 const result = await response.json();
+                console.log("[generateTattiEssence] AI API raw response:", result); // Debug Log full response
+
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
+                    console.log("[generateTattiEssence] AI generated essence successfully.");
                     return result.candidates[0].content.parts[0].text;
                 } else {
                     console.error("[generateTattiEssence] Gemini API returned an unexpected response structure for essence:", result);
-                    return "A player of mysterious essence.";
+                    return "A player of mysterious essence (unexpected response)."; // Fallback
                 }
             } catch (error) {
-                console.error("[generateTattiEssence] Error generating Tatti Essence:", error);
-                return "A player of mysterious essence.";
+                console.error("[generateTattiEssence] Error generating Tatti Essence (network/fetch error):", error);
+                return "A player of mysterious essence (network error)."; // Fallback
             }
         }
 
@@ -3761,25 +3781,38 @@
                 let chatHistory = [];
                 chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                 const payload = { contents: chatHistory };
-                const apiKey = "AIzaSyBjSGBeVq7JBvvS2SgIQXv3xQmx9cxzCkg"; // Using the provided API key
+                const apiKey = ""; // Set to empty string for Canvas to provide
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                console.log("[generatePlayerDescription] Sending request to AI API. URL:", apiUrl, "Payload:", payload); // Debug Log
+
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error(`[generatePlayerDescription] AI API responded with status ${response.status}:`, errorBody);
+                    return "A true legend in the making, with a style all their own (API error)."; // Fallback
+                }
+
                 const result = await response.json();
+                console.log("[generatePlayerDescription] AI API raw response:", result); // Debug Log full response
+
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
+                    console.log("[generatePlayerDescription] AI generated description successfully.");
                     return result.candidates[0].content.parts[0].text;
                 } else {
                     console.error("[generatePlayerDescription] Gemini API returned an unexpected response structure for description:", result);
-                    return "A true legend in the making, with a style all their own.";
+                    return "A true legend in the making, with a style all their own (unexpected response)."; // Fallback
                 }
             } catch (error) {
-                console.error("[generatePlayerDescription] Error generating Player Description:", error);
-                return "A true legend in the making, with a style all their own.";
+                console.error("[generatePlayerDescription] Error generating Player Description (network/fetch error):", error);
+                return "A true legend in the making, with a style all their own (network error)."; // Fallback
             }
         }
 
@@ -3815,7 +3848,7 @@
             }
 
             // Add event listener for saving display name in header
-            const saveDisplayNameBtn = document.getElementById('saveDisplayNameBtn');
+            const saveDisplayNameBtn = document.getElementById('saveDisplayName');
             if (saveDisplayNameBtn) {
                 saveDisplayNameBtn.addEventListener('click', async () => {
                     const name = document.getElementById('displayNameInput').value.trim();
