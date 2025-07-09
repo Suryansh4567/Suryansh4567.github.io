@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tatti Players - Profiles (Firebase)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
     <style>
         /* CSS remains the same as in the original */
         :root {
@@ -20,7 +22,7 @@
             --text-secondary: #a0b8c8;
             --status-success: #00e676;
             --status-warning: #ff9100;
-            --status-danger': #ff1744;
+            --status-danger: #ff1744;
             --highlight-effect: rgba(0, 240, 255, 0.15);
         }
 
@@ -154,30 +156,87 @@
         }
 
 
-        /* Navigation */
+        /* Navigation - Now for Side Drawer */
+        .hamburger-btn {
+            position: absolute;
+            top: 25px;
+            left: 20px;
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 101; /* Above header content */
+            transition: color 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .side-drawer {
+            position: fixed;
+            top: 0;
+            left: -300px; /* Hidden by default */
+            width: 280px; /* Width of the drawer */
+            height: 100%;
+            background: var(--card-color);
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s ease-in-out;
+            padding-top: 80px; /* Space for header */
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .side-drawer.open {
+            left: 0; /* Show the drawer */
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none; /* Hidden by default */
+            opacity: 0;
+            z-index: 999;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .drawer-overlay.visible {
+            display: block;
+            opacity: 1;
+        }
+
         .main-nav {
             display: flex;
-            justify-content: center;
-            background: rgba(26, 37, 57, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            flex-direction: column; /* Vertical links */
+            padding: 20px 0;
         }
 
         .main-nav a {
             color: var(--text-secondary);
             text-decoration: none;
-            padding: 12px 25px;
-            margin: 0 5px;
-            border-radius: 30px;
+            padding: 15px 25px;
+            margin: 5px 0;
+            border-radius: 8px; /* Slightly less rounded for vertical list */
             transition: all 0.3s ease;
             font-weight: 500;
             position: relative;
             overflow: hidden;
-            cursor: pointer; /* Added cursor pointer for clickable links */
+            cursor: pointer;
+            display: flex; /* For icon and text alignment */
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-nav a i {
+            font-size: 1.2rem;
+            color: var(--accent-blue);
         }
 
         .main-nav a::before {
@@ -200,6 +259,8 @@
         .main-nav a.active {
             color: var(--accent-blue);
             background: var(--highlight-effect);
+            border-left: 4px solid var(--accent-blue); /* Highlight active link */
+            padding-left: 21px; /* Adjust for border */
         }
 
         /* Dashboard layout */
@@ -1519,6 +1580,9 @@
     <div class="dynamic-background" id="dynamic-bg"></div>
     
     <header class="site-header">
+        <button id="hamburgerBtn" class="hamburger-btn" aria-label="Open navigation menu">
+            <i class="fas fa-bars"></i>
+        </button>
         <h1>Tatti Players</h1>
         <p>Player Profiles & Analytics</p>
         <div class="user-id-display">
@@ -1530,14 +1594,20 @@
         </div>
     </header>
 
-    <nav class="main-nav">
-        <a href="#" class="nav-link active" data-target="dashboard-page"><i class="fas fa-home"></i> Dashboard</a>
-        <a href="#" class="nav-link" data-target="analytics-page"><i class="fas fa-chart-line"></i> Analytics</a>
-        <a href="#" class="nav-link" data-target="what-if-page"><i class="fas fa-question-circle"></i> What If</a>
-        <a href="#" class="nav-link" data-target="community-stories-page"><i class="fas fa-users"></i> Community Stories</a>
-        <a href="#" class="nav-link" data-target="polls-page"><i class="fas fa-poll"></i> Polls</a>
-        <a href="#" class="nav-link" data-target="settings-page"><i class="fas fa-cog"></i> Settings</a>
-    </nav>
+    <!-- Side Drawer -->
+    <div id="sideDrawer" class="side-drawer">
+        <nav class="main-nav">
+            <a href="#" class="nav-link active" data-target="dashboard-page"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#" class="nav-link" data-target="analytics-page"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="#" class="nav-link" data-target="what-if-page"><i class="fas fa-question-circle"></i> What If</a>
+            <a href="#" class="nav-link" data-target="community-stories-page"><i class="fas fa-users"></i> Community Stories</a>
+            <a href="#" class="nav-link" data-target="polls-page"><i class="fas fa-poll"></i> Polls</a>
+            <a href="#" class="nav-link" data-target="settings-page"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+    </div>
+
+    <!-- Drawer Overlay -->
+    <div id="drawerOverlay" class="drawer-overlay"></div>
 
     <div class="main-content" style="display: none;">
         <!-- Dashboard Page Content -->
@@ -1548,91 +1618,8 @@
                 </div>
             </div>
 
-            <div class="members-grid">
-                <!-- Profile Card 1 (Naga Saki) -->
-                <div class="profile-card" data-member-id="naga-saki">
-                    <div class="tatti-essence">Tatti Status: Active</div>
-                    
-                    <div class="profile-header">
-                        <div class="profile-image">
-                            <img src="naga.png" alt="Naga Saki" onerror="this.onerror=null;this.src='https://placehold.co/80x80/0c1524/00f0ff?text=NS';">
-                        </div>
-                        <div class="profile-info">
-                            <h2>Naga Saki <span class="profile-status status-online">Online</span></h2>
-                            <div class="profile-meta">
-                                <div><i class="fas fa-id-card"></i> Player ID: naga-saki</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="profile-content">
-                        <h3>Pros:</h3>
-                        <ul>
-                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Respects their mother a lot.</li>
-                        </ul>
-                        <h3>Cons:</h3>
-                        <ul>
-                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> But makes many mistakes.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Profile Card 2 (Ali Khan) -->
-                <div class="profile-card" data-member-id="ali-khan">
-                    <div class="tatti-essence">Tatti Status: Active</div>
-                    
-                    <div class="profile-header">
-                        <div class="profile-image">
-                            <img src="ali.png" alt="Ali Khan" onerror="this.onerror=null;this.src='https://placehold.co/80x80/0c1524/8a2be2?text=AK';">
-                        </div>
-                        <div class="profile-info">
-                            <h2>Ali Khan <span class="profile-status status-offline">Offline</span></h2>
-                            <div class="profile-meta">
-                                <div><i class="fas fa-id-card"></i> Player ID: ali-khan</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="profile-content">
-                        <h3>Pros:</h3>
-                        <ul>
-                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Has many fathers.</li>
-                        </ul>
-                        <h3>Cons:</h3>
-                        <ul>
-                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> But only calls Shailu, Ishan, Rounak 'father'.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Profile Card 3 (Nxt Figo) -->
-                <div class="profile-card" data-member-id="nxt-figo">
-                    <div class="tatti-essence">Tatti Status: Active</div>
-                    
-                    <div class="profile-header">
-                        <div class="profile-image">
-                            <!-- Using a Font Awesome icon as fallback -->
-                            <i class="fas fa-user-circle"></i>
-                        </div>
-                        <div class="profile-info">
-                            <h2>Nxt Figo <span class="profile-status status-offline">Offline</span></h2>
-                            <div class="profile-meta">
-                                <div><i class="fas fa-id-card"></i> Player ID: nxt-figo</div>
-                            </div>
-                        </div>
-                        </div>
-                    
-                    <div class="profile-content">
-                        <h3>Pros:</h3>
-                        <ul>
-                            <li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> Everyone respects them.</li>
-                        </ul>
-                        <h3>Cons:</h3>
-                        <ul>
-                            <li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> Sanya is their best friend.</li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="members-grid" id="playerProfilesGrid">
+                <!-- Player profiles will be dynamically loaded here -->
             </div>
         </div>
 
@@ -1644,7 +1631,6 @@
                 
                 <div class="chart-container">
                     <canvas id="playerBarChart"></canvas>
-                    <!-- Removed the chart legend div from here -->
                 </div>
 
                 <!-- Player Description Container -->
@@ -2037,10 +2023,6 @@
             canvas.height = rect.height * dpr;
             ctx.scale(dpr, dpr);
             
-            // Set canvas display size
-            canvas.style.width = rect.width + 'px';
-            canvas.style.height = rect.height + 'px';
-            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             const chartWidth = rect.width;
@@ -2314,6 +2296,24 @@
                 showConfirmModal('Please set your display name first to share stories.');
                 return;
             }
+
+            // DiamondLock Concept: AI-Driven Access Control
+            // Simulate a request object for the AI prediction
+            const mockRequest = {
+                body: storyText,
+                userId: currentUserId,
+                displayName: userDisplayName,
+                // Add other relevant request data for a more realistic simulation
+                userAgent: navigator.userAgent,
+                timestamp: Date.now()
+            };
+            const accessGranted = aiprediction.decide(mockRequest);
+
+            if (!accessGranted) {
+                showConfirmModal('Access denied: High threat level detected for this action. Please try again later or modify your input.');
+                return;
+            }
+
             try {
                 const newStoryRef = storiesRef.push(); // Generates a unique key
                 const storyData = {
@@ -2461,7 +2461,7 @@
                 const snapshot = await storyRef.once('value');
                 const story = snapshot.val();
 
-                if (story && story.userId === currentUserId) { // Ensure only the owner can edit
+                if (story && (story.userId === currentUserId || isAdmin)) { // Allow admin to edit
                     const updates = {
                         text: newText,
                         timestamp: firebase.database.ServerValue.TIMESTAMP // Update timestamp on edit
@@ -2528,8 +2528,8 @@
 
                     const actionsDiv = storyItem.querySelector('.story-actions');
                     actionsDiv.innerHTML = `
-                        <button class="save-story-btn" data-story-id="${storyId}">Save</button>
-                        <button class="cancel-edit-btn" data-story-id="${storyId}">Cancel</button>
+                        <button data-story-id="${storyId}" class="save-story-btn">Save</button>
+                        <button data-story-id="${storyId}" class="cancel-edit-btn">Cancel</button>
                     `;
                     attachEditSaveCancelListeners(storyId, storyTextElement, actionsDiv, originalText);
                 });
@@ -2766,6 +2766,11 @@
             initDynamicBackground();
             setupPageSwitching();
             setupThemeSelection();
+            
+            // Initial render of hardcoded players
+            renderPlayerProfiles(playersData);
+            updateAnalyticsAndChart(); // Initial chart draw
+
             console.log('App initialization complete.'); // Debug Log
         }
 
@@ -2836,10 +2841,91 @@
 
         // Define player data
         const playersData = [
-            { name: 'Naga Saki', status: 'online', tattiScore: 80, description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.' },
-            { name: 'Ali Khan', status: 'offline', tattiScore: 99, description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.' },
-            { name: 'Nxt Figo', status: 'offline', tattiScore: 75, description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.' }
+            { 
+                name: 'Naga Saki', 
+                status: 'online', 
+                tattiScore: 80, 
+                description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.',
+                pros: ['Respects their mother a lot.'],
+                cons: ['But makes many mistakes.']
+            },
+            { 
+                name: 'Ali Khan', 
+                status: 'offline', 
+                tattiScore: 99, 
+                description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.',
+                pros: ['Has many fathers.'],
+                cons: ['But only calls Shailu, Ishan, Rounak \'father\'.']
+            },
+            { 
+                name: 'Nxt Figo', 
+                status: 'offline', 
+                tattiScore: 75, 
+                description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.',
+                pros: ['Everyone respects them.'],
+                cons: ['Sanya is their best friend.']
+            }
         ];
+
+        // Function to render player profiles (now using hardcoded data)
+        async function renderPlayerProfiles(players) {
+            console.log('Rendering player profiles.'); // Debug Log
+            const playerProfilesGrid = document.getElementById('playerProfilesGrid');
+            playerProfilesGrid.innerHTML = ''; // Clear existing profiles
+
+            for (const player of players) {
+                // Generate essence and description if not already present in the hardcoded data
+                const essence = player.tattiEssence || await generateTattiEssence(player.name);
+                const description = player.description || await generatePlayerDescription(player.name, essence);
+
+                // Build Pros list HTML
+                const prosHtml = player.pros && player.pros.length > 0 ? `
+                    <h3>Pros:</h3>
+                    <ul>
+                        ${player.pros.map(pro => `<li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> ${pro}</li>`).join('')}
+                    </ul>
+                ` : '';
+
+                // Build Cons list HTML
+                const consHtml = player.cons && player.cons.length > 0 ? `
+                    <h3>Cons:</h3>
+                    <ul>
+                        ${player.cons.map(con => `<li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> ${con}</li>`).join('')}
+                    </ul>
+                ` : '';
+
+
+                const profileCard = document.createElement('div');
+                profileCard.className = 'profile-card';
+                profileCard.dataset.memberId = player.name.toLowerCase().replace(/\s/g, '-'); // Simple ID for data-attribute
+                profileCard.innerHTML = `
+                    <div class="tatti-essence">${essence}</div>
+                    <div class="profile-header">
+                        <div class="profile-image">
+                            ${player.imageUrl ? `<img src="${player.imageUrl}" alt="${player.name}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/0c1524/00f0ff?text=${player.name.split(' ').map(n=>n[0]).join('')}';">` : `<i class="fas fa-user-circle"></i>`}
+                        </div>
+                        <div class="profile-info">
+                            <h2>${player.name} <span class="profile-status status-${player.status}">${player.status.charAt(0).toUpperCase() + player.status.slice(1)}</span></h2>
+                            <div class="profile-meta">
+                                <div><i class="fas fa-id-card"></i> Player ID: ${player.name.toLowerCase().replace(/\s/g, '-')}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-content">
+                        <p class="profile-description">${description}</p>
+                        ${prosHtml}
+                        ${consHtml}
+                        <ul class="trait-list">
+                            <li><i class="fas fa-star"></i> <strong>Tatti Score:</strong> ${player.tattiScore}</li>
+                            <li><i class="fas fa-gamepad"></i> <strong>Favorite Game:</strong> Not set</li>
+                            <li><i class="fas fa-users"></i> <strong>Team Role:</strong> Player</li>
+                            <li><i class="fas fa-fire"></i> <strong>Play Style:</strong> Adaptive</li>
+                        </ul>
+                    </div>
+                `;
+                playerProfilesGrid.appendChild(profileCard);
+            }
+        }
 
         // Update analytics numbers and draw chart
         function updateAnalyticsAndChart() {
@@ -2895,6 +2981,23 @@
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) {
                 showConfirmModal('Please set your display name first to create polls.');
+                return;
+            }
+
+            // DiamondLock Concept: AI-Driven Access Control
+            // Simulate a request object for the AI prediction
+            const mockRequest = {
+                body: { question, options },
+                userId: currentUserId,
+                displayName: userDisplayName,
+                // Add other relevant request data for a more realistic simulation
+                userAgent: navigator.userAgent,
+                timestamp: Date.now()
+            };
+            const accessGranted = aiprediction.decide(mockRequest);
+
+            if (!accessGranted) {
+                showConfirmModal('Access denied: High threat level detected for this action. Please try again later or modify your input.');
                 return;
             }
 
@@ -3160,6 +3263,9 @@
                 link.addEventListener('click', (event) => {
                     event.preventDefault();
                     console.log(`Nav link clicked: ${event.currentTarget.dataset.target}`); // Debug Log
+
+                    // Close the side drawer when a nav link is clicked
+                    closeDrawer();
 
                     // Remove 'active' class from all nav links
                     navLinks.forEach(nav => nav.classList.remove('active'));
@@ -3432,6 +3538,62 @@
         // This is how the Engine is conceptually brought into existence and starts its work.
         const engine = new QuantumEngagementEngine();
 
+        // --- DiamondLock Concepts Implementation (Client-Side Simulation) ---
+
+        /**
+         * Conceptual Threat Intelligence Service.
+         * In a real application, this would involve complex backend analysis,
+         * machine learning models, and external threat feeds.
+         */
+        const ThreatIntel = {
+            /**
+             * Scores the "threat level" of a request.
+             * For this client-side simulation, it returns a random number.
+             * @param {object} request - A mock request object.
+             * @returns {number} A simulated threat level (0.0 to 1.0).
+             */
+            score: function(request) {
+                // Simulate some factors that might increase threat level
+                // e.g., if the story contains certain keywords, or if user has
+                // a history of "suspicious" activity (conceptual).
+                let baseThreat = Math.random() * 0.05; 
+                
+                // Example: If the input is very long, slightly increase threat
+                if (request.body && request.body.length > 500) {
+                    baseThreat += 0.05;
+                }
+                // Example: If user ID starts with 'test' (conceptual known test user)
+                if (request.userId && request.userId.startsWith('test')) {
+                    baseThreat += 0.01;
+                }
+
+                // Introduce a random spike to simulate unpredictable threats
+                if (Math.random() < 0.1) { // 10% chance of a higher threat
+                    baseThreat += Math.random() * 0.15;
+                }
+
+                return Math.min(baseThreat, 1.0); // Cap at 1.0
+            }
+        };
+
+        /**
+         * Conceptual AI Prediction for Access Control.
+         * Simulates the `@aiprediction.decide(request)` bean from DiamondLock.
+         */
+        const aiprediction = {
+            /**
+             * Decides if access is granted based on the threat level.
+             * @param {object} request - The mock request object.
+             * @returns {boolean} True if access is granted, false otherwise.
+             */
+            decide: function(request) {
+                const threatLevel = ThreatIntel.score(request);
+                const THRESHOLD = 0.1; // Example threshold for denial
+                console.log(`AI Prediction: Threat Level = ${threatLevel.toFixed(4)}, Threshold = ${THRESHOLD}`);
+                return threatLevel < THRESHOLD;
+            }
+        };
+
         // --- AI Story Generation Function ---
         async function generateStorySuggestion() {
             const storyTextarea = document.getElementById('storyText');
@@ -3448,7 +3610,7 @@
             }
 
             // Show loading indicator and disable button
-            aiLoader.style.display = 'inline-block';
+            aiLoader.style.display = 'inline-inline-block';
             generateBtn.disabled = true;
 
             try {
@@ -3490,6 +3652,73 @@
                 // Hide loading indicator and enable button
                 aiLoader.style.display = 'none';
                 generateBtn.disabled = false;
+            }
+        }
+
+        /**
+         * Calls the Gemini API to generate a "Tatti Essence".
+         * @param {string} displayName - The user's display name.
+         * @returns {Promise<string>} The generated essence.
+         */
+        async function generateTattiEssence(displayName) {
+            const prompt = `Generate a very short, quirky, and slightly humorous "Tatti Essence" for a player named "${displayName}". It should be 1-2 sentences max. Example: "The silent but deadly strategist, always one step ahead." or "Master of the unexpected, bringing chaos with a smile."`;
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = "AIzaSyBjSGBeVq7JBvvS2SgIQXv3xQmx9cxzCkg"; // Using the provided API key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    console.error("Gemini API returned an unexpected response structure for essence:", result);
+                    return "A player of mysterious essence.";
+                }
+            } catch (error) {
+                console.error("Error generating Tatti Essence:", error);
+                return "A player of mysterious essence.";
+            }
+        }
+
+        /**
+         * Calls the Gemini API to generate a player description.
+         * @param {string} displayName - The player's display name.
+         * @param {string} essence - The player's Tatti Essence.
+         * @returns {Promise<string>} The generated description.
+         */
+        async function generatePlayerDescription(displayName, essence) {
+            const prompt = `Write a creative and engaging player description for "${displayName}". Incorporate their "Tatti Essence": "${essence}". The description should be 3-4 sentences long, highlighting their unique gaming style or personality. Make it fun and slightly over-the-top.`;
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = "AIzaSyBjSGBeVq7JBvvS2SgIQXv3xQmx9cxzCkg"; // Using the provided API key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    console.error("Gemini API returned an unexpected response structure for description:", result);
+                    return "A true legend in the making, with a style all their own.";
+                }
+            } catch (error) {
+                console.error("Error generating Player Description:", error);
+                return "A true legend in the making, with a style all their own.";
             }
         }
 
@@ -3606,6 +3835,28 @@
                 });
             }
             attachAddRemoveOptionListeners(); // Attach listeners for add/remove option buttons
+
+            // --- Side Drawer Logic ---
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sideDrawer = document.getElementById('sideDrawer');
+            const drawerOverlay = document.getElementById('drawerOverlay');
+
+            hamburgerBtn.addEventListener('click', () => {
+                console.log('Hamburger button clicked. Opening drawer.');
+                sideDrawer.classList.add('open');
+                toggleVisibility(drawerOverlay, true, 'block'); // Use 'block' for overlay
+            });
+
+            drawerOverlay.addEventListener('click', () => {
+                console.log('Overlay clicked. Closing drawer.');
+                closeDrawer();
+            });
+
+            function closeDrawer() {
+                sideDrawer.classList.remove('open');
+                toggleVisibility(drawerOverlay, false);
+            }
+            // --- End Side Drawer Logic ---
         });
     </script>
 </body>
