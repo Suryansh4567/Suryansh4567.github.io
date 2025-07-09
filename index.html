@@ -2853,7 +2853,8 @@
                 tattiScore: 80, 
                 description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.',
                 pros: ['Respects their mother a lot.'],
-                cons: ['But makes many mistakes.']
+                cons: ['But makes many mistakes.'],
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=NS'
             },
             { 
                 name: 'Ali Khan', 
@@ -2861,7 +2862,8 @@
                 tattiScore: 99, 
                 description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.',
                 pros: ['Has many fathers.'],
-                cons: ['But only calls Shailu, Ishan, Rounak \'father\'.']
+                cons: ['But only calls Shailu, Ishan, Rounak \'father\'.'],
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=AK'
             },
             { 
                 name: 'Nxt Figo', 
@@ -2869,7 +2871,26 @@
                 tattiScore: 75, 
                 description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.',
                 pros: ['Everyone respects them.'],
-                cons: ['Sanya is their best friend.']
+                cons: ['Sanya is their best friend.'],
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=NF'
+            },
+            {
+                name: 'Rudy',
+                status: 'online',
+                tattiScore: 88,
+                description: 'Rudy, the "Punjab Ka Sher" of Indoor boxing, was born from the fierce spirit of Punjab. He\'s a famous boxer, known for his signature "Whoo Wooo Waa" cry and his unique choice of plastic underwear in public. Beyond the ring, he surprisingly possesses a keen understanding of data analytics.',
+                pros: ['Very famous boxer', 'Wears plastic underwear in public (unique style)', 'Knows data analytics'],
+                cons: ['They only analyze data, not implement solutions'],
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=R'
+            },
+            {
+                name: 'Yuvi',
+                status: 'online',
+                tattiScore: 92,
+                description: 'Yuvi, a boy from Indoor, resembles a hamster and possesses the unique power of cutting trees with his destructive teeth. His father, a Spider-Man villain named Electro, gifted him a handmade electric bullet.',
+                pros: ['Girlfriend is Prostitute Jiya', 'God gave him chainsaw teeth'],
+                cons: ['Latringboy beats him everyday'],
+                imageUrl: 'https://placehold.co/80x80/0c1524/00f0ff?text=Y'
             }
         ];
 
@@ -2946,12 +2967,12 @@
             const chartLabels = [];
             // Theme-specific colors for each player
             const chartColors = currentTheme === 'hacker' ? 
-                ['#00ff00', '#00cc00', '#009900'] : 
+                ['#00ff00', '#00cc00', '#009900', '#006600', '#003300'] : 
                 currentTheme === 'royal' ? 
-                ['#9b59b6', '#8e44ad', '#6c3483'] :
+                ['#9b59b6', '#8e44ad', '#6c3483', '#562d7c', '#401f5c'] :
                 currentTheme === 'anime' ?
-                ['#89dceb', '#cba6f7', '#f5c2e7'] :
-                ['#00f0ff', '#8a2be2', '#ff00d0']; // Original theme colors
+                ['#89dceb', '#cba6f7', '#f5c2e7', '#b5a2e2', '#9786f0'] :
+                ['#00f0ff', '#8a2be2', '#ff00d0', '#00aaff', '#ffcc00']; // Original theme colors + new colors
 
             sortedPlayers.forEach((player, index) => {
                 // Add data for the bar chart
