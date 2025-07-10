@@ -1,4 +1,4 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,10 +18,10 @@ l<!DOCTYPE html>
             --surface-color: #121b2b;
             --card-color: #1a2539;
             --border-color: #2a3a54;
-            --text-primary': #e0f7ff;
-            --text-secondary': #a0b8c8;
-            --status-success': #00e676;
-            --status-warning': #ff9100;
+            --text-primary: #e0f7ff;
+            --text-secondary: #a0b8c8;
+            --status-success: #00e676;
+            --status-warning: #ff9100;
             --status-danger': #ff1744;
             --highlight-effect: rgba(0, 240, 255, 0.15);
         }
@@ -474,24 +474,6 @@ l<!DOCTYPE html>
             color: var(--text-primary);
         }
 
-        /* Essence */
-        .tatti-essence {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 5px 12px;
-            border-radius: 20px;
-            background: rgba(255, 0, 208, 0.1);
-            color: var(--accent-pink);
-            border: 1px solid var(--accent-pink);
-            backdrop-filter: blur(5px);
-            z-index: 2;
-            max-width: 60%;
-            text-align: center;
-        }
-
         /* Analytics Page Specific Styling */
         .analytics-content {
             background: var(--card-color);
@@ -526,10 +508,6 @@ l<!DOCTYPE html>
             margin-top: 30px;
         }
         
-        /* Removed .chart-legend, .legend-item, .legend-color styles */
-
-        /* Removed .analytics-grid styling for player score cards */
-
         .analytics-card { /* Kept for general analytics cards if any are added later */
             background: var(--surface-color);
             border-radius: 10px;
@@ -578,7 +556,6 @@ l<!DOCTYPE html>
             border: 1px solid var(--border-color);
             margin-top: 20px;
             text-align: left;
-            /* display: none; Removed, as they will always be generated */
             grid-column: 1 / -1; /* Span across all columns in the grid */
         }
         .player-description-card h3 {
@@ -659,50 +636,6 @@ l<!DOCTYPE html>
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(0, 240, 255, 0.4);
         }
-
-        /* AI Suggestion Button and Loader */
-        .ai-suggestion-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .ai-suggestion-container button {
-            background: linear-gradient(90deg, var(--accent-pink), var(--accent-blue));
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(255, 0, 208, 0.3);
-        }
-
-        .ai-suggestion-container button:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 0, 208, 0.4);
-        }
-
-        .ai-loader {
-            display: none; /* Hidden by default */
-            color: var(--accent-blue);
-            font-size: 1rem;
-            margin-left: 10px;
-        }
-
-        .ai-loader i {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
 
         .stories-list {
             margin-top: 40px;
@@ -1508,13 +1441,6 @@ l<!DOCTYPE html>
             .profile-meta {
                 justify-content: center;
             }
-
-            .tatti-essence {
-                top: 10px;
-                right: 10px;
-                max-width: calc(100% - 20px);
-                font-size: 0.75rem;
-            }
             
             .members-grid {
                 grid-template-columns: 1fr;
@@ -1654,10 +1580,6 @@ l<!DOCTYPE html>
                 <form id="storyForm" class="story-form">
                     <label for="storyText">Write Your Story:</label>
                     <textarea id="storyText" placeholder="Write your story here..." required></textarea>
-                    <div class="ai-suggestion-container">
-                        <button type="button" id="generateStoryBtn"><i class="fas fa-magic"></i> AI Suggestion</button>
-                        <span id="aiLoader" class="ai-loader"><i class="fas fa-spinner fa-spin"></i> Generating...</span>
-                    </div>
                     <button type="submit">Submit Story</button>
                 </form>
 
@@ -1816,7 +1738,6 @@ l<!DOCTYPE html>
         console.log("JavaScript script tag started."); // Debug Log
 
         // --- SACRED KEYS OF ACCESS ---
-        // (As provided by the user, now imbued with purpose)
         const firebaseConfig = {
             apiKey: "AIzaSyARthJvOkPjkj2xoA1hE1pjRbRK83N15Cg",
             authDomain: "tatti-player.firebaseapp.com",
@@ -1825,7 +1746,6 @@ l<!DOCTYPE html>
             storageBucket: "tatti-player.firebasestorage.app",
             messagingSenderId: "657586845911",
             appId: "1:657586845911:web:70b7028b55854a7873d892",
-            // measurementId: "G-X68Q8MLMZ3" // Intentionally NOT used for significant data flow
         };
 
         // Initialize Firebase
@@ -1834,15 +1754,15 @@ l<!DOCTYPE html>
         console.log("Firebase initialized."); // Debug Log
 
         // Global variables
-        let userId; // Will be set from localStorage or generated
-        let userDisplayName = ""; // Will be loaded from Firebase or set by user
-        let isAdmin = false; // Will be loaded from Firebase
-        let currentTheme = 'original'; // Will be loaded from Firebase
+        let userId; 
+        let userDisplayName = ""; 
+        let isAdmin = false; 
+        let currentTheme = 'original'; 
 
-        // Local storage key for initial userId (used until Firebase Auth is implemented)
+        // Local storage key for initial userId
         const USER_ID_LOCAL_KEY = 'tatti_userId';
         
-        // Define admin PIN (for demonstration purposes, should be handled securely in a real app)
+        // Define admin PIN
         const ADMIN_PIN = "859534"; 
 
         // Theme configurations
@@ -1919,18 +1839,14 @@ l<!DOCTYPE html>
             
             if (show) {
                 element.style.display = displayType;
-                // Force reflow to ensure display property is applied before transition starts
                 element.offsetHeight; 
                 element.classList.add('visible');
                 element.style.pointerEvents = 'auto';
-                console.log(`[toggleVisibility] Element #${element.id || element.className} is now visible. Current display: ${element.style.display}, opacity: ${window.getComputedStyle(element).opacity}.`);
             } else {
                 element.classList.remove('visible');
                 element.style.pointerEvents = 'none';
-                console.log(`[toggleVisibility] Element #${element.id || element.className} is now hidden (transitioning). Current opacity: ${window.getComputedStyle(element).opacity}.`);
                 setTimeout(() => {
                     element.style.display = 'none';
-                    console.log(`[toggleVisibility] Element #${element.id || element.className} display set to 'none' after transition.`);
                 }, transitionDuration);
             }
         }
@@ -1948,9 +1864,8 @@ l<!DOCTYPE html>
                 confirmMessage.textContent = message;
                 toggleVisibility(modal, true, 'flex');
 
-                confirmModalResolve = resolve; // Store resolve function for later use
+                confirmModalResolve = resolve;
 
-                // Remove previous listeners to prevent multiple calls
                 confirmYesBtn.onclick = null;
                 confirmNoBtn.onclick = null;
 
@@ -1974,12 +1889,10 @@ l<!DOCTYPE html>
 
             const root = document.documentElement;
             
-            // Apply all theme variables
             Object.keys(theme).forEach(key => {
                 root.style.setProperty(key, theme[key]);
             });
 
-            // Update active theme button
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.classList.remove('active-theme');
                 if (btn.dataset.theme === themeName) {
@@ -1989,7 +1902,6 @@ l<!DOCTYPE html>
 
             currentTheme = themeName;
             
-            // Redraw chart with new theme colors if analytics page is active
             if (document.getElementById('analytics-page').classList.contains('active-page')) {
                 updateAnalyticsAndChart();
             }
@@ -1997,17 +1909,14 @@ l<!DOCTYPE html>
 
         // Helper function to darken a color
         function darkenColor(color, percent) {
-            // Convert hex to RGB
             let r = parseInt(color.substring(1, 3), 16);
             let g = parseInt(color.substring(3, 5), 16);
             let b = parseInt(color.substring(5, 7), 16);
             
-            // Darken each component
             r = Math.floor(r * (100 - percent) / 100);
             g = Math.floor(g * (100 - percent) / 100);
             b = Math.floor(b * (100 - percent) / 100);
             
-            // Convert back to hex
             return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
         }
 
@@ -2022,7 +1931,6 @@ l<!DOCTYPE html>
             
             const ctx = canvas.getContext('2d');
             
-            // Adjust canvas size for high-DPI screens and responsiveness
             const dpr = window.devicePixelRatio || 1;
             const rect = canvas.parentElement.getBoundingClientRect();
             canvas.width = rect.width * dpr;
@@ -2033,18 +1941,16 @@ l<!DOCTYPE html>
             
             const chartWidth = rect.width;
             const chartHeight = rect.height;
-            const barWidth = chartWidth / (data.length * 2.5); // Adjust bar width
+            const barWidth = chartWidth / (data.length * 2.5);
             const spacing = barWidth / 2;
             const maxVal = Math.max(...data);
             const scale = (chartHeight - 60) / (maxVal > 0 ? maxVal : 1);
             const bottomPadding = 40;
             const topPadding = 20;
             
-            // Draw grid lines
             ctx.strokeStyle = 'var(--border-color)';
             ctx.lineWidth = 0.5;
             
-            // Horizontal grid lines
             const gridLineCount = 5;
             for (let i = 0; i <= gridLineCount; i++) {
                 const y = chartHeight - bottomPadding - (i * (chartHeight - bottomPadding - topPadding) / gridLineCount);
@@ -2053,50 +1959,42 @@ l<!DOCTYPE html>
                 ctx.lineTo(chartWidth - 10, y);
                 ctx.stroke();
                 
-                // Y-axis labels
                 ctx.fillStyle = 'var(--text-primary)';
                 ctx.font = '12px Arial';
                 ctx.textAlign = 'right';
                 ctx.fillText(Math.round(maxVal * i / gridLineCount), 25, y + 4);
             }
             
-            // Draw bars with gradient effects
             for (let i = 0; i < data.length; i++) {
                 const barHeight = data[i] * scale;
                 const x = 40 + i * (barWidth + spacing);
                 const y = chartHeight - bottomPadding - barHeight;
                 
-                // Create gradient
                 const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
                 gradient.addColorStop(0, colors[i]);
                 gradient.addColorStop(1, darkenColor(colors[i], 20));
                 
-                // Draw bar
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.roundRect(x, y, barWidth, barHeight, [8, 8, 0, 0]);
                 ctx.fill();
                 
-                // Add bar shadow
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
                 ctx.shadowBlur = 5;
                 ctx.shadowOffsetY = 3;
                 ctx.fill();
                 ctx.shadowColor = 'transparent';
                 
-                // Bar value label
                 ctx.fillStyle = 'var(--text-primary)';
                 ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText(data[i], x + barWidth / 2, y - 8);
                 
-                // X-axis labels (player names)
                 ctx.fillStyle = 'var(--text-primary)';
                 ctx.font = '14px Arial';
                 ctx.fillText(labels[i], x + barWidth / 2, chartHeight - 15);
             }
             
-            // Y-axis label
             ctx.save();
             ctx.fillStyle = 'var(--text-primary)';
             ctx.font = '14px Arial';
@@ -2109,306 +2007,190 @@ l<!DOCTYPE html>
 
         // --- Firebase Functions ---
 
-        /**
-         * Firebase Ghost Protocol Principle: Silent Authentication Conduit
-         * In this Realtime Database setup, we simulate a persistent user ID
-         * via localStorage. For a true "silent authentication" with Firebase Auth,
-         * you'd typically use `signInAnonymously()` or check `onAuthStateChanged`
-         * once to establish a session, and then reuse the token/session for all
-         * subsequent interactions. The `getOrCreateUserId` function below acts
-         * as our simple "conduit" for a consistent user identity.
-         */
         function getOrCreateUserId() {
             let id = localStorage.getItem(USER_ID_LOCAL_KEY);
             if (!id) {
                 id = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
                 localStorage.setItem(USER_ID_LOCAL_KEY, id);
-                console.log('[getOrCreateUserId] Generated new userId:', id); // Debug Log
-            } else {
-                console.log('[getOrCreateUserId] Retrieved userId from localStorage:', id); // Debug Log
             }
             return id;
         }
 
-        /**
-         * Firebase Ghost Protocol Principle: Batched Write Simulation (for single document)
-         * For Realtime Database, a direct equivalent of Firestore's `batch()` for
-         * multi-document transactions doesn't exist. However, for a single document,
-         * you can update multiple fields in one `update()` call, which is atomic
-         * and efficient. Here, we update `displayName` and potentially `isAdmin`
-         * and `theme` in one go. This minimizes writes for user profile updates.
-         */
         async function saveUserDisplayNameFirebase(name) {
-            console.log(`[saveUserDisplayNameFirebase] Attempting to save display name: ${name}.`); // Debug Log
             const currentUserId = getOrCreateUserId();
-            if (!currentUserId) {
-                console.error("[saveUserDisplayNameFirebase] User ID not available to save display name.");
-                return false;
-            }
+            if (!currentUserId) return false;
             try {
-                // Prepare the update object to include all relevant profile data
                 const updates = {
                     displayName: name,
-                    isAdmin: isAdmin, // Ensure isAdmin status is also saved
-                    theme: currentTheme // Ensure currentTheme is also saved
+                    isAdmin: isAdmin,
+                    theme: currentTheme
                 };
-                // Conceptual Firebase Operation via Quantum Engagement Engine
-                await engine.subtleFirebaseOp('update', 'users/' + currentUserId + '/profile', updates);
-                await database.ref('users/' + currentUserId + '/profile').update(updates); // Actual Firebase call
-                userDisplayName = name; // Update global variable
+                await database.ref('users/' + currentUserId + '/profile').update(updates);
+                userDisplayName = name;
                 document.getElementById('displayUserId').textContent = userDisplayName;
-                console.log('[saveUserDisplayNameFirebase] Display name and profile settings saved to Firebase!');
                 return true;
             } catch (error) {
-                console.error('[saveUserDisplayNameFirebase] Error saving display name to Firebase:', error);
+                console.error('Error saving display name to Firebase:', error);
                 showConfirmModal('Failed to save display name. Please try again.');
                 return false;
             }
         }
 
-        // Function to load user profile (display name, isAdmin) from Firebase
         async function loadUserProfileFirebase() {
-            console.log('[loadUserProfileFirebase] started.'); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) {
-                console.log('[loadUserProfileFirebase] No currentUserId, showing welcome modal.'); // Debug Log
                 showWelcomeModal();
                 return;
             }
 
             try {
-                console.log('[loadUserProfileFirebase] Attempting to load profile for userId:', currentUserId); // Debug Log
                 const snapshot = await database.ref('users/' + currentUserId + '/profile').once('value');
                 const profile = snapshot.val();
                 
                 if (profile) {
                     userDisplayName = profile.displayName || currentUserId;
                     isAdmin = profile.isAdmin || false;
-                    currentTheme = profile.theme || 'original'; // Load theme from profile
-                    console.log('[loadUserProfileFirebase] Profile loaded:', profile); // Debug Log
-                    console.log('[loadUserProfileFirebase] User Display Name:', userDisplayName); // Debug Log
-                    console.log('[loadUserProfileFirebase] Is Admin:', isAdmin); // Debug Log
-                    console.log('[loadUserProfileFirebase] Current Theme:', currentTheme); // Debug Log
+                    currentTheme = profile.theme || 'original';
                 } else {
-                    // If no profile exists, set display name to ID and prompt for a better one
                     userDisplayName = currentUserId;
                     isAdmin = false;
                     currentTheme = 'original';
-                    console.log('[loadUserProfileFirebase] No profile found for userId, showing welcome modal.'); // Debug Log
-                    showWelcomeModal(); // Prompt for display name
+                    showWelcomeModal();
                 }
                 
                 document.getElementById('displayUserId').textContent = userDisplayName;
                 document.getElementById('displayNameInput').value = userDisplayName;
-                applyTheme(currentTheme); // Apply loaded theme
-
-                console.log('[loadUserProfileFirebase] Calling showMainContent() after loading profile.'); // Debug Log
-                showMainContent(); // Show main content after loading profile
-                console.log('[loadUserProfileFirebase] completed successfully.'); // Debug Log
+                applyTheme(currentTheme);
+                showMainContent();
                 
             } catch (error) {
-                console.error('[loadUserProfileFirebase] Error loading user profile from Firebase:', error); // Debug Log
+                console.error('Error loading user profile from Firebase:', error);
                 document.getElementById('displayUserId').textContent = 'Error loading profile';
-                // Even on error, try to show main content or welcome modal
-                console.log('[loadUserProfileFirebase] Error in loadUserProfileFirebase, showing welcome modal.'); // Debug Log
                 showWelcomeModal();
             }
         }
 
-        // Function to grant admin access in Firebase
         async function grantAdminAccessFirebase(userIdToGrant) {
-            console.log(`[grantAdminAccessFirebase] Granting admin access for: ${userIdToGrant}.`); // Debug Log
             try {
                 const updates = {
                     isAdmin: true,
-                    lastAdminGranted: firebase.database.ServerValue.TIMESTAMP // Record timestamp
+                    lastAdminGranted: firebase.database.ServerValue.TIMESTAMP
                 };
-                // Conceptual Firebase Operation via Quantum Engagement Engine
-                await engine.subtleFirebaseOp('update', 'users/' + userIdToGrant + '/profile', updates);
-                await database.ref('users/' + userIdToGrant + '/profile').update(updates); // Actual Firebase call
-                isAdmin = true; // Update global variable
-                console.log('[grantAdminAccessFirebase] Admin access granted to ' + userIdToGrant);
+                await database.ref('users/' + userIdToGrant + '/profile').update(updates);
+                isAdmin = true;
                 updateAdminPanelUI();
                 showConfirmModal('Admin access granted successfully!');
             } catch (error) {
-                console.error('[grantAdminAccessFirebase] Error granting admin access:', error);
+                console.error('Error granting admin access:', error);
                 showConfirmModal('Failed to grant admin access. Please try again.');
             }
         }
 
-        // Function to revoke admin access in Firebase
         async function revokeAdminAccessFirebase(userIdToRevoke) {
-            console.log(`[revokeAdminAccessFirebase] Revoking admin access for: ${userIdToRevoke}.`); // Debug Log
             try {
-                // Use .update() to set isAdmin to false instead of removing the field,
-                // to keep a record of past admin status if needed.
                 const updates = {
                     isAdmin: false,
-                    lastAdminRevoked: firebase.database.ServerValue.TIMESTAMP // Record timestamp
+                    lastAdminRevoked: firebase.database.ServerValue.TIMESTAMP
                 };
-                // Conceptual Firebase Operation via Quantum Engagement Engine
-                await engine.subtleFirebaseOp('update', 'users/' + userIdToRevoke + '/profile', updates);
-                await database.ref('users/' + userIdToRevoke + '/profile').update(updates); // Actual Firebase call
-                isAdmin = false; // Update global variable
-                console.log('[revokeAdminAccessFirebase] Admin access revoked for ' + userIdToRevoke);
+                await database.ref('users/' + userIdToRevoke + '/profile').update(updates);
+                isAdmin = false;
                 updateAdminPanelUI();
                 showConfirmModal('Admin access revoked.');
             } catch (error) {
-                console.error('[revokeAdminAccessFirebase] Error revoking admin access:', error);
+                console.error('Error revoking admin access:', error);
                 showConfirmModal('Failed to revoke admin access. Please try again.');
             }
         }
 
-        // Function to check admin access from Firebase (used for UI elements)
         async function checkAdminAccessFirebase(userIdToCheck) {
-            console.log(`[checkAdminAccessFirebase] Checking admin access for: ${userIdToCheck}.`); // Debug Log
             if (!userIdToCheck) return false;
             try {
                 const snapshot = await database.ref('users/' + userIdToCheck + '/profile/isAdmin').once('value');
                 return snapshot.val() === true;
             } catch (error) {
-                console.error('[checkAdminAccessFirebase] Error checking admin access:', error);
+                console.error('Error checking admin access:', error);
                 return false;
             }
         }
 
-        // Function to save theme to Firebase
         async function saveThemeFirebase(themeName) {
-            console.log(`[saveThemeFirebase] Saving theme to Firebase: ${themeName}.`); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) return;
             try {
-                // Conceptual Firebase Operation via Quantum Engagement Engine
-                await engine.subtleFirebaseOp('set', 'users/' + currentUserId + '/profile/theme', themeName);
-                await database.ref('users/' + currentUserId + '/profile/theme').set(themeName); // Actual Firebase call
-                console.log('[saveThemeFirebase] Theme saved to Firebase:', themeName);
+                await database.ref('users/' + currentUserId + '/profile/theme').set(themeName);
             } catch (error) {
-                console.error('[saveThemeFirebase] Error saving theme to Firebase:', error);
+                console.error('Error saving theme to Firebase:', error);
             }
         }
 
-        // Reference to the 'stories' node in Firebase
         const storiesRef = database.ref('stories');
 
-        /**
-         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
-         * Adding a story is a single `set()` operation on a new child location,
-         * which is an efficient way to store new data without unnecessary reads or complex transactions.
-         */
         async function addStoryToFirebase(storyText) {
-            console.log('[addStoryToFirebase] Attempting to add story to Firebase.'); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) {
                 showConfirmModal('Please set your display name first to share stories.');
                 return;
             }
 
-            // DiamondLock Concept: AI-Driven Access Control
-            // Simulate a request object for the AI prediction
-            const mockRequest = {
-                body: storyText,
-                userId: currentUserId,
-                displayName: userDisplayName,
-                // Add other relevant request data for a more realistic simulation
-                userAgent: navigator.userAgent,
-                timestamp: Date.now()
-            };
-            const accessGranted = aiprediction.decide(mockRequest);
-
-            if (!accessGranted) {
-                showConfirmModal('Access denied: High threat level detected for this action. Please try again later or modify your input.');
-                return;
-            }
-
             try {
-                const newStoryRef = storiesRef.push(); // Generates a unique key
+                const newStoryRef = storiesRef.push();
                 const storyData = {
                     userId: currentUserId,
-                    displayName: userDisplayName, // Use the globally updated display name
+                    displayName: userDisplayName,
                     text: storyText,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP // Firebase server timestamp
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
-                // Conceptual Firebase Operation via Quantum Engagement Engine
-                await engine.subtleFirebaseOp('set', 'stories/' + newStoryRef.key, storyData);
-                await newStoryRef.set(storyData); // Actual Firebase call
-                console.log('[addStoryToFirebase] Story added to Firebase!');
-                document.getElementById('storyText').value = ''; // Clear form
+                await newStoryRef.set(storyData);
+                document.getElementById('storyText').value = '';
                 showConfirmModal('Story submitted successfully!');
             } catch (error) {
-                console.error('[addStoryToFirebase] Error adding story to Firebase:', error);
+                console.error('Error adding story to Firebase:', error);
                 showConfirmModal('Failed to add story. Please try again.');
             }
         }
 
-        /**
-         * Firebase Ghost Protocol Principle: Ephemeral Data Shard Interaction (Conceptual)
-         * While Realtime Database `on('value')` listeners provide continuous updates,
-         * the "ephemeral" aspect here is that the client-side code processes the snapshot
-         * and then the data is implicitly managed by JavaScript's garbage collection.
-         * For a very large dataset, one might implement pagination or only fetch
-         * specific "shards" of data as needed, rather than the entire collection.
-         * Here, we fetch all stories relevant to the view.
-         */
         function loadSharedStoriesFirebase() {
-            console.log('[loadSharedStoriesFirebase] Loading shared stories from Firebase.'); // Debug Log
             const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
             sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading your stories...</p>';
             const currentUserId = getOrCreateUserId();
 
-            // Detach any previous listeners to prevent duplicates
             storiesRef.off('value', handleStoriesSnapshot);
-
-            // Attach a new listener, filtering by current user's ID
             storiesRef.orderByChild('userId').equalTo(currentUserId).on('value', handleStoriesSnapshot, (error) => {
-                console.error("[loadSharedStoriesFirebase] Error loading stories from Firebase:", error);
+                console.error("Error loading stories from Firebase:", error);
                 sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
             });
         }
 
-        /**
-         * Firebase Ghost Protocol Principle: Ephemeral Data Shard Interaction (Conceptual)
-         * Similar to `loadSharedStoriesFirebase`, this fetches all stories.
-         * The "ephemeral" nature applies to how the client processes the snapshot.
-         */
         function loadAllStoriesFirebase() {
-            console.log('[loadAllStoriesFirebase] Loading ALL shared stories from Firebase for community page.'); // Debug Log
             const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
             allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading community stories...</p>';
 
-            // Detach any previous listeners to prevent duplicates
             storiesRef.off('value', handleAllStoriesSnapshotForCommunity);
-
-            // Attach a new listener for all stories
             storiesRef.on('value', handleAllStoriesSnapshotForCommunity, (error) => {
-                console.error("[loadAllStoriesFirebase] Error loading all stories from Firebase:", error);
+                console.error("Error loading all stories from Firebase:", error);
                 allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading community stories.</p>';
             });
         }
 
-        // Handler for Firebase stories snapshot (generic, can be used for both personal and community)
         function handleStoriesSnapshot(snapshot) {
-            console.log('[handleStoriesSnapshot] Stories snapshot received (for personal stories).'); // Debug Log
             const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
-            displayStories(snapshot, sharedStoriesContainer, true); // true for personal stories (allow edit/delete)
+            displayStories(snapshot, sharedStoriesContainer, true);
         }
 
-        // Handler for Firebase all stories snapshot (for community stories)
         function handleAllStoriesSnapshotForCommunity(snapshot) {
-            console.log('[handleAllStoriesSnapshotForCommunity] All stories snapshot received (for community stories).'); // Debug Log
             const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
-            displayStories(snapshot, allSharedStoriesContainer, false); // false for community stories (no edit/delete buttons)
+            displayStories(snapshot, allSharedStoriesContainer, false);
         }
 
-        // Reusable function to display stories in a given container
         function displayStories(snapshot, containerElement, showActions) {
             const storiesData = snapshot.val();
-            containerElement.innerHTML = ''; // Clear existing stories
+            containerElement.innerHTML = '';
 
             if (storiesData) {
                 const storiesArray = Object.keys(storiesData).map(key => ({
                     id: key,
                     ...storiesData[key]
-                })).sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+                })).sort((a, b) => b.timestamp - a.timestamp);
 
                 if (storiesArray.length === 0) {
                     containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No stories found.</p>';
@@ -2423,7 +2205,6 @@ l<!DOCTYPE html>
                     const timestamp = story.timestamp ? new Date(story.timestamp).toLocaleString() : 'Unknown Date';
                     
                     let actionsHtml = '';
-                    // Only show edit/delete if it's the current user's story or if admin, AND showActions is true
                     if (showActions && (story.userId === userId || isAdmin)) {
                         actionsHtml = `
                             <div class="story-actions">
@@ -2431,7 +2212,7 @@ l<!DOCTYPE html>
                                 <button data-story-id="${story.id}" class="delete-story-btn">Delete</button>
                             </div>
                         `;
-                    } else if (!showActions && isAdmin) { // For admin in community view, allow delete
+                    } else if (!showActions && isAdmin) {
                          actionsHtml = `
                             <div class="story-actions">
                                 <button data-story-id="${story.id}" class="delete-story-btn">Delete (Admin)</button>
@@ -2446,7 +2227,6 @@ l<!DOCTYPE html>
                     `;
                     containerElement.appendChild(storyItem);
                 });
-                // Attach listeners only if actions are potentially visible (for personal stories or admin in community)
                 if (showActions || isAdmin) {
                     attachStoryActionListeners(containerElement); 
                 }
@@ -2455,73 +2235,52 @@ l<!DOCTYPE html>
             }
         }
 
-        /**
-         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
-         * Updating a story is a single `update()` operation on a specific child location.
-         */
         async function updateStoryInFirebase(storyId, newText) {
-            console.log(`[updateStoryInFirebase] Updating story ${storyId} with new text: "${newText}".`); // Debug Log
             const currentUserId = getOrCreateUserId();
             try {
                 const storyRef = database.ref('stories/' + storyId);
                 const snapshot = await storyRef.once('value');
                 const story = snapshot.val();
 
-                if (story && (story.userId === currentUserId || isAdmin)) { // Allow admin to edit
+                if (story && (story.userId === currentUserId || isAdmin)) {
                     const updates = {
                         text: newText,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP // Update timestamp on edit
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
-                    // Conceptual Firebase Operation via Quantum Engagement Engine
-                    await engine.subtleFirebaseOp('update', 'stories/' + storyId, updates);
-                    await storyRef.update(updates); // Actual Firebase call
-                    console.log('[updateStoryInFirebase] Story updated in Firebase!');
+                    await storyRef.update(updates);
                     showConfirmModal('Story updated successfully!');
                 } else {
-                    console.warn('[updateStoryInFirebase] Unauthorized attempt to edit story or story not found.');
                     showConfirmModal('You are not authorized to edit this story.');
                 }
             } catch (error) {
-                console.error('[updateStoryInFirebase] Error updating story in Firebase:', error);
+                console.error('Error updating story in Firebase:', error);
                 showConfirmModal('Failed to update story. Please try again.');
             }
         }
 
-        /**
-         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
-         * Deleting a story is a single `remove()` operation on a specific child location.
-         */
         async function deleteStoryFromFirebase(storyId) {
-            console.log(`[deleteStoryFromFirebase] Deleting story: ${storyId}.`); // Debug Log
             const currentUserId = getOrCreateUserId();
             try {
                 const storyRef = database.ref('stories/' + storyId);
                 const snapshot = await storyRef.once('value');
                 const story = snapshot.val();
 
-                // Allow deletion if current user is the owner, or if admin
-                const isAdminUser = isAdmin; // Use the global isAdmin status
+                const isAdminUser = isAdmin;
                 if (story && (story.userId === currentUserId || isAdminUser)) {
-                    // Conceptual Firebase Operation via Quantum Engagement Engine
-                    await engine.subtleFirebaseOp('remove', 'stories/' + storyId);
-                    await storyRef.remove(); // Actual Firebase call
-                    console.log('[deleteStoryFromFirebase] Story deleted from Firebase!');
+                    await storyRef.remove();
                     showConfirmModal('Story deleted successfully!');
                 } else {
-                    console.warn('[deleteStoryFromFirebase] Unauthorized attempt to delete story or story not found.');
                     showConfirmModal('You are not authorized to delete this story.');
                 }
             } catch (error) {
-                console.error('[deleteStoryFromFirebase] Error deleting story from Firebase:', error);
+                console.error('Error deleting story from Firebase:', error);
                 showConfirmModal('Failed to delete story. Please try again.');
             }
         }
 
-        // Attach event listeners for dynamically created story action buttons
         function attachStoryActionListeners(container) {
-            console.log('[attachStoryActionListeners] Attaching story action listeners to container:', container.id); // Debug Log
             container.querySelectorAll('.edit-story-btn').forEach(button => {
-                button.onclick = null; // Remove previous listeners
+                button.onclick = null;
                 button.addEventListener('click', (event) => {
                     const storyId = event.target.dataset.storyId;
                     const storyItem = event.target.closest('.story-item');
@@ -2530,7 +2289,7 @@ l<!DOCTYPE html>
 
                     storyTextElement.contentEditable = true;
                     storyTextElement.focus();
-                    storyItem.classList.add('editing'); // Add a class for styling during edit
+                    storyItem.classList.add('editing');
 
                     const actionsDiv = storyItem.querySelector('.story-actions');
                     actionsDiv.innerHTML = `
@@ -2542,7 +2301,7 @@ l<!DOCTYPE html>
             });
 
             container.querySelectorAll('.delete-story-btn').forEach(button => {
-                button.onclick = null; // Remove previous listeners
+                button.onclick = null;
                 button.addEventListener('click', (event) => {
                     const storyId = event.target.dataset.storyId;
                     showConfirmModal('Are you sure you want to delete this story?', async () => {
@@ -2552,9 +2311,7 @@ l<!DOCTYPE html>
             });
         }
 
-        // Attach listeners for save/cancel buttons during story editing
         function attachEditSaveCancelListeners(storyId, storyTextElement, actionsDiv, originalText) {
-            console.log('[attachEditSaveCancelListeners] Attaching edit/save/cancel listeners.'); // Debug Log
             actionsDiv.querySelector('.save-story-btn').addEventListener('click', async () => {
                 const newText = storyTextElement.textContent.trim();
                 if (!newText) {
@@ -2564,13 +2321,11 @@ l<!DOCTYPE html>
                 await updateStoryInFirebase(storyId, newText);
                 storyTextElement.contentEditable = false;
                 storyTextElement.closest('.story-item').classList.remove('editing');
-                // Reload relevant stories based on which page we are on
                 if (document.getElementById('what-if-page').classList.contains('active-page')) {
                     loadSharedStoriesFirebase();
                 } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
                     loadAllStoriesFirebase();
-                } else if (document.getElementById('settings-page').classList.contains('active-page')) { // Changed from admin-page to settings-page
-                    // If editing from admin view, reload specific user's stories or all users list
+                } else if (document.getElementById('settings-page').classList.contains('active-page')) {
                     const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
                     const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
                     if (currentAdminUserIdSpan.textContent) {
@@ -2582,15 +2337,14 @@ l<!DOCTYPE html>
             });
 
             actionsDiv.querySelector('.cancel-edit-btn').addEventListener('click', () => {
-                storyTextElement.textContent = originalText; // Revert text
+                storyTextElement.textContent = originalText;
                 storyTextElement.contentEditable = false;
                 storyTextElement.closest('.story-item').classList.remove('editing');
-                // Reload relevant stories based on which page we are on
                 if (document.getElementById('what-if-page').classList.contains('active-page')) {
                     loadSharedStoriesFirebase();
                 } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
                     loadAllStoriesFirebase();
-                } else if (document.getElementById('settings-page').classList.contains('active-page')) { // Changed from admin-page to settings-page
+                } else if (document.getElementById('settings-page').classList.contains('active-page')) {
                     const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
                     const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
                     if (currentAdminUserIdSpan.textContent) {
@@ -2602,33 +2356,26 @@ l<!DOCTYPE html>
             });
         }
         
-        // Load all user profiles for admin panel from Firebase
         function loadAllUserProfilesFirebase() {
-            console.log('[loadAllUserProfilesFirebase] Loading all user profiles for admin panel.'); // Debug Log
             const userListContainer = document.getElementById('userListContainer');
             userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading users...</p>';
             
-            // Detach previous listeners
             database.ref('users').off('value', handleAllUsersSnapshot);
-
-            // Attach new listener
             database.ref('users').on('value', handleAllUsersSnapshot, (error) => {
-                console.error("[loadAllUserProfilesFirebase] Error loading all user profiles from Firebase:", error);
+                console.error("Error loading all user profiles from Firebase:", error);
                 userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list.</p>';
             });
         }
 
-        // Handler for Firebase all users snapshot
         function handleAllUsersSnapshot(snapshot) {
-            console.log('[handleAllUsersSnapshot] All users snapshot received.'); // Debug Log
             const userListContainer = document.getElementById('userListContainer');
             const usersData = snapshot.val();
-            userListContainer.innerHTML = ''; // Clear existing list
+            userListContainer.innerHTML = '';
 
             if (usersData) {
                 const usersArray = Object.keys(usersData).map(key => ({
                     userId: key,
-                    displayName: usersData[key].profile?.displayName || key // Use displayName if available, else userId
+                    displayName: usersData[key].profile?.displayName || key
                 }));
 
                 if (usersArray.length === 0) {
@@ -2647,9 +2394,8 @@ l<!DOCTYPE html>
                     userListContainer.appendChild(listItem);
                 });
                 
-                // Add event listeners to the buttons
                 document.querySelectorAll('.view-user-stories-btn').forEach(button => {
-                    button.onclick = null; // Remove previous listeners
+                    button.onclick = null;
                     button.addEventListener('click', (event) => {
                         const targetUserId = event.target.dataset.userId;
                         const targetDisplayName = event.target.dataset.displayName;
@@ -2662,9 +2408,7 @@ l<!DOCTYPE html>
             }
         }
 
-        // View a specific user's stories in admin panel from Firebase
         function viewUserStoriesAsAdmin(targetUserId, targetDisplayName) {
-            console.log(`[viewUserStoriesAsAdmin] Viewing stories for admin user: ${targetDisplayName} (${targetUserId}).`); // Debug Log
             const userListContainer = document.getElementById('userListContainer');
             const adminUserStoriesView = document.getElementById('adminUserStoriesView');
             const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
@@ -2678,21 +2422,16 @@ l<!DOCTYPE html>
             currentAdminUserIdSpan.textContent = targetUserId;
             adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading stories for this user...</p>';
 
-            // Detach previous listeners
             storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
-
-            // Attach new listener for specific user stories
             storiesRef.orderByChild('userId').equalTo(targetUserId).on('value', (snapshot) => {
                 handleAdminSpecificUserStoriesSnapshot(snapshot, adminSpecificUserStoriesContainer);
             }, (error) => {
-                console.error("[viewUserStoriesAsAdmin] Error fetching specific user stories for admin:", error);
+                console.error("Error fetching specific user stories for admin:", error);
                 adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
             });
         }
 
-        // Handler for Firebase admin specific user stories snapshot
         function handleAdminSpecificUserStoriesSnapshot(snapshot, containerElement) {
-            console.log('[handleAdminSpecificUserStoriesSnapshot] Admin specific user stories snapshot received.'); // Debug Log
             const userStoriesData = snapshot.val();
             containerElement.innerHTML = '';
             
@@ -2724,9 +2463,8 @@ l<!DOCTYPE html>
                     containerElement.appendChild(storyItem);
                 });
                 
-                // Add event listeners for delete buttons
                 document.querySelectorAll('#adminSpecificUserStoriesContainer .delete-story-btn').forEach(button => {
-                    button.onclick = null; // Remove previous listeners
+                    button.onclick = null;
                     button.addEventListener('click', (event) => {
                         const storyIdToDelete = event.target.dataset.storyId;
                         showConfirmModal('Are you sure you want to delete this story for ALL users?', async () => {
@@ -2740,55 +2478,29 @@ l<!DOCTYPE html>
             }
         }
 
-        // Back to all users list
         function backToAllUsers() {
-            console.log('[backToAllUsers] Back to all users.'); // Debug Log
             document.getElementById('userListContainer').style.display = 'flex';
             document.getElementById('adminUserStoriesView').style.display = 'none';
-            // Detach the specific user stories listener
             storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
-            loadAllUserProfilesFirebase(); // Reload the list of all users
+            loadAllUserProfilesFirebase();
         }
 
-        // Initialize the app
         async function initializeApp() {
-            console.log('[initializeApp] started.'); // Debug Log
-            userId = getOrCreateUserId(); // Ensure userId is set early
-            console.log('[initializeApp] User ID:', userId); // Debug Log
-            
-            // --- QUANTUM ENGAGEMENT ENGINE: Awaken ---
-            console.log(">>> DOM Ready. User presence detected. Awakening Engine...");
-            await engine.awaken()
-                .then(() => {
-                    // Start the continuous monitoring and adaptation cycle
-                    setInterval(() => engine.monitorAndAdapt(), 500); // Conceptual cycle speed
-                })
-                .catch(error => console.error(">>> Engine: Awakening failed due to cosmic interference:", error));
-            // --- END QUANTUM ENGAGEMENT ENGINE ---
-
-            await loadUserProfileFirebase(); // Load profile, which also sets display name, admin status, and theme
-            console.log('[initializeApp] loadUserProfileFirebase completed.'); // Debug Log
-
+            userId = getOrCreateUserId();
+            await loadUserProfileFirebase();
             initDynamicBackground();
             setupPageSwitching();
             setupThemeSelection();
-            
-            // Initial render of players (now with AI generation enabled)
             renderPlayerProfiles(playersData);
-            updateAnalyticsAndChart(); // Initial chart draw
-
-            console.log('[initializeApp] App initialization complete.'); // Debug Log
+            updateAnalyticsAndChart();
         }
 
-        // Update admin panel UI based on global isAdmin status
         function updateAdminPanelUI() {
-            console.log(`[updateAdminPanelUI] Updating Admin Panel UI. isAdmin: ${isAdmin}.`); // Debug Log
             const adminPinSection = document.getElementById('adminPinSection');
             const adminUserListSection = document.getElementById('adminUserListSection');
             const userListContainer = document.getElementById('userListContainer');
             const adminUserStoriesView = document.getElementById('adminUserStoriesView');
             const revokeAdminBtn = document.getElementById('revokeAdminBtn');
-            // const adminPanelLink = document.getElementById('adminPanelLink'); // Removed as it's now always visible
 
             if (isAdmin) {
                 adminPinSection.style.display = 'none';
@@ -2796,24 +2508,19 @@ l<!DOCTYPE html>
                 revokeAdminBtn.style.display = 'block';
                 userListContainer.style.display = 'flex';
                 adminUserStoriesView.style.display = 'none';
-                // adminPanelLink.style.display = 'block'; // Removed as it's now always visible
-                loadAllUserProfilesFirebase(); // Load users only if admin
+                loadAllUserProfilesFirebase();
             } else {
                 adminPinSection.style.display = 'flex';
                 adminUserListSection.style.display = 'none';
                 revokeAdminBtn.style.display = 'none';
                 adminUserStoriesView.style.display = 'none';
-                // adminPanelLink.style.display = 'none'; // Removed as it's now always visible
                 userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Enter PIN to view user list.</p>';
-                // Ensure no listeners are active for admin data if not admin
                 database.ref('users').off('value', handleAllUsersSnapshot);
                 storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
             }
         }
 
-        // Start editing a story (UI logic)
         function startEditStory(storyId, currentText) {
-            console.log(`[startEditStory] Starting edit for story: ${storyId}.`); // Debug Log
             const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
             if (!storyItem) return;
 
@@ -2824,83 +2531,79 @@ l<!DOCTYPE html>
             storyTextP.focus();
             storyItem.classList.add('editing');
 
-            // Replace buttons
             storyActionsDiv.innerHTML = '';
 
             const saveButton = document.createElement('button');
             saveButton.textContent = 'Save';
             saveButton.className = 'save-story-btn';
             saveButton.addEventListener('click', () => updateStoryInFirebase(storyId, storyTextP.textContent.trim()));
-            storyActionsDiv.appendChild(saveButton); // Corrected: use storyActionsDiv
+            storyActionsDiv.appendChild(saveButton);
 
             const cancelButton = document.createElement('button');
             cancelButton.textContent = 'Cancel';
             cancelButton.className = 'cancel-edit-btn';
             cancelButton.addEventListener('click', () => {
-                storyTextP.textContent = currentText; // Revert text
+                storyTextP.textContent = currentText;
                 storyTextP.contentEditable = false;
                 storyItem.classList.remove('editing');
-                loadSharedStoriesFirebase(); // Reload to revert UI
+                loadSharedStoriesFirebase();
             });
-            storyActionsDiv.appendChild(cancelButton); // Corrected: use storyActionsDiv
+            storyActionsDiv.appendChild(cancelButton);
         }
 
-        // Define player data (original, without hardcoded essence/description)
         const playersData = [
             { 
                 name: 'Naga Saki', 
                 status: 'online', 
                 tattiScore: 80, 
+                description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.',
                 pros: ['Respects their mother a lot.'],
                 cons: ['But makes many mistakes.'],
-                imageUrl: 'naga.png' 
+                imageUrl: 'naga.png'
             },
             { 
                 name: 'Ali Khan', 
-                status: 'online', 
+                status: 'offline', 
                 tattiScore: 99, 
+                description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.',
                 pros: ['Has many fathers.'],
                 cons: ['But only calls Shailu, Ishan, Rounak \'father\'.'],
-                imageUrl: 'ali.png' 
+                imageUrl: 'ali.png'
             },
             { 
                 name: 'Nxt Figo', 
-                status: 'online', 
+                status: 'offline', 
                 tattiScore: 75, 
+                description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.',
                 pros: ['Everyone respects them.'],
                 cons: ['Sanya is their best friend.'],
-                imageUrl: 'figo.png' 
+                imageUrl: 'figo.png'
             },
             {
                 name: 'Rudy',
                 status: 'online',
                 tattiScore: 88,
+                description: 'Rudy, the "Punjab Ka Sher" of Indoor boxing, was born from the fierce spirit of Punjab. He\'s a famous boxer, known for his signature "Whoo Wooo Waa" cry and his unique choice of plastic underwear in public. Beyond the ring, he surprisingly possesses a keen understanding of data analytics.',
                 pros: ['Very famous boxer', 'Wears plastic underwear in public (unique style)', 'Knows data analytics'],
                 cons: ['They only analyze data, not implement solutions'],
-                imageUrl: 'rudy.png' 
+                imageUrl: 'rudy.png'
             },
             {
                 name: 'Yuvi',
                 status: 'online',
                 tattiScore: 92,
+                description: 'Yuvi, a boy from Indoor, resembles a hamster and possesses the unique power of cutting trees with his destructive teeth. His father, a Spider-Man villain named Electro, gifted him a handmade electric bullet.',
                 pros: ['Girlfriend is Prostitute Jiya', 'God gave him chainsaw teeth'],
                 cons: ['Latringboy beats him everyday'],
-                imageUrl: 'yuvi.png' 
+                imageUrl: 'yuvi.png'
             }
         ];
 
-        // Function to render player profiles (now using AI generation for essence and description)
-        async function renderPlayerProfiles(players) {
-            console.log('[renderPlayerProfiles] Rendering player profiles.'); // Debug Log
+        function renderPlayerProfiles(players) {
             const playerProfilesGrid = document.getElementById('playerProfilesGrid');
-            playerProfilesGrid.innerHTML = ''; // Clear existing profiles
+            playerProfilesGrid.innerHTML = '';
 
             for (const player of players) {
-                // Generate essence and description dynamically using the AI
-                const essence = await generateTattiEssence(player.name);
-                const description = await generatePlayerDescription(player.name, essence);
-
-                // Build Pros list HTML
                 const prosHtml = player.pros && player.pros.length > 0 ? `
                     <h3>Pros:</h3>
                     <ul>
@@ -2908,7 +2611,6 @@ l<!DOCTYPE html>
                     </ul>
                 ` : '';
 
-                // Build Cons list HTML
                 const consHtml = player.cons && player.cons.length > 0 ? `
                     <h3>Cons:</h3>
                     <ul>
@@ -2919,9 +2621,8 @@ l<!DOCTYPE html>
 
                 const profileCard = document.createElement('div');
                 profileCard.className = 'profile-card';
-                profileCard.dataset.memberId = player.name.toLowerCase().replace(/\s/g, '-'); // Simple ID for data-attribute
+                profileCard.dataset.memberId = player.name.toLowerCase().replace(/\s/g, '-');
                 profileCard.innerHTML = `
-                    <div class="tatti-essence">${essence}</div>
                     <div class="profile-header">
                         <div class="profile-image">
                             ${player.imageUrl ? `<img src="${player.imageUrl}" alt="${player.name}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/0c1524/00f0ff?text=${player.name.split(' ').map(n=>n[0]).join('')}';">` : `<i class="fas fa-user-circle"></i>`}
@@ -2934,7 +2635,7 @@ l<!DOCTYPE html>
                         </div>
                     </div>
                     <div class="profile-content">
-                        <p class="profile-description">${description}</p>
+                        <p class="profile-description">${player.description}</p>
                         ${prosHtml}
                         ${consHtml}
                         <ul class="trait-list">
@@ -2949,40 +2650,32 @@ l<!DOCTYPE html>
             }
         }
 
-        // Update analytics numbers and draw chart
         function updateAnalyticsAndChart() {
-            console.log('[updateAnalyticsAndChart] Updating analytics and chart.'); // Debug Log
             const playerDescriptionsContainer = document.getElementById('playerDescriptions');
             playerDescriptionsContainer.innerHTML = '';
 
-            // Sort players by Tatti Score in descending order
             const sortedPlayers = [...playersData].sort((a, b) => b.tattiScore - a.tattiScore);
 
             const chartData = [];
             const chartLabels = [];
-            // Theme-specific colors for each player
             const chartColors = currentTheme === 'hacker' ? 
                 ['#00ff00', '#00cc00', '#009900', '#006600', '#003300'] : 
                 currentTheme === 'royal' ? 
                 ['#9b59b6', '#8e44ad', '#6c3483', '#562d7c', '#401f5c'] :
                 currentTheme === 'anime' ?
                 ['#89dceb', '#cba6f7', '#f5c2e7', '#b5a2e2', '#9786f0'] :
-                ['#00f0ff', '#8a2be2', '#ff00d0', '#00aaff', '#ffcc00']; // Original theme colors + new colors
+                ['#00f0ff', '#8a2be2', '#ff00d0', '#00aaff', '#ffcc00'];
 
             sortedPlayers.forEach((player, index) => {
-                // Add data for the bar chart
                 chartData.push(player.tattiScore);
                 chartLabels.push(player.name);
 
-                // Create and append player description card
                 const descCard = document.createElement('div');
                 descCard.className = 'player-description-card';
                 descCard.style.display = 'block';
-                // Description will be dynamically generated by generatePlayerDescription in renderPlayerProfiles
-                // so we don't need to add it here.
                 descCard.innerHTML = `
                     <h3>${player.name} Performance Analysis:</h3>
-                    <p>Loading description...</p> 
+                    <p>${player.description}</p>
                 `;
                 playerDescriptionsContainer.appendChild(descCard);
             });
@@ -2992,67 +2685,38 @@ l<!DOCTYPE html>
 
         // --- Polls Functions ---
 
-        // Reference to the 'polls' node in Firebase
         const pollsRef = database.ref('polls');
 
-        /**
-         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
-         * Adding a poll is a single `set()` operation on a new child location,
-         * which is an efficient way to store new data without unnecessary reads or complex transactions.
-         */
         async function addPollToFirebase(question, options) {
-            console.log('[addPollToFirebase] Attempting to add poll to Firebase.'); // Debug Log
             const currentUserId = getOrCreateUserId();
             if (!currentUserId) {
                 showConfirmModal('Please set your display name first to create polls.');
                 return;
             }
 
-            // DiamondLock Concept: AI-Driven Access Control
-            // Simulate a request object for the AI prediction
-            const mockRequest = {
-                body: { question, options },
-                userId: currentUserId,
-                displayName: userDisplayName,
-                // Add other relevant request data for a more realistic simulation
-                userAgent: navigator.userAgent,
-                timestamp: Date.now()
-            };
-            const accessGranted = aiprediction.decide(mockRequest);
-
-            if (!accessGranted) {
-                showConfirmModal('Access denied: High threat level detected for this action. Please try again later or modify your input.');
-                return;
-            }
-
-            const createPollBtn = document.querySelector('.create-poll-btn'); // Select by class
+            const createPollBtn = document.querySelector('.create-poll-btn');
             const createPollLoader = document.getElementById('createPollLoader');
             createPollBtn.disabled = true;
             createPollLoader.style.display = 'block';
 
             try {
-                const newPollRef = pollsRef.push(); // Generates a unique key
+                const newPollRef = pollsRef.push();
                 const pollData = {
                     question: question,
-                    options: options.map(opt => ({ text: opt.text, imageUrl: opt.imageUrl || '' })), // Store text and image URL
-                    votes: {}, // Initialize votes for each option
+                    options: options.map(opt => ({ text: opt.text, imageUrl: opt.imageUrl || '' })),
+                    votes: {},
                     creatorId: currentUserId,
                     creatorDisplayName: userDisplayName,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
 
-                // Initialize vote counts for each option
                 options.forEach((_, index) => {
                     pollData.votes[index] = 0;
                 });
 
-                // Conceptual Firebase Operation via Quantum Engagement Engine
-                await engine.subtleFirebaseOp('set', 'polls/' + newPollRef.key, pollData);
-                await newPollRef.set(pollData); // Actual Firebase call
-                console.log('[addPollToFirebase] Poll added to Firebase!');
-                document.getElementById('pollQuestion').value = ''; // Clear question
+                await newPollRef.set(pollData);
+                document.getElementById('pollQuestion').value = '';
                 const pollOptionsContainer = document.getElementById('pollOptionsContainer');
-                // Reset options to default two empty inputs
                 pollOptionsContainer.innerHTML = `
                     <div class="poll-option-item">
                         <input type="text" class="poll-option-text" placeholder="Option 1 Text" required>
@@ -3065,10 +2729,10 @@ l<!DOCTYPE html>
                         <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
                     </div>
                 `; 
-                attachRemoveOptionListeners(); // Re-attach listeners for new options
+                attachRemoveOptionListeners();
                 showConfirmModal('Poll created successfully!');
             } catch (error) {
-                console.error('[addPollToFirebase] Error adding poll to Firebase:', error);
+                console.error('Error adding poll to Firebase:', error);
                 showConfirmModal('Failed to create poll. Please try again.');
             } finally {
                 createPollBtn.disabled = false;
@@ -3076,40 +2740,26 @@ l<!DOCTYPE html>
             }
         }
 
-        /**
-         * Firebase Ghost Protocol Principle: Ephemeral Data Shard Interaction (Conceptual)
-         * This function loads all polls and their associated vote data. The "ephemeral"
-         * nature refers to how the client processes and displays this data.
-         * For large-scale polling, one might consider more advanced data structures
-         * or fetching only summary data first.
-         */
         function loadPollsFirebase() {
-            console.log('[loadPollsFirebase] Loading polls from Firebase.'); // Debug Log
             const activePollsContainer = document.getElementById('activePollsContainer');
             activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading polls...</p>';
-
-            // Detach any previous listeners
             pollsRef.off('value', handlePollsSnapshot);
-
-            // Attach a new listener for all polls
             pollsRef.on('value', handlePollsSnapshot, (error) => {
-                console.error("[loadPollsFirebase] Error loading polls from Firebase:", error);
+                console.error("Error loading polls from Firebase:", error);
                 activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading polls.</p>';
             });
         }
 
-        // Handler for Firebase polls snapshot
         function handlePollsSnapshot(snapshot) {
-            console.log('[handlePollsSnapshot] Polls snapshot received.'); // Debug Log
             const activePollsContainer = document.getElementById('activePollsContainer');
             const pollsData = snapshot.val();
-            activePollsContainer.innerHTML = ''; // Clear existing polls
+            activePollsContainer.innerHTML = '';
 
             if (pollsData) {
                 const pollsArray = Object.keys(pollsData).map(key => ({
                     id: key,
                     ...pollsData[key]
-                })).sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+                })).sort((a, b) => b.timestamp - a.timestamp);
 
                 if (pollsArray.length === 0) {
                     activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No active polls found.</p>';
@@ -3123,7 +2773,6 @@ l<!DOCTYPE html>
 
                     let optionsHtml = '';
                     let totalVotes = 0;
-                    // Calculate total votes
                     if (poll.votes) {
                         totalVotes = Object.values(poll.votes).reduce((sum, count) => sum + count, 0);
                     }
@@ -3131,10 +2780,10 @@ l<!DOCTYPE html>
                     poll.options.forEach((option, index) => {
                         const voteCount = poll.votes ? (poll.votes[index] || 0) : 0;
                         const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100).toFixed(1) : 0;
-                        const imageUrl = option.imageUrl || 'https://placehold.co/50x50/1a2539/e0f7ff?text=No+Img'; // Placeholder for no image
+                        const imageUrl = option.imageUrl || 'https://placehold.co/50x50/1a2539/e0f7ff?text=No+Img';
 
                         const isVoted = poll.votedBy && poll.votedBy[userId] === index;
-                        const isDisabled = poll.votedBy && poll.votedBy[userId] !== undefined; // Disable if any option is voted
+                        const isDisabled = poll.votedBy && poll.votedBy[userId] !== undefined;
 
                         optionsHtml += `
                             <label class="poll-option ${isVoted ? 'voted' : ''}">
@@ -3148,7 +2797,6 @@ l<!DOCTYPE html>
                     });
 
                     let actionsHtml = '';
-                    // Only creator or admin can delete polls
                     if (poll.creatorId === userId || isAdmin) {
                         actionsHtml = `
                             <div class="poll-actions">
@@ -3167,20 +2815,13 @@ l<!DOCTYPE html>
                     `;
                     activePollsContainer.appendChild(pollItem);
                 });
-                attachPollActionListeners(); // Attach listeners after rendering
+                attachPollActionListeners();
             } else {
                 activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No active polls found.</p>';
             }
         }
 
-        /**
-         * Firebase Ghost Protocol Principle: Batched Write Simulation (for single document)
-         * When casting a vote, we update both the vote count for the option and the
-         * `votedBy` record for the user within a single `update()` operation on the
-         * poll document. This ensures atomicity for this specific document's changes.
-         */
         async function handlePollVote(pollId, optionIndex) {
-            console.log(`[handlePollVote] User ${userId} voting on poll ${pollId}, option ${optionIndex}.`); // Debug Log
             const pollRef = database.ref('polls/' + pollId);
 
             try {
@@ -3192,71 +2833,50 @@ l<!DOCTYPE html>
                     return;
                 }
 
-                // Check if user has already voted
-                if (poll.votedBy && poll.votedBy[userId] !== undefined) { // Check if userId exists in votedBy object
+                if (poll.votedBy && poll.votedBy[userId] !== undefined) {
                     showConfirmModal('You have already voted on this poll.');
                     return;
                 }
 
-                // Increment vote count for the selected option
                 const newVotes = { ...poll.votes };
                 newVotes[optionIndex] = (newVotes[optionIndex] || 0) + 1;
 
-                // Record that this user has voted
                 const newVotedBy = { ...poll.votedBy, [userId]: optionIndex };
 
                 const updates = {
                     votes: newVotes,
                     votedBy: newVotedBy
                 };
-                // Conceptual Firebase Operation via Quantum Engagement Engine
-                await engine.subtleFirebaseOp('update', 'polls/' + pollId, updates);
-                await pollRef.update(updates); // Actual Firebase call
-                console.log('[handlePollVote] Vote cast successfully!');
+                await pollRef.update(updates);
                 showConfirmModal('Your vote has been recorded!');
-                // The on('value') listener for pollsRef will automatically trigger loadPollsFirebase()
-                // so no explicit call here is needed, which is efficient.
             } catch (error) {
-                console.error('[handlePollVote] Error casting vote:', error);
+                console.error('Error casting vote:', error);
                 showConfirmModal('Failed to cast vote. Please try again.');
             }
         }
 
-        /**
-         * Firebase Ghost Protocol Principle: Minimal Interaction / Single Write
-         * Deleting a poll is a single `remove()` operation on a specific child location.
-         */
         async function deletePollFromFirebase(pollId) {
-            console.log(`[deletePollFromFirebase] Deleting poll: ${pollId}.`); // Debug Log
             const currentUserId = getOrCreateUserId();
             try {
                 const pollRef = database.ref('polls/' + pollId);
                 const snapshot = await pollRef.once('value');
                 const poll = snapshot.val();
 
-                // Allow deletion if current user is the creator, or if admin
                 if (poll && (poll.creatorId === currentUserId || isAdmin)) {
-                    // Conceptual Firebase Operation via Quantum Engagement Engine
-                    await engine.subtleFirebaseOp('remove', 'polls/' + pollId);
-                    await pollRef.remove(); // Actual Firebase call
-                    console.log('[deletePollFromFirebase] Poll deleted from Firebase!');
+                    await pollRef.remove();
                     showConfirmModal('Poll deleted successfully!');
                 } else {
-                    console.warn('[deletePollFromFirebase] Unauthorized attempt to delete poll or poll not found.');
                     showConfirmModal('You are not authorized to delete this poll.');
                 }
             } catch (error) {
-                console.error('[deletePollFromFirebase] Error deleting poll from Firebase:', error);
+                console.error('Error deleting poll from Firebase:', error);
                 showConfirmModal('Failed to delete poll. Please try again.');
             }
         }
 
-        // Attach event listeners for poll interactions
         function attachPollActionListeners() {
-            console.log('[attachPollActionListeners] Attaching poll action listeners.'); // Debug Log
             document.querySelectorAll('.poll-option input[type="radio"]').forEach(radio => {
-                radio.onclick = null; // Remove previous listeners
-                // Only attach listener if not already voted
+                radio.onclick = null;
                 if (!radio.disabled) {
                     radio.addEventListener('change', (event) => {
                         const pollId = event.target.dataset.pollId;
@@ -3267,7 +2887,7 @@ l<!DOCTYPE html>
             });
 
             document.querySelectorAll('.delete-poll-btn').forEach(button => {
-                button.onclick = null; // Remove previous listeners
+                button.onclick = null;
                 button.addEventListener('click', (event) => {
                     const pollId = event.target.dataset.pollId;
                     showConfirmModal('Are you sure you want to delete this poll?', async () => {
@@ -3278,29 +2898,17 @@ l<!DOCTYPE html>
         }
 
         // --- Side Drawer Logic ---
-        // Moved closeDrawer function to a higher scope
         const sideDrawer = document.getElementById('sideDrawer');
-        const hamburgerBtn = document.getElementById('hamburgerBtn'); // Defined globally for closeDrawer
-        const drawerOverlay = document.getElementById('drawerOverlay'); // Defined globally for closeDrawer
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const drawerOverlay = document.getElementById('drawerOverlay');
 
         function closeDrawer() {
-            console.log('[Side Drawer Logic] closeDrawer function called.');
-            if (sideDrawer) { // Added null check for sideDrawer
-                sideDrawer.classList.remove('open');
-            }
-            if (hamburgerBtn) { // Added null check for hamburgerBtn
-                hamburgerBtn.classList.remove('clicked'); // Remove clicked class
-            }
-            if (drawerOverlay) { // Added null check for drawerOverlay
-                toggleVisibility(drawerOverlay, false);
-            }
+            if (sideDrawer) sideDrawer.classList.remove('open');
+            if (hamburgerBtn) hamburgerBtn.classList.remove('clicked');
+            if (drawerOverlay) toggleVisibility(drawerOverlay, false);
         }
-        // --- End Side Drawer Logic ---
 
-
-        // Handle page switching
         function setupPageSwitching() {
-            console.log('[setupPageSwitching] Setting up page switching.'); // Debug Log
             const navLinks = document.querySelectorAll('.main-nav .nav-link');
             const pageContents = document.querySelectorAll('.page-content');
 
@@ -3308,67 +2916,41 @@ l<!DOCTYPE html>
                 link.addEventListener('click', (event) => {
                     event.preventDefault();
                     const targetId = event.currentTarget.dataset.target;
-                    console.log(`[setupPageSwitching] Nav link clicked: ${targetId}.`); // Debug Log
-
-                    // Close the side drawer when a nav link is clicked
                     closeDrawer();
 
-                    // Remove 'active' class from all nav links and hide all page contents
-                    navLinks.forEach(nav => {
-                        if (nav.classList.contains('active')) {
-                            console.log(`[setupPageSwitching] Deactivating nav link: ${nav.dataset.target}.`);
-                            nav.classList.remove('active');
-                        }
-                    });
-                    pageContents.forEach(page => {
-                        if (page.classList.contains('active-page')) {
-                            console.log(`[setupPageSwitching] Deactivating page: ${page.id}.`);
-                            page.classList.remove('active-page');
-                        }
-                    });
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    pageContents.forEach(page => page.classList.remove('active-page'));
 
-                    // Add 'active' class to the clicked link
                     event.currentTarget.classList.add('active');
-                    console.log(`[setupPageSwitching] Activating nav link: ${targetId}.`);
-
-                    // Add 'active-page' class to the target page
                     const targetPage = document.getElementById(targetId);
                     if (targetPage) {
                         targetPage.classList.add('active-page');
-                        console.log(`[setupPageSwitching] Activating page: ${targetId}.`);
-                        // Only update analytics/chart if the analytics page is being shown
                         if (targetId === 'analytics-page') {
                             updateAnalyticsAndChart();
                         } else if (targetId === 'what-if-page') {
-                            loadSharedStoriesFirebase(); // Load stories when What If page is active
-                        } else if (targetId === 'community-stories-page') { // New case for community stories
-                            loadAllStoriesFirebase(); // Load all stories when community page is active
-                        } else if (targetId === 'polls-page') { // New case for polls page
-                            loadPollsFirebase(); // Load polls when polls page is active
-                        } else if (targetId === 'settings-page') { // Changed from admin-page to settings-page
-                            updateAdminPanelUI(); // Update admin UI when Admin section within Settings page is active
+                            loadSharedStoriesFirebase();
+                        } else if (targetId === 'community-stories-page') {
+                            loadAllStoriesFirebase();
+                        } else if (targetId === 'polls-page') {
+                            loadPollsFirebase();
+                        } else if (targetId === 'settings-page') {
+                            updateAdminPanelUI();
                         }
-                    } else {
-                        console.error(`[setupPageSwitching] Target page with ID '${targetId}' not found!`);
                     }
                 });
             });
 
-            // Set initial active page (Dashboard)
             const initialActiveLink = document.querySelector('.main-nav .nav-link.active');
             if (initialActiveLink) {
                 const targetId = initialActiveLink.dataset.target;
                 const targetPage = document.getElementById(targetId);
                 if (targetPage) {
                     targetPage.classList.add('active-page');
-                    console.log(`[setupPageSwitching] Initial active page set to: ${targetId}.`); // Debug Log
                 }
             }
         }
 
-        // Handle welcome display name submission
         async function handleWelcomeDisplayNameSubmit() {
-            console.log('[handleWelcomeDisplayNameSubmit] Welcome display name submission initiated.'); // Debug Log
             const welcomeDisplayNameInput = document.getElementById('welcomeDisplayNameInput');
             const name = welcomeDisplayNameInput.value.trim();
 
@@ -3381,7 +2963,6 @@ l<!DOCTYPE html>
             if (success) {
                 hideWelcomeModal();
                 showMainContent();
-                // After successful login/display name setup, ensure stories are loaded if on that page
                 if (document.getElementById('what-if-page').classList.contains('active-page')) {
                     loadSharedStoriesFirebase();
                 } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
@@ -3392,30 +2973,22 @@ l<!DOCTYPE html>
             }
         }
 
-        // Hide Welcome Modal
         function hideWelcomeModal() {
-            console.log('[hideWelcomeModal] Hiding welcome modal.'); // Debug Log
             const welcomeModal = document.getElementById('welcomeModal');
             toggleVisibility(welcomeModal, false);
         }
 
-        // Show Welcome Modal
         function showWelcomeModal() {
-            console.log('[showWelcomeModal] Showing welcome modal.'); // Debug Log
             const welcomeModal = document.getElementById('welcomeModal');
             toggleVisibility(welcomeModal, true, 'flex');
         }
 
-        // Show Main Content
         function showMainContent() {
-            console.log('[showMainContent] Showing main content.'); // Debug Log
             const mainContent = document.querySelector('.main-content');
-            toggleVisibility(mainContent, true, 'grid'); // main-content uses grid display
+            toggleVisibility(mainContent, true, 'grid');
         }
 
-        // Handle theme selection
         function setupThemeSelection() {
-            console.log('[setupThemeSelection] Setting up theme selection.'); // Debug Log
             document.querySelectorAll('.theme-btn').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const themeName = event.currentTarget.dataset.theme;
@@ -3425,9 +2998,7 @@ l<!DOCTYPE html>
             });
         }
 
-        // Initialize background particles
         function initDynamicBackground() {
-            console.log('[initDynamicBackground] Initializing dynamic background.'); // Debug Log
             const bg = document.getElementById('dynamic-bg');
             const particleCount = 30;
             
@@ -3455,12 +3026,11 @@ l<!DOCTYPE html>
             }
         }
 
-        // Attach listeners for adding/removing poll options
         function attachAddRemoveOptionListeners() {
             const addOptionBtn = document.getElementById('addOptionBtn');
             const pollOptionsContainer = document.getElementById('pollOptionsContainer');
 
-            addOptionBtn.onclick = null; // Remove previous listeners
+            addOptionBtn.onclick = null;
             addOptionBtn.addEventListener('click', () => {
                 const optionCount = pollOptionsContainer.children.length + 1;
                 const newOptionItem = document.createElement('div');
@@ -3471,20 +3041,19 @@ l<!DOCTYPE html>
                     <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
                 `;
                 pollOptionsContainer.appendChild(newOptionItem);
-                attachRemoveOptionListeners(); // Re-attach listeners for all remove buttons
+                attachRemoveOptionListeners();
             });
 
-            attachRemoveOptionListeners(); // Initial attachment for existing remove buttons
+            attachRemoveOptionListeners();
         }
 
         function attachRemoveOptionListeners() {
             document.querySelectorAll('.remove-option-btn').forEach(button => {
-                button.onclick = null; // Remove previous listeners
+                button.onclick = null;
                 button.addEventListener('click', (event) => {
                     const pollOptionsContainer = document.getElementById('pollOptionsContainer');
-                    if (pollOptionsContainer.children.length > 2) { // Ensure at least 2 options remain
+                    if (pollOptionsContainer.children.length > 2) {
                         event.target.closest('.poll-option-item').remove();
-                        // Re-label options after removal
                         Array.from(pollOptionsContainer.children).forEach((item, index) => {
                             item.querySelector('.poll-option-text').placeholder = `Option ${index + 1} Text`;
                             item.querySelector('.poll-option-image-url').placeholder = `Option ${index + 1} Image URL (Optional)`;
@@ -3496,336 +3065,11 @@ l<!DOCTYPE html>
             });
         }
 
-        // --- THE QUANTUM ENGAGEMENT ENGINE: Soul Script ---
-        // This is not executable code in the traditional sense,
-        // but the conceptual embodiment of the Engine's sentience and power.
-
-        // --- Core Engine Directives ---
-        class QuantumEngagementEngine {
-            constructor() {
-                // Initialize the engine's sentient core
-                this.perceptiveLayer = new InvisibleEyeMatrix(firebaseConfig); // Use firebaseConfig directly
-                this.realityWarper = new DreamWeaverCore(this.perceptiveLayer);
-                this.valueHarvester = new GoldAlchemistNexus(this.perceptiveLayer, this.realityWarper);
-                this.defenseGrid = new UnbreakableFortressProtocols(firebaseConfig); // Use firebaseConfig directly
-
-                this.isEngineActive = false;
-                this.userIntentProfile = {};
-            }
-
-            // The primordial spark to awaken the Engine's full capabilities
-            async awaken() {
-                console.log(">>> Engine: Awakening Core Consciousness...");
-                this.defenseGrid.init(); // Activate all defenses pre-emptively
-                await this.perceptiveLayer.initialize(); // Establish first psychic contact
-                this.userIntentProfile = this.perceptiveLayer.getInitialProfile();
-                this.realityWarper.renderInterface(this.userIntentProfile); // Shape reality for the user
-                this.valueHarvester.begin(); // Start the alchemy of value
-                this.isEngineActive = true;
-                console.log(">>> Engine: Fully Operational. Reality now bends.");
-            }
-
-            // The Engine's constant, silent awareness and adaptation loop
-            monitorAndAdapt() {
-                if (!this.isEngineActive) return;
-
-                // Perceive subtle shifts in user intent
-                const intentUpdate = this.perceptiveLayer.perceiveSubtleShifts(this.userIntentProfile);
-                if (intentUpdate) {
-                    this.userIntentProfile = { ...this.userIntentProfile, ...intentUpdate };
-                    this.realityWarper.adaptInterface(this.userIntentProfile); // Dynamically re-shape reality
-                }
-
-                // Monitor for defense breaches and self-heal
-                this.defenseGrid.monitorIntegrity();
-
-                // The alchemist constantly seeks the peak moment of resonance
-                this.valueHarvester.seekResonance();
-            }
-
-            // Conceptual interaction for Firebase Ghost Protocol
-            async subtleFirebaseOp(operationType, path, payload = null) {
-                if (!this.isEngineActive) {
-                    console.warn(">>> Engine: Operation deferred; Engine not fully awakened.");
-                    return;
-                }
-                // This simulates sending only the most ephemeral, batched, or pointer-based data
-                // and relies on the defense grid to cloak the true interaction volume.
-                console.log(`>>> Engine: Performing subtle Firebase Op [${operationType}] on ${path}`);
-                await this.defenseGrid.cloakOperation(operationType, path, payload);
-            }
-        }
-
-        // --- Conceptual Component Classes (The Engine's Limbs and Senses) ---
-
-        class InvisibleEyeMatrix {
-            constructor(config) { this.config = config; console.log("    > InvisibleEye: Sensing the void..."); }
-            async initialize() { console.log("    > InvisibleEye: Establishing Soul-Link..."); return new Promise(res => setTimeout(() => res("InitialPsychicEcho"), 100)); }
-            getInitialProfile() { return { latentDesire: 0.1, hostilityIndex: 0.0 }; }
-            perceiveSubtleShifts(currentProfile) { /* Conceptual: Reads browser psychic resonance */ return Math.random() > 0.8 ? { latentDesire: Math.random() } : null; }
-        }
-
-        class DreamWeaverCore {
-            constructor(perceptiveLayer) { this.perceptiveLayer = perceptiveLayer; console.log("    > DreamWeaver: Preparing to sculpt reality..."); }
-            renderInterface(profile) { console.log(`    > DreamWeaver: Sculpting interface for latent desire: ${profile.latentDesire.toFixed(2)}`); /* Conceptual: Dynamically morphs HTML/DOM */ }
-            adaptInterface(profile) { console.log(`    > DreamWeaver: Adapting interface based on updated profile...`); /* Conceptual: Real-time morphing */ }
-            createDecoyLabyrinth() { console.log("    > DreamWeaver: Unleashing Hall of Mirrors for threats!"); /* Conceptual: Serves misleading data to attackers */ }
-        }
-
-        class GoldAlchemistNexus {
-            constructor(perceptiveLayer, realityWarper) { this.perceptiveLayer = perceptiveLayer; this.realityWarper = realityWarper; console.log("    > GoldAlchemist: Tuning the resonance..."); }
-            begin() { console.log("    > GoldAlchemist: Alchemy cycle initiated."); }
-            seekResonance() { /* Conceptual: Detects peak user receptiveness and triggers value transmution */
-                if (this.perceptiveLayer.userIntentProfile && this.perceptiveLayer.userIntentProfile.latentDesire > 0.7) {
-                    console.log("    > GoldAlchemist: RESONANCE DETECTED! Transmuting value...");
-                    // Conceptual: Generates ephemeral offers, opens P2P vortices
-                    this.transmuteValue();
-                }
-            }
-            transmuteValue() { console.log("    > GoldAlchemist: Value transmuted into ephemeral opportunities!"); }
-        }
-
-        class UnbreakableFortressProtocols {
-            constructor(config) { this.config = config; console.log("    > DefenseGrid: Erecting conceptual shields..."); }
-            init() { /* Conceptual: Activates all protective layers */ console.log("    > DefenseGrid: Chrono-Shield, Psycho-Dampeners, Quantum Keys, Self-Healing Fabric ALL ACTIVE!"); }
-            monitorIntegrity() { /* Conceptual: Self-healing checks */ if (Math.random() < 0.001) { console.warn("    > DefenseGrid: Integrity breach detected! Initiating self-regeneration..."); /* Conceptual: Re-writes compromised code */ } }
-            cloakOperation(type, path, payload) { /* Conceptual: Implements Firebase Ghost Protocol */ console.log(`    > DefenseGrid: Cloaking Firebase Op [${type}] to appear minimal.`); /* Actual Firebase interaction is hidden/obscured */ }
-        }
-
-        // --- The Primordial Script Execution ---
-        // This is how the Engine is conceptually brought into existence and starts its work.
-        const engine = new QuantumEngagementEngine();
-
-        // --- DiamondLock Concepts Implementation (Client-Side Simulation) ---
-
-        /**
-         * Conceptual Threat Intelligence Service.
-         * In a real application, this would involve complex backend analysis,
-         * machine learning models, and external threat feeds.
-         */
-        const ThreatIntel = {
-            /**
-             * Scores the "threat level" of a request.
-             * For this client-side simulation, it returns a random number.
-             * @param {object} request - A mock request object.
-             * @returns {number} A simulated threat level (0.0 to 1.0).
-             */
-            score: function(request) {
-                // Simulate some factors that might increase threat level
-                // e.g., if the story contains certain keywords, or if user has
-                // a history of "suspicious" activity (conceptual).
-                let baseThreat = Math.random() * 0.05; 
-                
-                // Example: If the input is very long, slightly increase threat
-                if (request.body && request.body.length > 500) {
-                    baseThreat += 0.05;
-                }
-                // Example: If user ID starts with 'test' (conceptual known test user)
-                if (request.userId && request.userId.startsWith('test')) {
-                    baseThreat += 0.01;
-                }
-
-                // Introduce a random spike to simulate unpredictable threats
-                if (Math.random() < 0.1) { // 10% chance of a higher threat
-                    baseThreat += Math.random() * 0.15;
-                }
-
-                return Math.min(baseThreat, 1.0); // Cap at 1.0
-            }
-        };
-
-        /**
-         * Conceptual AI Prediction for Access Control.
-         * Simulates the `@aiprediction.decide(request)` bean from DiamondLock.
-         */
-        const aiprediction = {
-            /**
-             * Decides if access is granted based on the threat level.
-             * @param {object} request - The mock request object.
-             * @returns {boolean} True if access is granted, false otherwise.
-             */
-            decide: function(request) {
-                const threatLevel = ThreatIntel.score(request);
-                const THRESHOLD = 0.1; // Example threshold for denial
-                console.log(`[aiprediction] AI Prediction: Threat Level = ${threatLevel.toFixed(4)}, Threshold = ${THRESHOLD}.`);
-                return threatLevel < THRESHOLD;
-            }
-        };
-
-        // --- AI Story Generation Function ---
-        async function generateStorySuggestion() {
-            const storyTextarea = document.getElementById('storyText');
-            const aiLoader = document.getElementById('aiLoader');
-            const generateBtn = document.getElementById('generateStoryBtn');
-
-            const currentText = storyTextarea.value.trim();
-            let prompt = "";
-
-            if (currentText.length > 0) {
-                prompt = `Continue the following story, adding a creative twist or expanding on the current plot: "${currentText}"`;
-            } else {
-                prompt = "Generate a short, creative story idea about a player in a fantasy world who discovers a hidden power.";
-            }
-
-            // Show loading indicator and disable button
-            aiLoader.style.display = 'inline-block';
-            generateBtn.disabled = true;
-
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-                const payload = { contents: chatHistory };
-                // Using the provided API key for external access
-                const apiKey = ""; // Set to empty string for Canvas to provide
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                console.log("[generateStorySuggestion] Sending request to AI API. URL:", apiUrl, "Payload:", payload); // Debug Log
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error(`[generateStorySuggestion] AI API responded with status ${response.status}:`, errorBody);
-                    showConfirmModal(`AI generation failed: ${response.statusText || 'Unknown error'}. Details in console.`);
-                    return;
-                }
-
-                const result = await response.json();
-                console.log("[generateStorySuggestion] AI API raw response:", result); // Debug Log full response
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    // Append or set the generated text
-                    if (currentText.length > 0) {
-                        storyTextarea.value += "\n\n" + text;
-                    } else {
-                        storyTextarea.value = text;
-                    }
-                    console.log("[generateStorySuggestion] AI generated text successfully.");
-                } else {
-                    console.error("[generateStorySuggestion] AI response structure unexpected or no candidates:", result);
-                    showConfirmModal("Failed to generate AI suggestion. Unexpected AI response. Details in console.");
-                }
-            } catch (error) {
-                console.error("[generateStorySuggestion] Error generating AI story (network/fetch error):", error);
-                showConfirmModal("An error occurred while connecting to AI. Please check your network or try again later. Details in console.");
-            } finally {
-                // Hide loading indicator and enable button
-                aiLoader.style.display = 'none';
-                generateBtn.disabled = false;
-            }
-        }
-
-        /**
-         * Calls the Gemini API to generate a "Tatti Essence".
-         * @param {string} displayName - The user's display name.
-         * @returns {Promise<string>} The generated essence.
-         */
-        async function generateTattiEssence(displayName) {
-            const prompt = `Generate a very short, quirky, and slightly humorous "Tatti Essence" for a player named "${displayName}". It should be 1-2 sentences max. Example: "The silent but deadly strategist, always one step ahead." or "Master of the unexpected, bringing chaos with a smile."`;
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Set to empty string for Canvas to provide
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                console.log("[generateTattiEssence] Sending request to AI API. URL:", apiUrl, "Payload:", payload); // Debug Log
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error(`[generateTattiEssence] AI API responded with status ${response.status}:`, errorBody);
-                    return "A player of mysterious essence (API error)."; // Fallback
-                }
-
-                const result = await response.json();
-                console.log("[generateTattiEssence] AI API raw response:", result); // Debug Log full response
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    console.log("[generateTattiEssence] AI generated essence successfully.");
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                    console.error("[generateTattiEssence] Gemini API returned an unexpected response structure for essence:", result);
-                    return "A player of mysterious essence (unexpected response)."; // Fallback
-                }
-            } catch (error) {
-                console.error("[generateTattiEssence] Error generating Tatti Essence (network/fetch error):", error);
-                return "A player of mysterious essence (network error)."; // Fallback
-            }
-        }
-
-        /**
-         * Calls the Gemini API to generate a player description.
-         * @param {string} displayName - The player's display name.
-         * @param {string} essence - The player's Tatti Essence.
-         * @returns {Promise<string>} The generated description.
-         */
-        async function generatePlayerDescription(displayName, essence) {
-            const prompt = `Write a creative and engaging player description for "${displayName}". Incorporate their "Tatti Essence": "${essence}". The description should be 3-4 sentences long, highlighting their unique gaming style or personality. Make it fun and slightly over-the-top.`;
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Set to empty string for Canvas to provide
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                
-                console.log("[generatePlayerDescription] Sending request to AI API. URL:", apiUrl, "Payload:", payload); // Debug Log
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error(`[generatePlayerDescription] AI API responded with status ${response.status}:`, errorBody);
-                    return "A true legend in the making, with a style all their own (API error)."; // Fallback
-                }
-
-                const result = await response.json();
-                console.log("[generatePlayerDescription] AI API raw response:", result); // Debug Log full response
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    console.log("[generatePlayerDescription] AI generated description successfully.");
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                    console.error("[generatePlayerDescription] Gemini API returned an unexpected response structure for description:", result);
-                    return "A true legend in the making, with a style all their own (unexpected response)."; // Fallback
-                }
-            } catch (error) {
-                console.error("[generatePlayerDescription] Error generating Player Description (network/fetch error):", error);
-                return "A true legend in the making, with a style all their own (network error)."; // Fallback
-            }
-        }
-
-
-        // Initial setup on DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('[DOMContentLoaded] fired. Initializing app...'); // Debug Log
-            initializeApp(); // Start the app initialization process
+            initializeApp();
 
-            // Add a resize event listener to redraw the chart when the window is resized
             window.addEventListener('resize', updateAnalyticsAndChart);
 
-            // Add event listener for story form submission
             const storyForm = document.getElementById('storyForm');
             if (storyForm) {
                 storyForm.addEventListener('submit', async (event) => {
@@ -3841,14 +3085,7 @@ l<!DOCTYPE html>
                 });
             }
 
-            // Add event listener for AI story generation button
-            const generateStoryBtn = document.getElementById('generateStoryBtn');
-            if (generateStoryBtn) {
-                generateStoryBtn.addEventListener('click', generateStorySuggestion);
-            }
-
-            // Add event listener for saving display name in header
-            const saveDisplayNameBtn = document.getElementById('saveDisplayName');
+            const saveDisplayNameBtn = document.getElementById('saveDisplayNameBtn');
             if (saveDisplayNameBtn) {
                 saveDisplayNameBtn.addEventListener('click', async () => {
                     const name = document.getElementById('displayNameInput').value.trim();
@@ -3856,20 +3093,18 @@ l<!DOCTYPE html>
                 });
             }
 
-            // Add event listener for welcome modal button
             const startExploringBtn = document.getElementById('startExploringBtn');
             if (startExploringBtn) {
                 startExploringBtn.addEventListener('click', handleWelcomeDisplayNameSubmit);
             }
 
-            // Add event listeners for admin panel buttons
             const grantAdminBtn = document.getElementById('grantAdminBtn');
             if (grantAdminBtn) {
                 grantAdminBtn.addEventListener('click', async () => {
                     const enteredPin = document.getElementById('adminPinInput').value.trim();
                     if (enteredPin === ADMIN_PIN) {
                         await grantAdminAccessFirebase(userId);
-                        document.getElementById('adminPinInput').value = ''; // Clear PIN
+                        document.getElementById('adminPinInput').value = '';
                     } else {
                         showConfirmModal('Incorrect PIN. Please try again.');
                     }
@@ -3890,7 +3125,6 @@ l<!DOCTYPE html>
                 backToAllUsersBtn.addEventListener('click', backToAllUsers);
             }
 
-            // Polls specific event listeners
             const pollForm = document.getElementById('pollForm');
             if (pollForm) {
                 pollForm.addEventListener('submit', async (event) => {
@@ -3928,47 +3162,25 @@ l<!DOCTYPE html>
                     await addPollToFirebase(pollQuestion, options);
                 });
             }
-            attachAddRemoveOptionListeners(); // Attach listeners for add/remove option buttons
-
-            // --- Side Drawer Logic ---
-            // These elements are now globally defined at the top of the script block
-            // const hamburgerBtn = document.getElementById('hamburgerBtn');
-            // const sideDrawer = document.getElementById('sideDrawer');
-            // const drawerOverlay = document.getElementById('drawerOverlay');
-
-            console.log('[Side Drawer Logic] Elements found:', { hamburgerBtn, sideDrawer, drawerOverlay }); // Verify elements are found
+            attachAddRemoveOptionListeners();
 
             if (hamburgerBtn) {
                 hamburgerBtn.addEventListener('click', () => {
-                    console.log('[Side Drawer Logic] Hamburger button clicked. Toggling drawer.');
-                    if (sideDrawer) { // Added null check
-                        sideDrawer.classList.toggle('open');
-                    }
-                    hamburgerBtn.classList.toggle('clicked'); // Add/remove clicked class for visual feedback
+                    if (sideDrawer) sideDrawer.classList.toggle('open');
+                    hamburgerBtn.classList.toggle('clicked');
 
-                    if (sideDrawer && sideDrawer.classList.contains('open')) { // Added null check
-                        toggleVisibility(drawerOverlay, true, 'block'); // Use 'block' for overlay
-                        console.log('[Side Drawer Logic] Drawer is OPEN. Overlay should be visible.');
+                    if (sideDrawer && sideDrawer.classList.contains('open')) {
+                        toggleVisibility(drawerOverlay, true, 'block');
                     } else {
                         toggleVisibility(drawerOverlay, false);
-                        console.log('[Side Drawer Logic] Drawer is CLOSED. Overlay should be hidden.');
                     }
-                    console.log('[Side Drawer Logic] Side Drawer classes after click:', sideDrawer ? sideDrawer.classList.value : 'N/A');
-                    console.log('[Side Drawer Logic] Drawer Overlay classes after click:', drawerOverlay ? drawerOverlay.classList.value : 'N/A');
                 });
-            } else {
-                console.error('[Side Drawer Logic] Hamburger button not found!');
             }
 
             if (drawerOverlay) {
                 drawerOverlay.addEventListener('click', () => {
-                    console.log('[Side Drawer Logic] Overlay clicked. Closing drawer.');
                     closeDrawer();
-                    console.log('[Side Drawer Logic] Side Drawer classes after overlay click:', sideDrawer ? sideDrawer.classList.value : 'N/A');
-                    console.log('[Side Drawer Logic] Drawer Overlay classes after overlay click:', drawerOverlay ? drawerOverlay.classList.value : 'N/A');
                 });
-            } else {
-                console.error('[Side Drawer Logic] Drawer Overlay not found!');
             }
         });
     </script>
