@@ -7,8 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js CDN for analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <style>
-        /* CSS remains the same as in the original */
+        /* Base CSS for Tatti Players (kept from previous version) */
         :root {
             --dark-bg: #0c1524;
             --darker-bg: #080e1a;
@@ -20,12 +24,407 @@
             --border-color: #2a3a54;
             --text-primary: #e0f7ff;
             --text-secondary: #a0b8c8;
-            --status-success: #00e676;
-            --status-warning: #ff9100;
+            --status-success': #00e676;
+            --status-warning': #ff9100;
             --status-danger': #ff1744;
-            --highlight-effect: rgba(0, 240, 255, 0.15);
+            --highlight-effect': rgba(0, 240, 255, 0.15);
+
+            /* New variables from Historic Evidence style */
+            --he-dark-bg: #121212;
+            --he-darker-bg: #0a0a0a;
+            --he-card-bg: #1e1e1e;
+            --he-accent: #4e54c8;
+            --he-accent-light: #6a71e6;
+            --he-text: #f5f5f5;
+            --he-text-secondary: #b0b0b0;
+            --he-success: #4ade80;
+            --he-warning: #facc15;
+            --he-error: #f87171;
         }
 
+        /* Theme-specific overrides for Historic Evidence page */
+        .audio-library-content {
+            --he-dark-bg: #0f0f15; /* From reference */
+            --he-darker-bg: #0a0a0f; /* From reference */
+            --he-card-bg: #1a1a24; /* From reference */
+            --he-accent: #6a5af9; /* From reference */
+            --he-accent-light: #8a7fff; /* From reference */
+            --he-accent-glow: rgba(106, 90, 249, 0.2); /* New */
+            --he-text: #ffffff; /* From reference */
+            --he-text-secondary: #b0b0c0; /* From reference */
+            --he-success: #4ade80; /* From reference */
+            --he-warning: #facc15; /* From reference */
+            --he-error: #ff5c7c; /* From reference */
+
+            /* Apply these new HE variables to the section itself */
+            background: var(--he-card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        /* Specific styles for Historic Evidence elements using the new HE variables */
+        .audio-library-content .section-title {
+            font-size: 2.6rem; /* From reference */
+            margin-bottom: 40px; /* From reference */
+            text-align: center;
+            position: relative;
+            padding-bottom: 20px; /* From reference */
+            font-weight: 700; /* From reference */
+            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .audio-library-content .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0; /* From reference */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px; /* From reference */
+            height: 4px; /* From reference */
+            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light));
+            border-radius: 2px;
+            box-shadow: 0 0 15px var(--he-accent-glow); /* New */
+        }
+
+        .upload-section {
+            background: var(--he-card-bg); /* Use new HE card-color */
+            border-radius: 20px; /* From reference */
+            padding: 35px; /* From reference */
+            margin-bottom: 50px; /* From reference */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* From reference */
+            border: 1px solid rgba(255, 255, 255, 0.05); /* Keep original border style */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light));
+            box-shadow: 0 0 15px var(--he-accent-glow);
+        }
+
+        .upload-section h3 {
+            font-size: 1.8rem; /* From reference */
+            margin-bottom: 25px; /* From reference */
+            display: flex;
+            align-items: center;
+            gap: 15px; /* From reference */
+            color: var(--he-accent-light); /* Use new HE accent-light */
+        }
+
+        .upload-form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px; /* From reference */
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* From reference */
+        }
+
+        .form-group label {
+            font-weight: 600; /* From reference */
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px; /* From reference */
+            color: var(--he-text); /* Use new HE text-primary */
+        }
+
+        .form-group input {
+            padding: 16px 20px; /* From reference */
+            border-radius: 14px; /* From reference */
+            border: 1px solid rgba(255, 255, 255, 0.08); /* From reference */
+            background: rgba(26, 26, 36, 0.7); /* From reference */
+            color: var(--he-text); /* Use new HE text-primary */
+            font-size: 1.1rem; /* From reference */
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* From reference */
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--he-accent); /* Use new HE accent-blue */
+            box-shadow: 0 0 0 3px var(--he-accent-glow); /* Use new HE accent-glow */
+        }
+
+        .file-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .file-input-label {
+            flex: 1;
+            padding: 16px 20px; /* From reference */
+            border-radius: 14px; /* From reference */
+            border: 1px dashed rgba(106, 90, 249, 0.4); /* From reference */
+            background: rgba(26, 26, 36, 0.4); /* From reference */
+            color: var(--he-text-secondary); /* Use new HE text-secondary */
+            font-size: 1.1rem; /* From reference */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* From reference */
+        }
+
+        .file-input-label:hover {
+            border-color: var(--he-accent); /* Use new HE accent-blue */
+            background: rgba(106, 90, 249, 0.1); /* From reference */
+        }
+
+        .file-input-label span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, var(--he-accent), var(--he-accent-light)); /* Use new HE accent-blue, accent-purple */
+            color: white;
+            padding: 18px 35px; /* From reference */
+            border: none;
+            border-radius: 14px; /* From reference */
+            font-size: 1.2rem; /* From reference */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* From reference */
+            box-shadow: 0 8px 25px var(--he-accent-glow); /* Use new HE accent-glow */
+            margin-top: 10px; /* From reference */
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-3px); /* From reference */
+            box-shadow: 0 12px 30px var(--he-accent-glow); /* From reference */
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            margin-top: 20px; /* From reference */
+        }
+
+        .progress-bar {
+            height: 8px; /* From reference */
+            background: rgba(255, 255, 255, 0.08); /* From reference */
+            border-radius: 4px; /* From reference */
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* From reference */
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light)); /* Use new HE accent-blue */
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 15px var(--he-accent-glow); /* New */
+        }
+
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); /* From reference */
+            gap: 30px; /* From reference */
+        }
+
+        .evidence-card {
+            background: var(--he-card-bg); /* Use new HE card-color */
+            border-radius: 20px; /* From reference */
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* From reference */
+            transition: all 0.4s ease; /* From reference */
+            border: 1px solid rgba(255, 255, 255, 0.05); /* Keep original border style */
+            position: relative;
+        }
+
+        .evidence-card:hover {
+            transform: translateY(-8px); /* From reference */
+            box-shadow: 0 20px 50px var(--he-accent-glow); /* Use new HE accent-glow */
+        }
+
+        .card-header {
+            padding: 25px; /* From reference */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .evidence-title {
+            font-size: 1.5rem; /* From reference */
+            font-weight: 700; /* From reference */
+            margin-bottom: 8px; /* From reference */
+            color: var(--he-text); /* Use new HE text-primary */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .evidence-meta {
+            font-size: 0.95rem; /* From reference */
+            color: var(--he-text-secondary); /* Use new HE text-secondary */
+            display: flex;
+            gap: 20px; /* From reference */
+        }
+
+        .card-body {
+            padding: 25px; /* From reference */
+            position: relative;
+        }
+
+        /* Advanced Audio Visualization */
+        .visualization-container {
+            height: 180px; /* From reference */
+            width: 100%;
+            background: rgba(15, 15, 25, 0.5); /* From reference */
+            border-radius: 15px; /* From reference */
+            margin-bottom: 25px; /* From reference */
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4); /* From reference */
+        }
+
+        .visualization-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* From reference */
+            margin-top: 20px; /* From reference */
+        }
+
+        .control-btn {
+            width: 50px; /* From reference */
+            height: 50px; /* From reference */
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1); /* From reference */
+            border: none;
+            color: var(--he-text); /* Use new HE text */
+            font-size: 20px; /* From reference */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* From reference */
+        }
+
+        .control-btn:hover {
+            background: var(--he-accent); /* Use new HE accent */
+            transform: scale(1.12); /* From reference */
+            box-shadow: 0 0 20px var(--he-accent-glow); /* From reference */
+        }
+
+        .control-btn:active {
+            transform: scale(0.95); /* From reference */
+        }
+
+        .play-btn {
+            width: 65px; /* From reference */
+            height: 65px; /* From reference */
+            font-size: 24px; /* From reference */
+            background: var(--he-accent); /* Use new HE accent */
+            box-shadow: 0 0 25px var(--he-accent-glow); /* From reference */
+        }
+
+        .progress-container {
+            margin-top: 20px; /* From reference */
+        }
+
+        .progress-bar {
+            height: 8px; /* From reference */
+            background: rgba(255, 255, 255, 0.1); /* From reference */
+            border-radius: 4px; /* From reference */
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* From reference */
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light)); /* Use new HE accent, accent-light */
+            width: 0%;
+            transition: width 0.1s linear; /* From reference */
+            box-shadow: 0 0 15px var(--he-accent-glow); /* From reference */
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem; /* From reference */
+            color: var(--he-text-secondary); /* Use new HE text-secondary */
+            margin-top: 10px; /* From reference */
+        }
+
+        .no-evidence {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px; /* From reference */
+            color: var(--he-text-secondary); /* Use new HE text-secondary */
+        }
+
+        .no-evidence i {
+            font-size: 4rem; /* From reference */
+            margin-bottom: 25px; /* From reference */
+            color: var(--he-accent); /* Use new HE accent */
+            opacity: 0.2; /* From reference */
+        }
+
+        .evidence-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .delete-evidence-btn {
+            background-color: var(--he-error);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 92, 124, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delete-evidence-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 92, 124, 0.4);
+        }
+
+
+        /* Base CSS for Tatti Players (continued) */
         * {
             margin: 0;
             padding: 0;
@@ -1113,11 +1512,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .theme-btn i {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-
         .theme-btn.active-theme {
             border: 2px solid var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.3);
@@ -1412,6 +1806,12 @@
         }
 
         /* Responsive design */
+        @media (max-width: 1200px) {
+            .evidence-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
         @media (max-width: 768px) {
             .main-nav {
                 flex-wrap: wrap;
@@ -1503,6 +1903,121 @@
                 width: 100%; /* Full width on small screens */
                 min-width: unset;
             }
+            .audio-item button {
+                width: auto; /* Buttons can size naturally */
+            }
+            .audio-controls {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Responsive for Historic Evidence elements */
+            .audio-library-content .section-title {
+                font-size: 1.8rem;
+            }
+        }
+        /* New CSS for the mini admin badge */
+        .admin-badge-mini {
+            background: rgba(78, 84, 200, 0.2);
+            color: var(--accent-light);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+        /* Style for the message when upload section is hidden */
+        .upload-restricted-message {
+            background: var(--surface-color);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .upload-restricted-message i {
+            font-size: 3rem;
+            color: var(--accent-blue);
+            opacity: 0.5;
+        }
+
+        /* New styles for editable player profiles */
+        .profile-card.editing {
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 20px var(--highlight-effect);
+        }
+
+        .profile-card .editable-field {
+            margin-bottom: 10px;
+        }
+
+        .profile-card .editable-field label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .profile-card .editable-field input[type="text"],
+        .profile-card .editable-field input[type="number"],
+        .profile-card .editable-field textarea,
+        .profile-card .editable-field select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--darker-bg);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 38px; /* Ensure consistent height for inputs */
+        }
+
+        .profile-card .editable-field textarea {
+            min-height: 80px;
+        }
+
+        .profile-card .player-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .profile-card .player-actions button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-card .player-actions .edit-player-btn {
+            background: var(--accent-blue);
+            color: var(--darker-bg);
+        }
+
+        .profile-card .player-actions .save-player-btn {
+            background: var(--status-success);
+            color: white;
+        }
+
+        .profile-card .player-actions .cancel-player-btn {
+            background: var(--text-secondary);
+            color: var(--darker-bg);
+        }
+
+        .profile-card .player-actions button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -1533,6 +2048,7 @@
             <a href="#" class="nav-link" data-target="what-if-page"><i class="fas fa-question-circle"></i> What If</a>
             <a href="#" class="nav-link" data-target="community-stories-page"><i class="fas fa-users"></i> Community Stories</a>
             <a href="#" class="nav-link" data-target="polls-page"><i class="fas fa-poll"></i> Polls</a>
+            <a href="#" class="nav-link" data-target="audio-library-page"><i class="fas fa-archive"></i> Historic Evidence</a>
             <a href="#" class="nav-link" data-target="settings-page"><i class="fas fa-cog"></i> Settings</a>
         </nav>
     </div>
@@ -1648,6 +2164,59 @@
             </div>
         </div>
 
+        <!-- Audio Library Page Content (now Historic Evidence) -->
+        <div id="audio-library-page" class="dashboard page-content">
+            <div class="audio-library-content">
+                <h2 class="section-title">Historic Evidence Repository</h2>
+                
+                <!-- Upload section -->
+                <div class="upload-section" id="uploadSection">
+                    <h3><i class="fas fa-cloud-upload-alt"></i> Upload New Evidence</h3>
+                    <form class="upload-form" id="uploadForm">
+                        <div class="form-group">
+                            <label for="evidenceTitle"><i class="fas fa-heading"></i> Evidence Title</label>
+                            <input type="text" id="evidenceTitle" placeholder="Enter evidence title" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="audioFile"><i class="fas fa-file-audio"></i> Audio File</label>
+                            <div class="file-input-container">
+                                <input type="file" id="audioFile" accept="audio/*" required style="display: none;">
+                                <label for="audioFile" class="file-input-label">
+                                    <span id="fileName">Select audio file</span>
+                                    <i class="fas fa-folder-open"></i>
+                                </label>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress" id="uploadProgress"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="upload-btn" id="uploadBtn">
+                            <i class="fas fa-upload"></i> Upload Evidence
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Message for non-admins -->
+                <div class="upload-restricted-message" id="uploadRestrictedMessage" style="display: none;">
+                    <i class="fas fa-lock"></i>
+                    <p>Only administrators can upload new evidence.</p>
+                </div>
+                
+                <!-- Evidence grid -->
+                <div class="evidence-grid" id="evidenceGrid">
+                    <div class="no-evidence" id="noEvidenceMessage">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No Evidence Found</h3>
+                        <p>Upload new evidence to begin preservation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Settings Page Content -->
         <div id="settings-page" class="dashboard page-content">
             <div class="analytics-content">
@@ -1731,10 +2300,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
         console.log("JavaScript script tag started."); // Debug Log
 
@@ -1752,6 +2317,7 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database(); // Get a reference to the database service
+        const storage = firebase.storage(); // Get a reference to the storage service
         console.log("Firebase initialized."); // Debug Log
 
         // Global variables
@@ -1759,12 +2325,13 @@
         let userDisplayName = ""; 
         let isAdmin = false; 
         let currentTheme = 'original'; 
+        let currentAudioPlayer = null; // To manage currently playing audio
 
         // Local storage key for initial userId
         const USER_ID_LOCAL_KEY = 'tatti_userId';
         
         // Define admin PIN
-        const ADMIN_PIN = "859534"; 
+        const ADMIN_PIN = "6789"; // Changed from "859534" to "6789"
 
         // Theme configurations
         const themes = {
@@ -2037,24 +2604,27 @@
             }
         }
 
+        // Global map to store admin status of all users
+        let allUsersAdminStatus = {};
+
         async function loadUserProfileFirebase() {
-            const currentUserId = getOrCreateUserId();
-            if (!currentUserId) {
+            userId = getOrCreateUserId();
+            if (!userId) {
                 showWelcomeModal();
                 return;
             }
 
             try {
-                const snapshot = await database.ref('users/' + currentUserId + '/profile').once('value');
-                const profile = snapshot.val();
+                const userProfileSnapshot = await database.ref('users/' + userId + '/profile').once('value');
+                const profile = userProfileSnapshot.val();
                 
                 if (profile) {
-                    userDisplayName = profile.displayName || currentUserId;
-                    isAdmin = profile.isAdmin || false;
+                    userDisplayName = profile.displayName || userId;
+                    isAdmin = profile.isAdmin || false; // This line sets isAdmin
                     currentTheme = profile.theme || 'original';
                 } else {
-                    userDisplayName = currentUserId;
-                    isAdmin = false;
+                    userDisplayName = userId;
+                    isAdmin = false; // This line sets isAdmin if no profile exists
                     currentTheme = 'original';
                     showWelcomeModal();
                 }
@@ -2063,9 +2633,21 @@
                 document.getElementById('displayNameInput').value = userDisplayName;
                 applyTheme(currentTheme);
                 showMainContent();
-                
+
+                // Fetch all user profiles to determine admin status for filtering evidence
+                const allUsersSnapshot = await database.ref('users').once('value');
+                const allUsersData = allUsersSnapshot.val();
+                if (allUsersData) {
+                    for (const uid in allUsersData) {
+                        if (allUsersData[uid].profile) {
+                            allUsersAdminStatus[uid] = allUsersData[uid].profile.isAdmin || false;
+                        }
+                    }
+                }
+                console.log("All users admin status loaded:", allUsersAdminStatus);
+
             } catch (error) {
-                console.error('Error loading user profile from Firebase:', error);
+                console.error('Error loading user profile or all users from Firebase:', error);
                 document.getElementById('displayUserId').textContent = 'Error loading profile';
                 showWelcomeModal();
             }
@@ -2079,6 +2661,8 @@
                 };
                 await database.ref('users/' + userIdToGrant + '/profile').update(updates);
                 isAdmin = true;
+                // Update the global admin status map immediately
+                allUsersAdminStatus[userIdToGrant] = true; 
                 updateAdminPanelUI();
                 showConfirmModal('Admin access granted successfully!');
             } catch (error) {
@@ -2095,6 +2679,8 @@
                 };
                 await database.ref('users/' + userIdToRevoke + '/profile').update(updates);
                 isAdmin = false;
+                // Update the global admin status map immediately
+                allUsersAdminStatus[userIdToRevoke] = false;
                 updateAdminPanelUI();
                 showConfirmModal('Admin access revoked.');
             } catch (error) {
@@ -2488,11 +3074,11 @@
 
         async function initializeApp() {
             userId = getOrCreateUserId();
-            await loadUserProfileFirebase();
+            await loadUserProfileFirebase(); // This now fetches all user admin statuses
             initDynamicBackground();
             setupPageSwitching();
             setupThemeSelection();
-            renderPlayerProfiles(playersData);
+            renderPlayerProfiles(playersData); // Initial render
             updateAnalyticsAndChart();
         }
 
@@ -2552,6 +3138,8 @@
             storyActionsDiv.appendChild(cancelButton);
         }
 
+        // Static Player Data - NOTE: Changes made via admin edit will NOT persist across sessions
+        // For persistent changes, this data would need to be moved to Firebase Realtime Database.
         const playersData = [
             { 
                 name: 'Naga Saki', 
@@ -2560,7 +3148,12 @@
                 description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.',
                 pros: ['Respects their mother a lot.'],
                 cons: ['But makes many mistakes.'],
-                imageUrl: 'naga.png'
+                imageUrl: 'naga.png',
+                historicalEvidence: [ // Keeping this data structure, though not used on the new audio page
+                    { year: '2022', event: 'Discovered to have a unique ability to blend into shadows during night matches.' },
+                    { year: '2023', event: 'Led the team to an unexpected victory in the "Midnight Gauntlet" tournament.' },
+                    { year: '2024', event: 'Controversy arose after a "dark matter" incident, but no official charges were filed.' }
+                ]
             },
             { 
                 name: 'Ali Khan', 
@@ -2569,7 +3162,12 @@
                 description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.',
                 pros: ['Has many fathers.'],
                 cons: ['But only calls Shailu, Ishan, Rounak \'father\'.'],
-                imageUrl: 'ali.png'
+                imageUrl: 'ali.png',
+                historicalEvidence: [
+                    { year: '2021', event: 'First appeared on the scene, quickly dominating local indoor circuits.' },
+                    { year: '2022', event: 'Achieved the highest "Tatti Score" ever recorded in a single season.' },
+                    { year: '2023', event: 'Rumored to have multiple mentors, leading to the "many fathers" nickname.' }
+                ]
             },
             { 
                 name: 'Nxt Figo', 
@@ -2578,7 +3176,12 @@
                 description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.',
                 pros: ['Everyone respects them.'],
                 cons: ['Sanya is their best friend.'],
-                imageUrl: 'figo.png'
+                imageUrl: 'figo.png',
+                historicalEvidence: [
+                    { year: '2020', event: 'Founded the "Nxt" group, aiming to revolutionize player training.' },
+                    { year: '2021', event: 'Introduced controversial "happiness protocols" within the group, sparking debate.' },
+                    { year: '2022', event: 'Successfully led "Nxt" to become a prominent force in the player community.' }
+                ]
             },
             {
                 name: 'Rudy',
@@ -2587,7 +3190,12 @@
                 description: 'Rudy, the "Punjab Ka Sher" of Indoor boxing, was born from the fierce spirit of Punjab. He\'s a famous boxer, known for his signature "Whoo Wooo Waa" cry and his unique choice of plastic underwear in public. Beyond the ring, he surprisingly possesses a keen understanding of data analytics,he is a model.',
                 pros: ['Very famous boxer', 'Wears plastic underwear in public (unique style)', 'Knows data analytics'],
                 cons: ['They only analyze data, not implement solutions'],
-                imageUrl: 'rudy.png'
+                imageUrl: 'rudy.png',
+                historicalEvidence: [
+                    { year: '2019', event: 'Rose to fame in the underground indoor boxing scene with his signature cry.' },
+                    { year: '2020', event: 'Began incorporating data analytics into his training, leading to unexpected victories.' },
+                    { year: '2022', event: 'Became a fashion icon after his plastic underwear choice went viral.' }
+                ]
             },
             {
                 name: 'Yuvi',
@@ -2596,7 +3204,12 @@
                 description: 'Yuvi, a boy from Indoor, resembles a hamster and possesses the unique power of cutting trees with his destructive teeth. His father, a Spider-Man villain named Electro, gifted him a handmade electric bullet.',
                 pros: ['Girlfriend is Prostitute Jiya', 'God gave him chainsaw teeth'],
                 cons: ['Latringboy beats him everyday,he carry a football ,Owner of bullet but rides chetak '],
-                 imageUrl: 'yuvi.png'
+                 imageUrl: 'yuvi.png',
+                historicalEvidence: [
+                    { year: '2018', event: 'First documented instance of "chainsaw teeth" ability during a local deforestation project.' },
+                    { year: '2019', event: 'Received the "electric bullet" from his alleged father, Electro.' },
+                    { year: '2021', event: 'Controversies surrounding his relationship with "Prostitute Jiya" made headlines.' }
+                ]
             },
             {
                 name: 'Francture',
@@ -2605,10 +3218,20 @@
                 description: 'Francture is a mythical creature from Japan named Kappa. He came to India to crack JEE and is a born chef. At night, he owns a sweet shop named "Francture ke Rasgulla". He wants to become an esport player but became an escort girl.',
                 pros: ['Looks like Kappa', 'Has a record of making 50 samosas naked'],
                 cons: ['His best friend is Ashiq', 'Has an iPhone but not a single bed'],
-                imageUrl: 'franky.png' // Placeholder image for Francture
+                imageUrl: 'franky.png', // Placeholder image for Francture
+                historicalEvidence: [
+                    { year: '2017', event: 'Migrated from Japan to India with the ambitious goal of cracking the JEE exam.' },
+                    { year: '2018', event: 'Opened "Francture ke Rasgulla" sweet shop, becoming a local culinary sensation.' },
+                    { year: '2020', event: 'The infamous "50 naked samosas" challenge was completed, cementing his legend.' }
+                ]
             }
         ];
 
+        /**
+         * Renders player profiles into the grid.
+         * Includes "Edit" button for admins.
+         * @param {Array<Object>} players The array of player data.
+         */
         function renderPlayerProfiles(players) {
             const playerProfilesGrid = document.getElementById('playerProfilesGrid');
             playerProfilesGrid.innerHTML = '';
@@ -2616,17 +3239,17 @@
             for (const player of players) {
                 const prosHtml = player.pros && player.pros.length > 0 ? `
                     <h3>Pros:</h3>
-                    <ul>
+                    <ul class="trait-list-pros">
                         ${player.pros.map(pro => `<li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> ${pro}</li>`).join('')}
                     </ul>
-                ` : '';
+                ` : '<ul class="trait-list-pros"></ul>'; // Keep empty ul for consistency
 
                 const consHtml = player.cons && player.cons.length > 0 ? `
                     <h3>Cons:</h3>
-                    <ul>
+                    <ul class="trait-list-cons">
                         ${player.cons.map(con => `<li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> ${con}</li>`).join('')}
                     </ul>
-                ` : '';
+                ` : '<ul class="trait-list-cons"></ul>'; // Keep empty ul for consistency
 
 
                 const profileCard = document.createElement('div');
@@ -2638,27 +3261,175 @@
                             ${player.imageUrl ? `<img src="${player.imageUrl}" alt="${player.name}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/0c1524/00f0ff?text=${player.name.split(' ').map(n=>n[0]).join('')}';">` : `<i class="fas fa-user-circle"></i>`}
                         </div>
                         <div class="profile-info">
-                            <h2>${player.name} <span class="profile-status status-${player.status}">${player.status.charAt(0).toUpperCase() + player.status.slice(1)}</span></h2>
+                            <h2><span class="player-name-display">${player.name}</span> <span class="profile-status status-${player.status}"><span class="player-status-display">${player.status.charAt(0).toUpperCase() + player.status.slice(1)}</span></span></h2>
                             <div class="profile-meta">
                                 <div><i class="fas fa-id-card"></i> Player ID: ${player.name.toLowerCase().replace(/\s/g, '-')}</div>
                             </div>
                         </div>
                     </div>
                     <div class="profile-content">
-                        <p class="profile-description">${player.description}</p>
+                        <p class="profile-description-display">${player.description}</p>
                         ${prosHtml}
                         ${consHtml}
                         <ul class="trait-list">
-                            <li><i class="fas fa-star"></i> <strong>Tatti Score:</strong> ${player.tattiScore}</li>
-                            <li><i class="fas fa-gamepad"></i> <strong>Favorite Game:</strong> Not set</li>
-                            <li><i class="fas fa-users"></i> <strong>Team Role:</strong> Player</li>
-                            <li><i class="fas fa-fire"></i> <strong>Play Style:</strong> Adaptive</li>
+                            <li><i class="fas fa-star"></i> <strong>Tatti Score:</strong> <span class="player-score-display">${player.tattiScore}</span></li>
+                            <li><i class="fas fa-gamepad"></i> <strong>Favorite Game:</strong> <span class="player-fav-game-display">Not set</span></li>
+                            <li><i class="fas fa-users"></i> <strong>Team Role:</strong> <span class="player-team-role-display">Player</span></li>
+                            <li><i class="fas fa-fire"></i> <strong>Play Style:</strong> <span class="player-play-style-display">Adaptive</span></li>
+                            <li><i class="fas fa-image"></i> <strong>Image URL:</strong> <span class="player-image-url-display">${player.imageUrl || 'N/A'}</span></li>
                         </ul>
+                        <div class="player-actions">
+                            ${isAdmin ? `<button class="edit-player-btn" data-player-id="${player.name.toLowerCase().replace(/\s/g, '-')}">Edit Player</button>` : ''}
+                        </div>
                     </div>
                 `;
                 playerProfilesGrid.appendChild(profileCard);
             }
+            if (isAdmin) {
+                attachPlayerEditListeners();
+            }
         }
+
+        /**
+         * Attaches event listeners for "Edit Player" buttons.
+         */
+        function attachPlayerEditListeners() {
+            document.querySelectorAll('.edit-player-btn').forEach(button => {
+                button.onclick = null; // Clear previous listeners
+                button.addEventListener('click', (event) => {
+                    const playerId = event.target.dataset.playerId;
+                    const playerCard = event.target.closest('.profile-card');
+                    startEditPlayer(playerId, playerCard);
+                });
+            });
+        }
+
+        /**
+         * Transforms a player card into an editable form.
+         * @param {string} playerId The ID of the player to edit.
+         * @param {HTMLElement} playerCard The HTML element of the player card.
+         */
+        function startEditPlayer(playerId, playerCard) {
+            const player = playersData.find(p => p.name.toLowerCase().replace(/\s/g, '-') === playerId);
+            if (!player) return;
+
+            playerCard.classList.add('editing');
+
+            // Store original values for cancel
+            playerCard.dataset.originalName = player.name;
+            playerCard.dataset.originalStatus = player.status;
+            playerCard.dataset.originalScore = player.tattiScore;
+            playerCard.dataset.originalDescription = player.description;
+            playerCard.dataset.originalPros = JSON.stringify(player.pros || []);
+            playerCard.dataset.originalCons = JSON.stringify(player.cons || []);
+            playerCard.dataset.originalImageUrl = player.imageUrl || '';
+
+            // Replace display elements with input fields
+            playerCard.querySelector('.player-name-display').innerHTML = `<input type="text" class="edit-player-name" value="${player.name}">`;
+            playerCard.querySelector('.player-status-display').innerHTML = `
+                <select class="edit-player-status">
+                    <option value="online" ${player.status === 'online' ? 'selected' : ''}>Online</option>
+                    <option value="offline" ${player.status === 'offline' ? 'selected' : ''}>Offline</option>
+                    <option value="away" ${player.status === 'away' ? 'selected' : ''}>Away</option>
+                </select>
+            `;
+            playerCard.querySelector('.player-score-display').innerHTML = `<input type="number" class="edit-player-score" value="${player.tattiScore}" min="0" max="100">`;
+            playerCard.querySelector('.profile-description-display').innerHTML = `<textarea class="edit-player-description">${player.description}</textarea>`;
+            playerCard.querySelector('.player-image-url-display').innerHTML = `<input type="text" class="edit-player-image-url" value="${player.imageUrl || ''}" placeholder="Image URL">`;
+
+            // For pros and cons, convert list items to editable textareas (simple approach)
+            const prosList = playerCard.querySelector('.trait-list-pros');
+            const consList = playerCard.querySelector('.trait-list-cons');
+
+            prosList.innerHTML = `
+                <textarea class="edit-player-pros" placeholder="Enter pros, one per line">${(player.pros || []).join('\n')}</textarea>
+            `;
+            consList.innerHTML = `
+                <textarea class="edit-player-cons" placeholder="Enter cons, one per line">${(player.cons || []).join('\n')}</textarea>
+            `;
+
+
+            // Change buttons
+            const playerActionsDiv = playerCard.querySelector('.player-actions');
+            playerActionsDiv.innerHTML = `
+                <button class="save-player-btn" data-player-id="${playerId}">Save</button>
+                <button class="cancel-player-btn" data-player-id="${playerId}">Cancel</button>
+            `;
+
+            // Attach new listeners for Save/Cancel
+            playerActionsDiv.querySelector('.save-player-btn').addEventListener('click', () => savePlayerChanges(playerId, playerCard));
+            playerActionsDiv.querySelector('.cancel-player-btn').addEventListener('click', () => cancelPlayerEdit(playerId, playerCard));
+        }
+
+        /**
+         * Saves changes made to a player profile.
+         * @param {string} playerId The ID of the player being edited.
+         * @param {HTMLElement} playerCard The HTML element of the player card.
+         */
+        function savePlayerChanges(playerId, playerCard) {
+            const playerIndex = playersData.findIndex(p => p.name.toLowerCase().replace(/\s/g, '-') === playerId);
+            if (playerIndex === -1) return;
+
+            const newName = playerCard.querySelector('.edit-player-name').value.trim();
+            const newStatus = playerCard.querySelector('.edit-player-status').value;
+            const newScore = parseInt(playerCard.querySelector('.edit-player-score').value);
+            const newDescription = playerCard.querySelector('.edit-player-description').value.trim();
+            const newPros = playerCard.querySelector('.edit-player-pros').value.split('\n').map(s => s.trim()).filter(s => s);
+            const newCons = playerCard.querySelector('.edit-player-cons').value.split('\n').map(s => s.trim()).filter(s => s);
+            const newImageUrl = playerCard.querySelector('.edit-player-image-url').value.trim();
+
+            if (!newName || isNaN(newScore) || newScore < 0 || newScore > 100) {
+                showConfirmModal('Please enter a valid player name and a Tatti Score between 0 and 100.');
+                return;
+            }
+
+            // Update the static playersData array
+            playersData[playerIndex].name = newName;
+            playersData[playerIndex].status = newStatus;
+            playersData[playerIndex].tattiScore = newScore;
+            playersData[playerIndex].description = newDescription;
+            playersData[playerIndex].pros = newPros;
+            playersData[playerIndex].cons = newCons;
+            playersData[playerIndex].imageUrl = newImageUrl;
+
+            // Re-render all player profiles to reflect changes
+            renderPlayerProfiles(playersData);
+            updateAnalyticsAndChart(); // Update chart with potentially changed scores
+            showConfirmModal('Player profile updated (session-only). For persistent changes, data needs to be in a database.');
+        }
+
+        /**
+         * Cancels editing a player profile and reverts to original values.
+         * @param {string} playerId The ID of the player being edited.
+         * @param {HTMLElement} playerCard The HTML element of the player card.
+         */
+        function cancelPlayerEdit(playerId, playerCard) {
+            // Revert to original values using dataset attributes
+            const originalName = playerCard.dataset.originalName;
+            const originalStatus = playerCard.dataset.originalStatus;
+            const originalScore = parseInt(playerCard.dataset.originalScore);
+            const originalDescription = playerCard.dataset.originalDescription;
+            const originalPros = JSON.parse(playerCard.dataset.originalPros);
+            const originalCons = JSON.parse(playerCard.dataset.originalCons);
+            const originalImageUrl = playerCard.dataset.originalImageUrl;
+
+            const playerIndex = playersData.findIndex(p => p.name.toLowerCase().replace(/\s/g, '-') === playerId);
+            if (playerIndex !== -1) {
+                playersData[playerIndex].name = originalName;
+                playersData[playerIndex].status = originalStatus;
+                playersData[playerIndex].tattiScore = originalScore;
+                playersData[playerIndex].description = originalDescription;
+                playersData[playerIndex].pros = originalPros;
+                playersData[playerIndex].cons = originalCons;
+                playersData[playerIndex].imageUrl = originalImageUrl;
+            }
+            
+            // Re-render all player profiles to revert
+            renderPlayerProfiles(playersData);
+            updateAnalyticsAndChart(); // Update chart to reflect original scores
+            showConfirmModal('Player profile edit cancelled.');
+        }
+
 
         function updateAnalyticsAndChart() {
             const playerDescriptionsContainer = document.getElementById('playerDescriptions');
@@ -2692,6 +3463,509 @@
             
             drawBarChart('playerBarChart', chartData, chartLabels, chartColors);
         }
+
+        // --- Historic Evidence Functions (formerly Audio Library) ---
+        // DOM Elements for Historic Evidence
+        const evidenceTitleInput = document.getElementById('evidenceTitle');
+        const audioFileInput = document.getElementById('audioFile');
+        const fileNameSpan = document.getElementById('fileName');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const evidenceGrid = document.getElementById('evidenceGrid');
+        // const loadingOverlay = document.getElementById('loadingOverlay'); // This element doesn't exist in the current HTML
+        // const notification = document.getElementById('notification'); // This element doesn't exist in the current HTML
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadSection = document.getElementById('uploadSection');
+        const noEvidenceMessage = document.getElementById('noEvidenceMessage');
+        const uploadRestrictedMessage = document.getElementById('uploadRestrictedMessage'); // New element
+        let selectedFile = null; // Declare selectedFile here
+
+        // Firebase References for Historic Evidence
+        const historicEvidenceRef = database.ref('historicEvidence'); // New Firebase node for historic evidence
+
+        // AudioContext and related objects
+        let audioCtx;
+        // Map to store audio elements, their contexts, and analysers by evidence ID
+        const audioPlayerInstances = new Map();
+
+        /**
+         * Renders the historic evidence from Firebase data.
+         */
+        function renderHistoricEvidence() {
+            console.log(`[renderHistoricEvidence] Function called. isAdmin: ${isAdmin}`); // Debug log for isAdmin status
+            
+            // Control visibility of upload section based on admin status
+            if (isAdmin) {
+                console.log("[renderHistoricEvidence] User is ADMIN. Showing upload section.");
+                uploadSection.style.display = 'block'; // Show for admins
+                uploadRestrictedMessage.style.display = 'none'; // Hide restricted message
+            } else {
+                console.log("[renderHistoricEvidence] User is NOT ADMIN. Hiding upload section.");
+                uploadSection.style.display = 'none'; // Hide for regular users
+                uploadRestrictedMessage.style.display = 'flex'; // Show restricted message
+            }
+
+            // Stop all currently playing audio before re-rendering
+            audioPlayerInstances.forEach(instance => {
+                if (!instance.audio.paused) {
+                    instance.audio.pause();
+                    instance.playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+            audioPlayerInstances.clear(); // Clear the map
+
+            // showLoadingOverlay(true, "Loading evidence..."); // Commented out as loadingOverlay is not in HTML
+            
+            historicEvidenceRef.on('value', (snapshot) => {
+                evidenceGrid.innerHTML = ''; // Clear existing cards
+                const evidenceData = snapshot.val();
+                let hasVisibleEvidence = false;
+
+                if (evidenceData) {
+                    const evidenceArray = Object.keys(evidenceData).map(key => ({
+                        id: key,
+                        ...evidenceData[key]
+                    })).sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+
+                    evidenceArray.forEach(evidence => {
+                        // Corrected logic:
+                        // If current user is admin, show all evidence.
+                        // If current user is NOT admin, only show evidence uploaded by the current user.
+                        if (isAdmin || (evidence.uploaderId === userId)) {
+                            const uploaderIsAdmin = allUsersAdminStatus[evidence.uploaderId] || false; // Still need this for the badge
+                            addEvidenceCard(evidence, uploaderIsAdmin); 
+                            hasVisibleEvidence = true;
+                        } else {
+                            console.log(`[renderHistoricEvidence] Hiding evidence '${evidence.title}' (ID: ${evidence.id}) from non-admin user. Uploader: ${evidence.uploaderId}, Current User: ${userId}`);
+                        }
+                    });
+                }
+
+                if (!hasVisibleEvidence) {
+                    noEvidenceMessage.style.display = 'block';
+                } else {
+                    noEvidenceMessage.style.display = 'none';
+                }
+                // showLoadingOverlay(false); // Commented out as loadingOverlay is not in HTML
+            }, (error) => {
+                console.error("Error loading evidence:", error);
+                // showNotification("Failed to load evidence.", "error"); // Commented out as notification is not in HTML
+                // showLoadingOverlay(false); // Commented out as loadingOverlay is not in HTML
+            });
+        }
+
+        /**
+         * Adds a new evidence card to the grid.
+         * @param {Object} evidence The evidence object from Firebase.
+         * @param {boolean} uploaderIsAdmin True if the uploader of this evidence is an admin.
+         */
+        function addEvidenceCard(evidence, uploaderIsAdmin) {
+            const card = document.createElement('div');
+            card.className = 'evidence-card';
+            card.dataset.id = evidence.id;
+            
+            // Format timestamp
+            const date = evidence.timestamp ? new Date(evidence.timestamp).toLocaleDateString() : 'Unknown Date';
+            const time = evidence.timestamp ? new Date(evidence.timestamp).toLocaleTimeString() : 'Unknown Time';
+
+            let deleteButtonHtml = '';
+            // Only show delete button if current user is admin OR the uploader
+            if (isAdmin || evidence.uploaderId === userId) {
+                deleteButtonHtml = `
+                    <div class="evidence-actions">
+                        <button class="delete-evidence-btn" data-id="${evidence.id}" data-file-url="${evidence.url}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+            }
+            
+            // Display "Admin" badge next to uploader's name if they are an admin
+            const uploaderDisplay = `${evidence.uploadedBy || 'Anonymous'} ${uploaderIsAdmin ? '<span class="admin-badge-mini">(Admin)</span>' : ''}`;
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <h3 class="evidence-title">${evidence.title}</h3>
+                    <div class="evidence-meta">
+                        <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                        <span><i class="fas fa-clock"></i> ${time}</span>
+                        <span><i class="fas fa-user"></i> ${uploaderDisplay}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="visualization-container">
+                        <canvas class="visualization-canvas" id="canvas-${evidence.id}"></canvas>
+                    </div>
+                    <div class="audio-controls">
+                        <button class="control-btn skip-back-btn" data-id="${evidence.id}">
+                            <i class="fas fa-step-backward"></i>
+                        </button>
+                        <button class="control-btn play-btn" id="playBtn-${evidence.id}" data-id="${evidence.id}">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="control-btn skip-forward-btn" data-id="${evidence.id}">
+                            <i class="fas fa-step-forward"></i>
+                        </button>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" data-id="${evidence.id}">
+                            <div class="progress" id="progress-${evidence.id}"></div>
+                        </div>
+                        <div class="time-info">
+                            <span class="current-time">0:00</span>
+                            <span class="duration">0:00</span>
+                        </div>
+                    </div>
+                    ${deleteButtonHtml}
+                </div>
+            `;
+            evidenceGrid.appendChild(card);
+
+            // Setup player controls for the new card
+            setupPlayerControls(evidence.id, evidence.url);
+
+            // Attach event listener for delete button
+            if (deleteButtonHtml) {
+                card.querySelector('.delete-evidence-btn').addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    const fileUrl = this.dataset.fileUrl;
+                    showConfirmModal('Are you sure you want to delete this evidence? This action cannot be undone.', async () => {
+                        await deleteEvidence(id, fileUrl);
+                    });
+                });
+            }
+        }
+
+        /**
+         * Sets up custom player controls and audio visualization for a given evidence ID.
+         * @param {string} id The ID of the evidence.
+         * @param {string} audioUrl The URL of the audio file.
+         */
+        function setupPlayerControls(id, audioUrl) {
+            const playBtn = document.getElementById(`playBtn-${id}`);
+            const skipBackBtn = playBtn.previousElementSibling;
+            const skipForwardBtn = playBtn.nextElementSibling;
+            const progressDiv = document.getElementById(`progress-${id}`);
+            const progressBar = progressDiv.parentElement;
+            const currentTimeEl = progressBar.nextElementSibling.querySelector('.current-time');
+            const durationEl = progressBar.nextElementSibling.querySelector('.duration');
+            const canvas = document.getElementById(`canvas-${id}`);
+            const ctx = canvas.getContext('2d');
+
+            // Initialize AudioContext if it hasn't been already
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const audio = new Audio(audioUrl);
+            const source = audioCtx.createMediaElementSource(audio);
+            const analyser = audioCtx.createAnalyser();
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            analyser.fftSize = 256; // Adjust for more or less detail
+            
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            // Store instance details
+            audioPlayerInstances.set(id, {
+                audio: audio,
+                analyser: analyser,
+                dataArray: dataArray,
+                canvas: canvas,
+                ctx: ctx,
+                playBtn: playBtn,
+                progressBar: progressBar,
+                progressDiv: progressDiv,
+                currentTimeEl: currentTimeEl,
+                durationEl: durationEl,
+                animationFrameId: null // To store the requestAnimationFrame ID
+            });
+
+            // Set canvas size
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            // Format time utility
+            const formatTime = (seconds) => {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            };
+
+            // Visualization function
+            const drawVisualization = (instance) => {
+                instance.animationFrameId = requestAnimationFrame(() => drawVisualization(instance));
+                
+                // If audio is paused, stop drawing
+                if (instance.audio.paused) {
+                    cancelAnimationFrame(instance.animationFrameId);
+                    instance.animationFrameId = null;
+                    return;
+                }
+
+                instance.analyser.getByteFrequencyData(instance.dataArray);
+                
+                const canvas = instance.canvas;
+                const ctx = instance.ctx;
+                const bufferLength = instance.analyser.frequencyBinCount;
+                const dataArray = instance.dataArray;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw waveform
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = `rgba(106, 90, 249, ${instance.audio.volume})`; // Use HE accent color
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = 'var(--he-accent-glow)';
+                ctx.beginPath();
+                
+                const sliceWidth = canvas.width * 1.0 / bufferLength;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * canvas.height / 2;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += sliceWidth;
+                }
+                
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+                
+                // Draw particles
+                const particleCount = 20; // Fewer particles for performance
+                for (let i = 0; i < particleCount; i++) {
+                    const index = Math.floor(Math.random() * bufferLength);
+                    const value = dataArray[index] / 255;
+                    const radius = value * 10 + 1; // Smaller max radius
+                    const xPos = Math.random() * canvas.width;
+                    const yPos = canvas.height - (Math.random() * canvas.height * value);
+                    
+                    ctx.beginPath();
+                    ctx.arc(xPos, yPos, radius, 0, 2 * Math.PI);
+                    ctx.fillStyle = `rgba(138, 127, 255, ${value * 0.5})`; // Use HE accent-light with lower opacity
+                    ctx.fill();
+                }
+            };
+
+            // Play/Pause button logic
+            playBtn.addEventListener('click', () => {
+                // Pause any currently playing audio
+                audioPlayerInstances.forEach((instance, key) => {
+                    if (key !== id && !instance.audio.paused) {
+                        instance.audio.pause();
+                        instance.playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        if (instance.animationFrameId) {
+                            cancelAnimationFrame(instance.animationFrameId);
+                            instance.animationFrameId = null;
+                        }
+                    }
+                });
+
+                if (audio.paused) {
+                    audio.play().catch(e => console.error("Audio play failed:", e));
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    drawVisualization(audioPlayerInstances.get(id));
+                } else {
+                    audio.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    if (audioPlayerInstances.get(id).animationFrameId) {
+                        cancelAnimationFrame(audioPlayerInstances.get(id).animationFrameId);
+                        audioPlayerInstances.get(id).animationFrameId = null;
+                    }
+                }
+            });
+
+            // Skip back button logic
+            skipBackBtn.addEventListener('click', () => {
+                audio.currentTime = Math.max(0, audio.currentTime - 10); // Skip back 10 seconds
+            });
+
+            // Skip forward button logic
+            skipForwardBtn.addEventListener('click', () => {
+                audio.currentTime = Math.min(audio.duration, audio.currentTime + 10); // Skip forward 10 seconds
+            });
+
+            // Update progress as audio plays
+            audio.addEventListener('timeupdate', () => {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressDiv.style.width = `${percent}%`;
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+            });
+
+            // Set audio duration when metadata is loaded
+            audio.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(audio.duration);
+            });
+
+            // Click on progress bar to seek
+            progressBar.addEventListener('click', (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const percent = clickX / rect.width;
+                audio.currentTime = percent * audio.duration;
+            });
+
+            // Reset when audio ends
+            audio.addEventListener('ended', () => {
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                progressDiv.style.width = '0%';
+                currentTimeEl.textContent = '0:00';
+                if (audioPlayerInstances.get(id).animationFrameId) {
+                    cancelAnimationFrame(audioPlayerInstances.get(id).animationFrameId);
+                    audioPlayerInstances.get(id).animationFrameId = null;
+                }
+            });
+
+            // Handle window resize for canvas
+            window.addEventListener('resize', () => {
+                const instance = audioPlayerInstances.get(id);
+                if (instance) {
+                    const container = instance.canvas.parentElement;
+                    instance.canvas.width = container.clientWidth;
+                    instance.canvas.height = container.clientHeight;
+                    // Redraw visualization if playing
+                    if (!instance.audio.paused && !instance.animationFrameId) {
+                         drawVisualization(instance);
+                    }
+                }
+            });
+        }
+
+        /**
+         * Uploads a new audio file as evidence to Firebase Storage and saves metadata to Realtime Database.
+         */
+        async function uploadEvidence() {
+            const title = evidenceTitleInput.value.trim();
+            
+            if (!title) {
+                showConfirmModal('Please enter a title for the evidence'); // Using showConfirmModal as notification is not in HTML
+                return;
+            }
+            
+            if (!selectedFile) {
+                showConfirmModal('Please select an audio file'); // Using showConfirmModal as notification is not in HTML
+                return;
+            }
+            
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            // showLoadingOverlay(true, "Uploading audio..."); // Commented out as loadingOverlay is not in HTML
+
+            try {
+                // Create a storage ref
+                const storageRef = storage.ref('historic_audio/' + userId + '/' + selectedFile.name);
+                
+                // Upload file
+                const uploadTask = storageRef.put(selectedFile);
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Observe state change events suchs as progress, pause, and resume
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        uploadProgress.style.width = `${progress}%`;
+                        // showLoadingOverlay(true, `Uploading audio: ${progress.toFixed(0)}%`); // Commented out
+                    }, 
+                    (error) => {
+                        // Handle unsuccessful uploads
+                        console.error("Upload failed:", error);
+                        showConfirmModal('Upload failed: ' + error.message); // Using showConfirmModal
+                        uploadBtn.disabled = false;
+                        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Evidence';
+                        // showLoadingOverlay(false); // Commented out
+                    }, 
+                    async () => {
+                        // Handle successful uploads on complete
+                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                        
+                        // Save evidence metadata to Realtime Database
+                        await historicEvidenceRef.push({
+                            title: title,
+                            url: downloadURL,
+                            uploadedBy: userDisplayName,
+                            uploaderId: userId,
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        });
+
+                        showConfirmModal('Evidence uploaded successfully!'); // Using showConfirmModal
+                        
+                        // Reset form
+                        uploadForm.reset();
+                        fileNameSpan.textContent = 'Select audio file';
+                        selectedFile = null;
+                        uploadProgress.style.width = '0%';
+                        
+                        uploadBtn.disabled = false;
+                        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Evidence';
+                        // showLoadingOverlay(false); // Commented out
+                    }
+                );
+            } catch (error) {
+                console.error("Error initiating upload:", error);
+                showConfirmModal('Error initiating upload: ' + error.message); // Using showConfirmModal
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Evidence';
+                // showLoadingOverlay(false); // Commented out
+            }
+        }
+
+        /**
+         * Deletes an evidence entry from Firebase Realtime Database and its corresponding file from Storage.
+         * @param {string} id The ID of the evidence to delete.
+         * @param {string} fileUrl The download URL of the file in Storage.
+         */
+        async function deleteEvidence(id, fileUrl) {
+            // showLoadingOverlay(true, "Deleting evidence..."); // Commented out
+            try {
+                // Stop and remove audio instance if it exists
+                const instance = audioPlayerInstances.get(id);
+                if (instance) {
+                    if (!instance.audio.paused) {
+                        instance.audio.pause();
+                    }
+                    if (instance.animationFrameId) {
+                        cancelAnimationFrame(instance.animationFrameId);
+                    }
+                    instance.audio.src = ''; // Clear audio source
+                    audioPlayerInstances.delete(id);
+                }
+
+                // Delete from Realtime Database
+                await historicEvidenceRef.child(id).remove();
+
+                // Delete from Firebase Storage
+                const storageRef = storage.refFromURL(fileUrl);
+                await storageRef.delete();
+
+                showConfirmModal('Evidence deleted successfully!'); // Using showConfirmModal
+            } catch (error) {
+                console.error("Error deleting evidence:", error);
+                showConfirmModal('Failed to delete evidence: ' + error.message); // Using showConfirmModal
+            } finally {
+                // showLoadingOverlay(false); // Commented out
+            }
+        }
+        
+        // Show/hide loading overlay (Placeholder as element not in HTML)
+        function showLoadingOverlay(show, message = "Loading...") {
+            console.log(`Loading Overlay: ${show ? 'Showing' : 'Hiding'} - ${message}`);
+            // Implement actual modal/overlay if needed in HTML
+        }
+
+        // Show notification (Placeholder as element not in HTML)
+        function showNotification(message, type) {
+            console.log(`Notification (${type}): ${message}`);
+            // Implement actual notification UI if needed in HTML
+        }
+
 
         // --- Polls Functions ---
 
@@ -2792,7 +4066,7 @@
                         const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100).toFixed(1) : 0;
                         const imageUrl = option.imageUrl || 'https://placehold.co/50x50/1a2539/e0f7ff?text=No+Img';
 
-                        const isVoted = poll.votedBy && poll.votedBy[userId] === index;
+                        const isVoted = poll.votedBy && poll.votedBy[userId] !== undefined && poll.votedBy[userId] === index;
                         const isDisabled = poll.votedBy && poll.votedBy[userId] !== undefined;
 
                         optionsHtml += `
@@ -2935,6 +4209,7 @@
                     const targetPage = document.getElementById(targetId);
                     if (targetPage) {
                         targetPage.classList.add('active-page');
+                        console.log(`[setupPageSwitching] Navigated to: ${targetId}`); // Debug log
                         if (targetId === 'analytics-page') {
                             updateAnalyticsAndChart();
                         } else if (targetId === 'what-if-page') {
@@ -2943,6 +4218,8 @@
                             loadAllStoriesFirebase();
                         } else if (targetId === 'polls-page') {
                             loadPollsFirebase();
+                        } else if (targetId === 'audio-library-page') { // Updated page logic
+                            renderHistoricEvidence(); // Call the new function
                         } else if (targetId === 'settings-page') {
                             updateAdminPanelUI();
                         }
@@ -2973,12 +4250,19 @@
             if (success) {
                 hideWelcomeModal();
                 showMainContent();
-                if (document.getElementById('what-if-page').classList.contains('active-page')) {
-                    loadSharedStoriesFirebase();
-                } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
-                    loadAllStoriesFirebase();
-                } else if (document.getElementById('polls-page').classList.contains('active-page')) {
-                    loadPollsFirebase();
+                // Re-load data for currently active page after welcome modal is dismissed
+                const activePageElement = document.querySelector('.page-content.active-page');
+                if (activePageElement) {
+                    const activePageId = activePageElement.id;
+                    if (activePageId === 'what-if-page') {
+                        loadSharedStoriesFirebase();
+                    } else if (activePageId === 'community-stories-page') {
+                        loadAllStoriesFirebase();
+                    } else if (activePageId === 'polls-page') {
+                        loadPollsFirebase();
+                    } else if (activePageId === 'audio-library-page') {
+                        renderHistoricEvidence(); // Call the new function
+                    }
                 }
             }
         }
@@ -3173,6 +4457,26 @@
                 });
             }
             attachAddRemoveOptionListeners();
+
+            // Event Listeners for Historic Evidence page
+            if (audioFileInput) {
+                audioFileInput.addEventListener('change', (e) => {
+                    if (e.target.files[0]) {
+                        selectedFile = e.target.files[0];
+                        fileNameSpan.textContent = selectedFile.name;
+                    } else {
+                        selectedFile = null;
+                        fileNameSpan.textContent = 'Select audio file';
+                    }
+                });
+            }
+            
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    uploadEvidence();
+                });
+            }
 
             if (hamburgerBtn) {
                 hamburgerBtn.addEventListener('click', () => {
