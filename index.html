@@ -1842,7 +1842,7 @@
                 justify-content: center;
             }
             
-            .members-grid {
+    .members-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -2019,6 +2019,35 @@
             opacity: 0.9;
             transform: translateY(-2px);
         }
+
+        /* Styles for detailed progress info */
+        .upload-progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        .file-validation-message {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .file-validation-message.error {
+            background-color: rgba(255, 23, 68, 0.15);
+            color: var(--status-danger);
+            border: 1px solid var(--status-danger);
+        }
+
+        .file-validation-message.success {
+            background-color: rgba(0, 230, 118, 0.15);
+            color: var(--status-success);
+            border: 1px solid var(--status-success);
+        }
     </style>
 </head>
 <body>
@@ -2187,15 +2216,24 @@
                                     <i class="fas fa-folder-open"></i>
                                 </label>
                             </div>
-                            <div class="progress-container">
+                            <div id="fileValidation" class="file-validation-message"></div>
+                            <div class="progress-container" style="display: none;">
                                 <div class="progress-bar">
                                     <div class="progress" id="uploadProgress"></div>
+                                </div>
+                                <div class="upload-progress-info">
+                                    <span>Progress: <span id="uploadPercentage">0%</span></span>
+                                    <span>Speed: <span id="uploadSpeed">-</span></span>
+                                    <span>ETA: <span id="uploadETA">-</span></span>
                                 </div>
                             </div>
                         </div>
                         
-                        <button type="submit" class="upload-btn" id="uploadBtn">
+                        <button type="submit" class="upload-btn" id="uploadBtn" disabled>
                             <i class="fas fa-upload"></i> Upload Evidence
+                        </button>
+                        <button type="button" id="cancelUploadBtn" class="upload-btn" style="display:none; margin-top: 10px; background-color: var(--status-danger);">
+                            <i class="fas fa-times-circle"></i> Cancel Upload
                         </button>
                     </form>
                 </div>
@@ -2304,7 +2342,9 @@
         console.log("JavaScript script tag started."); // Debug Log
 
         // --- SACRED KEYS OF ACCESS ---
-        const firebaseConfig = {
+        // Dynamically get firebaseConfig from the Canvas environment if available
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            // Fallback hardcoded config for local development/testing outside Canvas
             apiKey: "AIzaSyARthJvOkPjkj2xoA1hE1pjRbRK83N15Cg",
             authDomain: "tatti-player.firebaseapp.com",
             databaseURL: "https://tatti-player-default-rtdb.firebaseio.com",
@@ -2313,11 +2353,13 @@
             messagingSenderId: "657586845911",
             appId: "1:657586845911:web:70b7028b55854a7873d892",
         };
+        console.log("Firebase Config:", firebaseConfig); // Debug Log
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database(); // Get a reference to the database service
         const storage = firebase.storage(); // Get a reference to the storage service
+        const auth = firebase.auth(); // Get a reference to the auth service
         console.log("Firebase initialized."); // Debug Log
 
         // Global variables
@@ -2327,11 +2369,21 @@
         let currentTheme = 'original'; 
         let currentAudioPlayer = null; // To manage currently playing audio
 
-        // Local storage key for initial userId
+        // New global variables for upload
+        let uploadStartTime;
+        let lastUpdateTime;
+        let lastUploaded = 0;
+        let uploadTask; // To allow cancellation
+        const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
+        const UPLOAD_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+        const PROGRESS_UPDATE_INTERVAL = 500; // ms, for debouncing UI updates
+        let lastProgressUpdate = 0;
+
+        // Local storage key for initial userId (will be overridden by Firebase UID if authenticated)
         const USER_ID_LOCAL_KEY = 'tatti_userId';
         
         // Define admin PIN
-        const ADMIN_PIN = "6789"; // Changed from "859534" to "6789"
+        const ADMIN_PIN = "6789"; 
 
         // Theme configurations
         const themes = {
@@ -2575,7 +2627,10 @@
 
         // --- Firebase Functions ---
 
-        function getOrCreateUserId() {
+        // This function is no longer the primary source of userId.
+        // userId will now be derived from Firebase Auth's currentUser.uid.
+        // This function is kept for backward compatibility if needed, but its usage is reduced.
+        function getOrCreateLocalUserId() {
             let id = localStorage.getItem(USER_ID_LOCAL_KEY);
             if (!id) {
                 id = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
@@ -2585,17 +2640,22 @@
         }
 
         async function saveUserDisplayNameFirebase(name) {
-            const currentUserId = getOrCreateUserId();
-            if (!currentUserId) return false;
+            // Ensure userId is available from Firebase Auth before saving
+            if (!userId) {
+                console.error("Cannot save display name: userId is not set (user not authenticated).");
+                showConfirmModal('Please ensure you are authenticated before saving your display name.');
+                return false;
+            }
             try {
                 const updates = {
                     displayName: name,
                     isAdmin: isAdmin,
                     theme: currentTheme
                 };
-                await database.ref('users/' + currentUserId + '/profile').update(updates);
+                await database.ref('users/' + userId + '/profile').update(updates);
                 userDisplayName = name;
                 document.getElementById('displayUserId').textContent = userDisplayName;
+                console.log(`[saveUserDisplayNameFirebase] Display name saved for ${userId}: ${name}`);
                 return true;
             } catch (error) {
                 console.error('Error saving display name to Firebase:', error);
@@ -2608,31 +2668,46 @@
         let allUsersAdminStatus = {};
 
         async function loadUserProfileFirebase() {
-            userId = getOrCreateUserId();
+            // This function is now called AFTER Firebase Auth has set the global userId.
             if (!userId) {
-                showWelcomeModal();
+                console.warn("[loadUserProfileFirebase] userId is not set. Cannot load profile.");
+                // This case should ideally not happen if onAuthStateChanged works as expected.
+                // If it does, it means anonymous sign-in failed or is still pending.
+                document.getElementById('displayUserId').textContent = 'Error: Not Authenticated';
+                showWelcomeModal(); // Re-prompt for display name if auth failed
                 return;
             }
 
+            console.log(`[loadUserProfileFirebase] Attempting to load profile for userId: ${userId}`);
             try {
                 const userProfileSnapshot = await database.ref('users/' + userId + '/profile').once('value');
                 const profile = userProfileSnapshot.val();
                 
                 if (profile) {
                     userDisplayName = profile.displayName || userId;
-                    isAdmin = profile.isAdmin || false; // This line sets isAdmin
+                    isAdmin = profile.isAdmin || false; 
                     currentTheme = profile.theme || 'original';
+                    console.log(`[loadUserProfileFirebase] Profile loaded for ${userId}. Display Name: ${userDisplayName}, IsAdmin: ${isAdmin}, Theme: ${currentTheme}`);
                 } else {
-                    userDisplayName = userId;
-                    isAdmin = false; // This line sets isAdmin if no profile exists
+                    // Profile does not exist, create a default one and prompt for display name
+                    userDisplayName = userId; // Default to UID
+                    isAdmin = false; 
                     currentTheme = 'original';
-                    showWelcomeModal();
+                    console.log(`[loadUserProfileFirebase] No profile found for ${userId}. Creating default.`);
+                    // Save default profile to database
+                    await database.ref('users/' + userId + '/profile').set({
+                        displayName: userDisplayName,
+                        isAdmin: isAdmin,
+                        theme: currentTheme,
+                        createdAt: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    showWelcomeModal(); // Show welcome modal for new users
                 }
                 
                 document.getElementById('displayUserId').textContent = userDisplayName;
                 document.getElementById('displayNameInput').value = userDisplayName;
                 applyTheme(currentTheme);
-                showMainContent();
+                showMainContent(); // Show main content once authenticated and profile loaded
 
                 // Fetch all user profiles to determine admin status for filtering evidence
                 const allUsersSnapshot = await database.ref('users').once('value');
@@ -2649,7 +2724,8 @@
             } catch (error) {
                 console.error('Error loading user profile or all users from Firebase:', error);
                 document.getElementById('displayUserId').textContent = 'Error loading profile';
-                showWelcomeModal();
+                // If there's an error loading profile, still show welcome modal to allow user to try setting name
+                showWelcomeModal(); 
             }
         }
 
@@ -2665,6 +2741,7 @@
                 allUsersAdminStatus[userIdToGrant] = true; 
                 updateAdminPanelUI();
                 showConfirmModal('Admin access granted successfully!');
+                console.log(`[grantAdminAccessFirebase] Admin access granted to ${userIdToGrant}`);
             } catch (error) {
                 console.error('Error granting admin access:', error);
                 showConfirmModal('Failed to grant admin access. Please try again.');
@@ -2683,6 +2760,7 @@
                 allUsersAdminStatus[userIdToRevoke] = false;
                 updateAdminPanelUI();
                 showConfirmModal('Admin access revoked.');
+                console.log(`[revokeAdminAccessFirebase] Admin access revoked for ${userIdToRevoke}`);
             } catch (error) {
                 console.error('Error revoking admin access:', error);
                 showConfirmModal('Failed to revoke admin access. Please try again.');
@@ -2701,10 +2779,14 @@
         }
 
         async function saveThemeFirebase(themeName) {
-            const currentUserId = getOrCreateUserId();
-            if (!currentUserId) return;
+            // Ensure userId is available from Firebase Auth before saving
+            if (!userId) {
+                console.error("Cannot save theme: userId is not set (user not authenticated).");
+                return;
+            }
             try {
-                await database.ref('users/' + currentUserId + '/profile/theme').set(themeName);
+                await database.ref('users/' + userId + '/profile/theme').set(themeName);
+                console.log(`[saveThemeFirebase] Theme saved for ${userId}: ${themeName}`);
             } catch (error) {
                 console.error('Error saving theme to Firebase:', error);
             }
@@ -2713,16 +2795,19 @@
         const storiesRef = database.ref('stories');
 
         async function addStoryToFirebase(storyText) {
-            const currentUserId = getOrCreateUserId();
-            if (!currentUserId) {
-                showConfirmModal('Please set your display name first to share stories.');
+            if (!userId) {
+                showConfirmModal('You must be logged in to share stories.');
                 return;
+            }
+            if (!userDisplayName || userDisplayName === userId) {
+                 showConfirmModal('Please set your display name first to share stories.');
+                 return;
             }
 
             try {
                 const newStoryRef = storiesRef.push();
                 const storyData = {
-                    userId: currentUserId,
+                    userId: userId, // Use authenticated userId
                     displayName: userDisplayName,
                     text: storyText,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
@@ -2730,6 +2815,7 @@
                 await newStoryRef.set(storyData);
                 document.getElementById('storyText').value = '';
                 showConfirmModal('Story submitted successfully!');
+                console.log(`[addStoryToFirebase] Story added by ${userId}`);
             } catch (error) {
                 console.error('Error adding story to Firebase:', error);
                 showConfirmModal('Failed to add story. Please try again.');
@@ -2739,13 +2825,18 @@
         function loadSharedStoriesFirebase() {
             const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
             sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading your stories...</p>';
-            const currentUserId = getOrCreateUserId();
+            
+            if (!userId) {
+                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Please log in to view your stories.</p>';
+                return;
+            }
 
             storiesRef.off('value', handleStoriesSnapshot);
-            storiesRef.orderByChild('userId').equalTo(currentUserId).on('value', handleStoriesSnapshot, (error) => {
+            storiesRef.orderByChild('userId').equalTo(userId).on('value', handleStoriesSnapshot, (error) => {
                 console.error("Error loading stories from Firebase:", error);
                 sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
             });
+            console.log(`[loadSharedStoriesFirebase] Loading stories for userId: ${userId}`);
         }
 
         function loadAllStoriesFirebase() {
@@ -2757,6 +2848,7 @@
                 console.error("Error loading all stories from Firebase:", error);
                 allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading community stories.</p>';
             });
+            console.log("[loadAllStoriesFirebase] Loading all community stories.");
         }
 
         function handleStoriesSnapshot(snapshot) {
@@ -2823,19 +2915,23 @@
         }
 
         async function updateStoryInFirebase(storyId, newText) {
-            const currentUserId = getOrCreateUserId();
+            if (!userId) {
+                showConfirmModal('You must be logged in to edit stories.');
+                return;
+            }
             try {
                 const storyRef = database.ref('stories/' + storyId);
                 const snapshot = await storyRef.once('value');
                 const story = snapshot.val();
 
-                if (story && (story.userId === currentUserId || isAdmin)) {
+                if (story && (story.userId === userId || isAdmin)) {
                     const updates = {
                         text: newText,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     };
                     await storyRef.update(updates);
                     showConfirmModal('Story updated successfully!');
+                    console.log(`[updateStoryInFirebase] Story ${storyId} updated by ${userId}`);
                 } else {
                     showConfirmModal('You are not authorized to edit this story.');
                 }
@@ -2846,16 +2942,20 @@
         }
 
         async function deleteStoryFromFirebase(storyId) {
-            const currentUserId = getOrCreateUserId();
+            if (!userId) {
+                showConfirmModal('You must be logged in to delete stories.');
+                return;
+            }
             try {
                 const storyRef = database.ref('stories/' + storyId);
                 const snapshot = await storyRef.once('value');
                 const story = snapshot.val();
 
                 const isAdminUser = isAdmin;
-                if (story && (story.userId === currentUserId || isAdminUser)) {
+                if (story && (story.userId === userId || isAdminUser)) {
                     await storyRef.remove();
                     showConfirmModal('Story deleted successfully!');
+                    console.log(`[deleteStoryFromFirebase] Story ${storyId} deleted by ${userId}`);
                 } else {
                     showConfirmModal('You are not authorized to delete this story.');
                 }
@@ -2952,6 +3052,7 @@
                 console.error("Error loading all user profiles from Firebase:", error);
                 userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list.</p>';
             });
+            console.log("[loadAllUserProfilesFirebase] Loading all user profiles.");
         }
 
         function handleAllUsersSnapshot(snapshot) {
@@ -3016,6 +3117,7 @@
                 console.error("Error fetching specific user stories for admin:", error);
                 adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
             });
+            console.log(`[viewUserStoriesAsAdmin] Viewing stories for ${targetDisplayName} (${targetUserId})`);
         }
 
         function handleAdminSpecificUserStoriesSnapshot(snapshot, containerElement) {
@@ -3073,8 +3175,38 @@
         }
 
         async function initializeApp() {
-            userId = getOrCreateUserId();
-            await loadUserProfileFirebase(); // This now fetches all user admin statuses
+            console.log("[initializeApp] Starting app initialization.");
+            // Listen for Firebase Auth state changes
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // User is signed in.
+                    userId = user.uid;
+                    console.log(`[onAuthStateChanged] User signed in. UID: ${userId}`);
+                    await loadUserProfileFirebase(); // Load profile using the authenticated UID
+                } else {
+                    // User is signed out. Attempt to sign in.
+                    console.log("[onAuthStateChanged] User signed out. Attempting sign-in...");
+                    userId = getOrCreateLocalUserId(); // Get a local ID as a fallback/initial placeholder
+
+                    try {
+                        // Use __initial_auth_token provided by Canvas for seamless login
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            console.log("[onAuthStateChanged] Signing in with custom token...");
+                            await auth.signInWithCustomToken(__initial_auth_token);
+                        } else {
+                            // Fallback to anonymous sign-in if no custom token is available (e.g., local testing)
+                            console.log("[onAuthStateChanged] Signing in anonymously...");
+                            await auth.signInAnonymously();
+                        }
+                    } catch (error) {
+                        console.error("Firebase sign-in failed:", error);
+                        showConfirmModal('Failed to sign in. Some features may be limited.');
+                        // If sign-in fails, still try to load profile with local ID, but features might be restricted by rules
+                        await loadUserProfileFirebase(); 
+                    }
+                }
+            });
+
             initDynamicBackground();
             setupPageSwitching();
             setupThemeSelection();
@@ -3096,6 +3228,7 @@
                 userListContainer.style.display = 'flex';
                 adminUserStoriesView.style.display = 'none';
                 loadAllUserProfilesFirebase();
+                console.log("[updateAdminPanelUI] Admin UI enabled.");
             } else {
                 adminPinSection.style.display = 'flex';
                 adminUserListSection.style.display = 'none';
@@ -3104,6 +3237,7 @@
                 userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Enter PIN to view user list.</p>';
                 database.ref('users').off('value', handleAllUsersSnapshot);
                 storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
+                console.log("[updateAdminPanelUI] Admin UI disabled.");
             }
         }
 
@@ -3492,7 +3626,7 @@
          * Renders the historic evidence from Firebase data.
          */
         function renderHistoricEvidence() {
-            console.log(`[renderHistoricEvidence] Function called. isAdmin: ${isAdmin}`); // Debug log for isAdmin status
+            console.log(`[renderHistoricEvidence] Function called. isAdmin: ${isAdmin}, userId: ${userId}`); 
             
             // Control visibility of upload section based on admin status
             if (isAdmin) {
@@ -3840,130 +3974,301 @@
             });
         }
 
-        /**
-         * Uploads a new audio file as evidence to Firebase Storage and saves metadata to Realtime Database.
-         */
+        // Function to delete evidence from Firebase Realtime Database and Storage
+        async function deleteEvidence(evidenceId, fileUrl) {
+            if (!userId) {
+                showConfirmModal('You must be logged in to delete evidence.');
+                return;
+            }
+
+            try {
+                // Get the evidence data from Realtime Database to verify uploaderId
+                const evidenceSnapshot = await historicEvidenceRef.child(evidenceId).once('value');
+                const evidenceData = evidenceSnapshot.val();
+
+                if (!evidenceData) {
+                    showConfirmModal('Evidence not found.');
+                    return;
+                }
+
+                // Check if current user is the uploader or an admin
+                if (evidenceData.uploaderId === userId || isAdmin) {
+                    // 1. Delete from Firebase Storage
+                    const storageRef = storage.refFromURL(fileUrl);
+                    await storageRef.delete();
+                    console.log(`[deleteEvidence] File deleted from Storage: ${fileUrl}`);
+
+                    // 2. Delete from Firebase Realtime Database
+                    await historicEvidenceRef.child(evidenceId).remove();
+                    console.log(`[deleteEvidence] Evidence metadata deleted from Realtime Database: ${evidenceId}`);
+
+                    showConfirmModal('Evidence deleted successfully!');
+                    renderHistoricEvidence(); // Re-render the list to reflect changes
+                } else {
+                    showConfirmModal('You are not authorized to delete this evidence.');
+                }
+            } catch (error) {
+                console.error("Error deleting evidence:", error);
+                showConfirmModal('Failed to delete evidence. Please try again.');
+            }
+        }
+
+        // Replace the existing uploadEvidence function with this enhanced version
         async function uploadEvidence() {
+            if (!auth.currentUser) {
+                showConfirmModal('You must be logged in to upload evidence.');
+                return;
+            }
+
             const title = evidenceTitleInput.value.trim();
+            const validationMessage = document.getElementById('fileValidation');
+            
+            // Reset validation message
+            validationMessage.textContent = '';
+            validationMessage.className = 'file-validation-message';
             
             if (!title) {
-                showConfirmModal('Please enter a title for the evidence'); // Using showConfirmModal as notification is not in HTML
+                validationMessage.textContent = 'Please enter a title for the evidence';
+                validationMessage.classList.add('error');
+                evidenceTitleInput.focus();
                 return;
             }
             
             if (!selectedFile) {
-                showConfirmModal('Please select an audio file'); // Using showConfirmModal as notification is not in HTML
+                validationMessage.textContent = 'Please select an audio file';
+                validationMessage.classList.add('error');
                 return;
             }
             
+            // Validate file type
+            const validTypes = ['audio/mp3', 'audio/wav', 'audio/mpeg'];
+            if (!validTypes.includes(selectedFile.type)) {
+                validationMessage.textContent = 'Invalid file type. Please upload MP3 or WAV files only.';
+                validationMessage.classList.add('error');
+                return;
+            }
+            
+            // Validate file size
+            if (selectedFile.size > MAX_FILE_SIZE) {
+                validationMessage.textContent = `File too large. Maximum size is ${formatFileSize(MAX_FILE_SIZE)}.`;
+                validationMessage.classList.add('error');
+                return;
+            }
+
+            // Sanitize file name (remove invalid chars for Firebase paths)
+            const sanitizedFileName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+            
             uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-            // showLoadingOverlay(true, "Uploading audio..."); // Commented out as loadingOverlay is not in HTML
-
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            document.querySelector('.progress-container').style.display = 'block';
+            
+            // Show cancel button (assume you add <button id="cancelUploadBtn" style="display:none;">Cancel</button> in HTML)
+            const cancelBtn = document.getElementById('cancelUploadBtn');
+            if (cancelBtn) {
+                cancelBtn.style.display = 'block';
+                cancelBtn.onclick = cancelUpload;
+            }
+            
             try {
-                // Create a storage ref
-                const storageRef = storage.ref('historic_audio/' + userId + '/' + selectedFile.name);
+                // Check if file already exists
+                const storageRef = storage.ref(`historic_audio/${userId}/${sanitizedFileName}`);
+                const fileExists = await checkFileExists(storageRef);
                 
-                // Upload file
-                const uploadTask = storageRef.put(selectedFile);
-
+                if (fileExists) {
+                    const overwrite = await showConfirmModal(
+                        `A file with name "${sanitizedFileName}" already exists. Overwrite?`
+                    );
+                    if (!overwrite) {
+                        resetUploadForm();
+                        return;
+                    }
+                }
+                
+                // Start upload
+                uploadStartTime = Date.now();
+                lastUpdateTime = uploadStartTime;
+                lastUploaded = 0;
+                uploadTask = storageRef.put(selectedFile);
+                
+                // Set timeout to cancel if too slow
+                const timeoutId = setTimeout(() => {
+                    if (uploadTask && uploadTask.snapshot.state === 'running') {
+                        uploadTask.cancel();
+                        showConfirmModal('Upload timed out after 5 minutes.');
+                    }
+                }, UPLOAD_TIMEOUT);
+                
                 uploadTask.on('state_changed', 
                     (snapshot) => {
-                        // Observe state change events suchs as progress, pause, and resume
+                        const currentTime = Date.now();
+                        if (currentTime - lastProgressUpdate < PROGRESS_UPDATE_INTERVAL) return; // Debounce
+                        
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        uploadProgress.style.width = `${progress}%`;
-                        // showLoadingOverlay(true, `Uploading audio: ${progress.toFixed(0)}%`); // Commented out
+                        const deltaTime = Math.max((currentTime - lastUpdateTime) / 1000, 0.1); // Avoid divide by zero
+                        const deltaBytes = snapshot.bytesTransferred - lastUploaded;
+                        const uploadSpeed = (deltaBytes / deltaTime) / (1024 * 1024); // MB/s
+                        
+                        const eta = calculateETA(uploadSpeed, snapshot.totalBytes - snapshot.bytesTransferred);
+                        
+                        // Update UI
+                        updateProgressUI(progress, uploadSpeed, eta);
+                        
+                        lastUpdateTime = currentTime;
+                        lastUploaded = snapshot.bytesTransferred;
+                        lastProgressUpdate = currentTime;
                     }, 
                     (error) => {
-                        // Handle unsuccessful uploads
                         console.error("Upload failed:", error);
-                        showConfirmModal('Upload failed: ' + error.message); // Using showConfirmModal
-                        uploadBtn.disabled = false;
-                        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Evidence';
-                        // showLoadingOverlay(false); // Commented out
+                        let errorMessage = 'Upload failed';
+                        
+                        switch(error.code) {
+                            case 'storage/unauthorized':
+                                errorMessage = 'You don\'t have permission to upload files';
+                                break;
+                            case 'storage/canceled':
+                                errorMessage = 'Upload canceled';
+                                break;
+                            case 'storage/unknown':
+                                errorMessage = 'Unknown error occurred';
+                                break;
+                            case 'storage/quota-exceeded':
+                                errorMessage = 'Storage quota exceeded';
+                                break;
+                        }
+                        
+                        showConfirmModal(errorMessage);
+                        clearTimeout(timeoutId);
+                        resetUploadForm();
                     }, 
                     async () => {
-                        // Handle successful uploads on complete
-                        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                        
-                        // Save evidence metadata to Realtime Database
-                        await historicEvidenceRef.push({
-                            title: title,
-                            url: downloadURL,
-                            uploadedBy: userDisplayName,
-                            uploaderId: userId,
-                            timestamp: firebase.database.ServerValue.TIMESTAMP
-                        });
-
-                        showConfirmModal('Evidence uploaded successfully!'); // Using showConfirmModal
-                        
-                        // Reset form
-                        uploadForm.reset();
-                        fileNameSpan.textContent = 'Select audio file';
-                        selectedFile = null;
-                        uploadProgress.style.width = '0%';
-                        
-                        uploadBtn.disabled = false;
-                        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Evidence';
-                        // showLoadingOverlay(false); // Commented out
+                        clearTimeout(timeoutId);
+                        try {
+                            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                            
+                            // Save evidence metadata
+                            await historicEvidenceRef.push({
+                                title: title,
+                                url: downloadURL,
+                                fileName: sanitizedFileName,
+                                fileSize: selectedFile.size,
+                                fileType: selectedFile.type,
+                                uploadedBy: userDisplayName,
+                                uploaderId: userId, // Use authenticated userId
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            });
+                            
+                            showConfirmModal('Evidence uploaded successfully!');
+                            resetUploadForm();
+                            // Refresh evidence list (implement if needed)
+                            renderHistoricEvidence(); // Call renderHistoricEvidence to refresh
+                        } catch (error) {
+                            console.error("Error saving metadata:", error);
+                            showConfirmModal('Error saving evidence metadata. The file was uploaded but may not appear in the list.');
+                            resetUploadForm();
+                        }
                     }
                 );
             } catch (error) {
-                console.error("Error initiating upload:", error);
-                showConfirmModal('Error initiating upload: ' + error.message); // Using showConfirmModal
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Evidence';
-                // showLoadingOverlay(false); // Commented out
+                console.error("Upload initialization error:", error);
+                showConfirmModal('Error starting upload process');
+                resetUploadForm();
             }
         }
 
-        /**
-         * Deletes an evidence entry from Firebase Realtime Database and its corresponding file from Storage.
-         * @param {string} id The ID of the evidence to delete.
-         * @param {string} fileUrl The download URL of the file in Storage.
-         */
-        async function deleteEvidence(id, fileUrl) {
-            // showLoadingOverlay(true, "Deleting evidence..."); // Commented out
+        // Helper to cancel upload
+        function cancelUpload() {
+            if (uploadTask && uploadTask.snapshot.state === 'running') {
+                uploadTask.cancel();
+                showConfirmModal('Upload canceled by user.');
+                resetUploadForm();
+            }
+        }
+
+        // Helper to update progress UI
+        function updateProgressUI(progress, speed, eta) {
+            uploadProgress.style.width = `${progress}%`;
+            document.getElementById('uploadPercentage').textContent = `${progress.toFixed(1)}%`;
+            document.getElementById('uploadSpeed').textContent = `${speed.toFixed(2)} MB/s`;
+            document.getElementById('uploadETA').textContent = eta; // Assume you add <span id="uploadETA">-</span> in HTML
+        }
+
+        // Helper to calculate ETA
+        function calculateETA(speed, remainingBytes) {
+            if (speed <= 0) return 'Calculating...';
+            const etaSeconds = remainingBytes / (speed * 1024 * 1024);
+            if (etaSeconds < 60) return `${Math.round(etaSeconds)} seconds`;
+            return `${Math.round(etaSeconds / 60)} minutes`;
+        }
+
+        // Helper function to check if file exists (unchanged)
+        async function checkFileExists(storageRef) {
             try {
-                // Stop and remove audio instance if it exists
-                const instance = audioPlayerInstances.get(id);
-                if (instance) {
-                    if (!instance.audio.paused) {
-                        instance.audio.pause();
-                    }
-                    if (instance.animationFrameId) {
-                        cancelAnimationFrame(instance.animationFrameId);
-                    }
-                    instance.audio.src = ''; // Clear audio source
-                    audioPlayerInstances.delete(id);
-                }
-
-                // Delete from Realtime Database
-                await historicEvidenceRef.child(id).remove();
-
-                // Delete from Firebase Storage
-                const storageRef = storage.refFromURL(fileUrl);
-                await storageRef.delete();
-
-                showConfirmModal('Evidence deleted successfully!'); // Using showConfirmModal
+                await storageRef.getDownloadURL();
+                return true;
             } catch (error) {
-                console.error("Error deleting evidence:", error);
-                showConfirmModal('Failed to delete evidence: ' + error.message); // Using showConfirmModal
-            } finally {
-                // showLoadingOverlay(false); // Commented out
+                if (error.code === 'storage/object-not-found') {
+                    return false;
+                }
+                throw error;
             }
         }
-        
-        // Show/hide loading overlay (Placeholder as element not in HTML)
-        function showLoadingOverlay(show, message = "Loading...") {
-            console.log(`Loading Overlay: ${show ? 'Showing' : 'Hiding'} - ${message}`);
-            // Implement actual modal/overlay if needed in HTML
+
+        // Helper function to format file size (unchanged)
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' bytes';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
         }
 
-        // Show notification (Placeholder as element not in HTML)
-        function showNotification(message, type) {
-            console.log(`Notification (${type}): ${message}`);
-            // Implement actual notification UI if needed in HTML
+        // Reset upload form (enhanced to hide cancel button)
+        function resetUploadForm() {
+            uploadForm.reset();
+            fileNameSpan.textContent = 'Select audio file';
+            selectedFile = null;
+            uploadProgress.style.width = '0%';
+            document.getElementById('uploadPercentage').textContent = '0%';
+            document.getElementById('uploadSpeed').textContent = '-';
+            document.getElementById('uploadETA').textContent = '-'; // Reset ETA
+            document.querySelector('.progress-container').style.display = 'none';
+            
+            const cancelBtn = document.getElementById('cancelUploadBtn');
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Evidence';
+            document.getElementById('fileValidation').textContent = '';
+        }
+
+        // Update the file input change listener (enhanced with button disable logic)
+        if (audioFileInput) {
+            audioFileInput.addEventListener('change', (e) => {
+                const validationMessage = document.getElementById('fileValidation');
+                validationMessage.textContent = '';
+                validationMessage.className = 'file-validation-message';
+                
+                if (e.target.files[0]) {
+                    selectedFile = e.target.files[0];
+                    fileNameSpan.textContent = selectedFile.name;
+                    
+                    // Enable upload button only if valid
+                    uploadBtn.disabled = !(selectedFile && evidenceTitleInput.value.trim());
+                    
+                    // Show file info
+                    validationMessage.textContent = `File: ${selectedFile.name} (${formatFileSize(selectedFile.size)})`;
+                    validationMessage.classList.add('success');
+                } else {
+                    selectedFile = null;
+                    fileNameSpan.textContent = 'Select audio file';
+                    uploadBtn.disabled = true;
+                }
+            });
+        }
+
+        // Enable/disable upload button based on form validity (unchanged)
+        if (evidenceTitleInput) {
+            evidenceTitleInput.addEventListener('input', () => {
+                uploadBtn.disabled = !(selectedFile && evidenceTitleInput.value.trim());
+            });
         }
 
 
@@ -3972,10 +4277,13 @@
         const pollsRef = database.ref('polls');
 
         async function addPollToFirebase(question, options) {
-            const currentUserId = getOrCreateUserId();
-            if (!currentUserId) {
-                showConfirmModal('Please set your display name first to create polls.');
+            if (!userId) {
+                showConfirmModal('You must be logged in to create polls.');
                 return;
+            }
+            if (!userDisplayName || userDisplayName === userId) {
+                 showConfirmModal('Please set your display name first to create polls.');
+                 return;
             }
 
             const createPollBtn = document.querySelector('.create-poll-btn');
@@ -3989,7 +4297,7 @@
                     question: question,
                     options: options.map(opt => ({ text: opt.text, imageUrl: opt.imageUrl || '' })),
                     votes: {},
-                    creatorId: currentUserId,
+                    creatorId: userId, // Use authenticated userId
                     creatorDisplayName: userDisplayName,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
@@ -4015,6 +4323,7 @@
                 `; 
                 attachRemoveOptionListeners();
                 showConfirmModal('Poll created successfully!');
+                console.log(`[addPollToFirebase] Poll created by ${userId}`);
             } catch (error) {
                 console.error('Error adding poll to Firebase:', error);
                 showConfirmModal('Failed to create poll. Please try again.');
@@ -4032,6 +4341,7 @@
                 console.error("Error loading polls from Firebase:", error);
                 activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading polls.</p>';
             });
+            console.log("[loadPollsFirebase] Loading all polls.");
         }
 
         function handlePollsSnapshot(snapshot) {
@@ -4106,6 +4416,11 @@
         }
 
         async function handlePollVote(pollId, optionIndex) {
+            if (!userId) {
+                showConfirmModal('You must be logged in to vote on polls.');
+                return;
+            }
+
             const pollRef = database.ref('polls/' + pollId);
 
             try {
@@ -4133,6 +4448,7 @@
                 };
                 await pollRef.update(updates);
                 showConfirmModal('Your vote has been recorded!');
+                console.log(`[handlePollVote] User ${userId} voted on poll ${pollId}, option ${optionIndex}`);
             } catch (error) {
                 console.error('Error casting vote:', error);
                 showConfirmModal('Failed to cast vote. Please try again.');
@@ -4140,15 +4456,19 @@
         }
 
         async function deletePollFromFirebase(pollId) {
-            const currentUserId = getOrCreateUserId();
+            if (!userId) {
+                showConfirmModal('You must be logged in to delete polls.');
+                return;
+            }
             try {
                 const pollRef = database.ref('polls/' + pollId);
                 const snapshot = await pollRef.once('value');
                 const poll = snapshot.val();
 
-                if (poll && (poll.creatorId === currentUserId || isAdmin)) {
+                if (poll && (poll.creatorId === userId || isAdmin)) {
                     await pollRef.remove();
                     showConfirmModal('Poll deleted successfully!');
+                    console.log(`[deletePollFromFirebase] Poll ${pollId} deleted by ${userId}`);
                 } else {
                     showConfirmModal('You are not authorized to delete this poll.');
                 }
@@ -4218,8 +4538,8 @@
                             loadAllStoriesFirebase();
                         } else if (targetId === 'polls-page') {
                             loadPollsFirebase();
-                        } else if (targetId === 'audio-library-page') { // Updated page logic
-                            renderHistoricEvidence(); // Call the new function
+                        } else if (targetId === 'audio-library-page') { 
+                            renderHistoricEvidence(); 
                         } else if (targetId === 'settings-page') {
                             updateAdminPanelUI();
                         }
@@ -4245,6 +4565,10 @@
                 showConfirmModal('Please enter a display name to start exploring.');
                 return;
             }
+            if (!userId) {
+                showConfirmModal('Authentication not ready. Please try again in a moment or refresh the page.');
+                return;
+            }
 
             const success = await saveUserDisplayNameFirebase(name);
             if (success) {
@@ -4261,7 +4585,7 @@
                     } else if (activePageId === 'polls-page') {
                         loadPollsFirebase();
                     } else if (activePageId === 'audio-library-page') {
-                        renderHistoricEvidence(); // Call the new function
+                        renderHistoricEvidence(); 
                     }
                 }
             }
@@ -4461,12 +4785,24 @@
             // Event Listeners for Historic Evidence page
             if (audioFileInput) {
                 audioFileInput.addEventListener('change', (e) => {
+                    const validationMessage = document.getElementById('fileValidation');
+                    validationMessage.textContent = '';
+                    validationMessage.className = 'file-validation-message';
+                    
                     if (e.target.files[0]) {
                         selectedFile = e.target.files[0];
                         fileNameSpan.textContent = selectedFile.name;
+                        
+                        // Enable upload button only if valid
+                        uploadBtn.disabled = !(selectedFile && evidenceTitleInput.value.trim());
+                        
+                        // Show file info
+                        validationMessage.textContent = `File: ${selectedFile.name} (${formatFileSize(selectedFile.size)})`;
+                        validationMessage.classList.add('success');
                     } else {
                         selectedFile = null;
                         fileNameSpan.textContent = 'Select audio file';
+                        uploadBtn.disabled = true;
                     }
                 });
             }
