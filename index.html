@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tatti Players - Profiles (Firebase)</title>
+    <title>Tatti Players - Profiles</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js CDN for analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <style>
-        /* Base CSS for Tatti Players (kept from previous version) */
+        /* Base CSS for Tatti Players */
         :root {
             --dark-bg: #0c1524;
             --darker-bg: #080e1a;
@@ -24,412 +20,54 @@
             --border-color: #2a3a54;
             --text-primary: #e0f7ff;
             --text-secondary: #a0b8c8;
-            --status-success': #00e676;
-            --status-warning': #ff9100;
-            --status-danger': #ff1744;
-            --highlight-effect': rgba(0, 240, 255, 0.15);
-
-            /* New variables from Historic Evidence style */
-            --he-dark-bg: #121212;
-            --he-darker-bg: #0a0a0a;
-            --he-card-bg: #1e1e1e;
-            --he-accent: #4e54c8;
-            --he-accent-light: #6a71e6;
-            --he-text: #f5f5f5;
-            --he-text-secondary: #b0b0b0;
-            --he-success: #4ade80;
-            --he-warning: #facc15;
-            --he-error: #f87171;
+            --status-success: #00e676;
+            --status-warning: #ff9100;
+            --status-danger: #ff1744;
+            --highlight-effect: rgba(0, 240, 255, 0.15);
         }
 
-        /* Theme-specific overrides for Historic Evidence page */
-        .audio-library-content {
-            --he-dark-bg: #0f0f15; /* From reference */
-            --he-darker-bg: #0a0a0f; /* From reference */
-            --he-card-bg: #1a1a24; /* From reference */
-            --he-accent: #6a5af9; /* From reference */
-            --he-accent-light: #8a7fff; /* From reference */
-            --he-accent-glow: rgba(106, 90, 249, 0.2); /* New */
-            --he-text: #ffffff; /* From reference */
-            --he-text-secondary: #b0b0c0; /* From reference */
-            --he-success: #4ade80; /* From reference */
-            --he-warning: #facc15; /* From reference */
-            --he-error: #ff5c7c; /* From reference */
-
-            /* Apply these new HE variables to the section itself */
-            background: var(--he-card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            margin-top: 30px;
+        /* Light Theme */
+        body.light-theme {
+            --dark-bg: #e0f2f7;
+            --darker-bg: #f0f8fa;
+            --accent-blue: #1e88e5;
+            --accent-purple: #673ab7;
+            --accent-pink: #d81b60;
+            --surface-color: #ffffff;
+            --card-color: #f5f5f5;
+            --border-color: #cfd8dc;
+            --text-primary: #263238;
+            --text-secondary: #546e7a;
+            --status-success: #388e3c;
+            --status-warning: #fbc02d;
+            --status-danger: #d32f2f;
+            --highlight-effect: rgba(30, 136, 229, 0.15);
         }
 
-        /* Specific styles for Historic Evidence elements using the new HE variables */
-        .audio-library-content .section-title {
-            font-size: 2.6rem; /* From reference */
-            margin-bottom: 40px; /* From reference */
-            text-align: center;
-            position: relative;
-            padding-bottom: 20px; /* From reference */
-            font-weight: 700; /* From reference */
-            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .audio-library-content .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0; /* From reference */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px; /* From reference */
-            height: 4px; /* From reference */
-            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light));
-            border-radius: 2px;
-            box-shadow: 0 0 15px var(--he-accent-glow); /* New */
-        }
-
-        .upload-section {
-            background: var(--he-card-bg); /* Use new HE card-color */
-            border-radius: 20px; /* From reference */
-            padding: 35px; /* From reference */
-            margin-bottom: 50px; /* From reference */
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* From reference */
-            border: 1px solid rgba(255, 255, 255, 0.05); /* Keep original border style */
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light));
-            box-shadow: 0 0 15px var(--he-accent-glow);
-        }
-
-        .upload-section h3 {
-            font-size: 1.8rem; /* From reference */
-            margin-bottom: 25px; /* From reference */
-            display: flex;
-            align-items: center;
-            gap: 15px; /* From reference */
-            color: var(--he-accent-light); /* Use new HE accent-light */
-        }
-
-        .upload-form {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 25px; /* From reference */
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* From reference */
-        }
-
-        .form-group label {
-            font-weight: 600; /* From reference */
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 12px; /* From reference */
-            color: var(--he-text); /* Use new HE text-primary */
-        }
-
-        .form-group input {
-            padding: 16px 20px; /* From reference */
-            border-radius: 14px; /* From reference */
-            border: 1px solid rgba(255, 255, 255, 0.08); /* From reference */
-            background: rgba(26, 26, 36, 0.7); /* From reference */
-            color: var(--he-text); /* Use new HE text-primary */
-            font-size: 1.1rem; /* From reference */
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* From reference */
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--he-accent); /* Use new HE accent-blue */
-            box-shadow: 0 0 0 3px var(--he-accent-glow); /* Use new HE accent-glow */
-        }
-
-        .file-input-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .file-input-label {
-            flex: 1;
-            padding: 16px 20px; /* From reference */
-            border-radius: 14px; /* From reference */
-            border: 1px dashed rgba(106, 90, 249, 0.4); /* From reference */
-            background: rgba(26, 26, 36, 0.4); /* From reference */
-            color: var(--he-text-secondary); /* Use new HE text-secondary */
-            font-size: 1.1rem; /* From reference */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* From reference */
-        }
-
-        .file-input-label:hover {
-            border-color: var(--he-accent); /* Use new HE accent-blue */
-            background: rgba(106, 90, 249, 0.1); /* From reference */
-        }
-
-        .file-input-label span {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-        }
-
-        .upload-btn {
-            background: linear-gradient(135deg, var(--he-accent), var(--he-accent-light)); /* Use new HE accent-blue, accent-purple */
-            color: white;
-            padding: 18px 35px; /* From reference */
-            border: none;
-            border-radius: 14px; /* From reference */
-            font-size: 1.2rem; /* From reference */
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px; /* From reference */
-            box-shadow: 0 8px 25px var(--he-accent-glow); /* Use new HE accent-glow */
-            margin-top: 10px; /* From reference */
-        }
-
-        .upload-btn:hover {
-            transform: translateY(-3px); /* From reference */
-            box-shadow: 0 12px 30px var(--he-accent-glow); /* From reference */
-        }
-
-        .upload-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .progress-container {
-            margin-top: 20px; /* From reference */
-        }
-
-        .progress-bar {
-            height: 8px; /* From reference */
-            background: rgba(255, 255, 255, 0.08); /* From reference */
-            border-radius: 4px; /* From reference */
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* From reference */
-        }
-
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light)); /* Use new HE accent-blue */
-            width: 0%;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 15px var(--he-accent-glow); /* New */
-        }
-
-        .evidence-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); /* From reference */
-            gap: 30px; /* From reference */
-        }
-
-        .evidence-card {
-            background: var(--he-card-bg); /* Use new HE card-color */
-            border-radius: 20px; /* From reference */
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* From reference */
-            transition: all 0.4s ease; /* From reference */
-            border: 1px solid rgba(255, 255, 255, 0.05); /* Keep original border style */
-            position: relative;
-        }
-
-        .evidence-card:hover {
-            transform: translateY(-8px); /* From reference */
-            box-shadow: 0 20px 50px var(--he-accent-glow); /* Use new HE accent-glow */
-        }
-
-        .card-header {
-            padding: 25px; /* From reference */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .evidence-title {
-            font-size: 1.5rem; /* From reference */
-            font-weight: 700; /* From reference */
-            margin-bottom: 8px; /* From reference */
-            color: var(--he-text); /* Use new HE text-primary */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .evidence-meta {
-            font-size: 0.95rem; /* From reference */
-            color: var(--he-text-secondary); /* Use new HE text-secondary */
-            display: flex;
-            gap: 20px; /* From reference */
-        }
-
-        .card-body {
-            padding: 25px; /* From reference */
-            position: relative;
-        }
-
-        /* Advanced Audio Visualization */
-        .visualization-container {
-            height: 180px; /* From reference */
-            width: 100%;
-            background: rgba(15, 15, 25, 0.5); /* From reference */
-            border-radius: 15px; /* From reference */
-            margin-bottom: 25px; /* From reference */
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4); /* From reference */
-        }
-
-        .visualization-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .audio-controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px; /* From reference */
-            margin-top: 20px; /* From reference */
-        }
-
-        .control-btn {
-            width: 50px; /* From reference */
-            height: 50px; /* From reference */
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1); /* From reference */
-            border: none;
-            color: var(--he-text); /* Use new HE text */
-            font-size: 20px; /* From reference */
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* From reference */
-        }
-
-        .control-btn:hover {
-            background: var(--he-accent); /* Use new HE accent */
-            transform: scale(1.12); /* From reference */
-            box-shadow: 0 0 20px var(--he-accent-glow); /* From reference */
-        }
-
-        .control-btn:active {
-            transform: scale(0.95); /* From reference */
-        }
-
-        .play-btn {
-            width: 65px; /* From reference */
-            height: 65px; /* From reference */
-            font-size: 24px; /* From reference */
-            background: var(--he-accent); /* Use new HE accent */
-            box-shadow: 0 0 25px var(--he-accent-glow); /* From reference */
-        }
-
-        .progress-container {
-            margin-top: 20px; /* From reference */
-        }
-
-        .progress-bar {
-            height: 8px; /* From reference */
-            background: rgba(255, 255, 255, 0.1); /* From reference */
-            border-radius: 4px; /* From reference */
-            overflow: hidden;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* From reference */
-        }
-
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--he-accent), var(--he-accent-light)); /* Use new HE accent, accent-light */
-            width: 0%;
-            transition: width 0.1s linear; /* From reference */
-            box-shadow: 0 0 15px var(--he-accent-glow); /* From reference */
-        }
-
-        .time-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem; /* From reference */
-            color: var(--he-text-secondary); /* Use new HE text-secondary */
-            margin-top: 10px; /* From reference */
-        }
-
-        .no-evidence {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px; /* From reference */
-            color: var(--he-text-secondary); /* Use new HE text-secondary */
-        }
-
-        .no-evidence i {
-            font-size: 4rem; /* From reference */
-            margin-bottom: 25px; /* From reference */
-            color: var(--he-accent); /* Use new HE accent */
-            opacity: 0.2; /* From reference */
-        }
-
-        .evidence-actions {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .delete-evidence-btn {
-            background-color: var(--he-error);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(255, 92, 124, 0.3);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .delete-evidence-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(255, 92, 124, 0.4);
+        /* Cyberpunk Theme */
+        body.cyberpunk-theme {
+            --dark-bg: #0d0d0d;
+            --darker-bg: #050505;
+            --accent-blue: #00ffff; /* Cyber Blue */
+            --accent-purple: #ff00ff; /* Magenta */
+            --accent-pink: #ffea00; /* Neon Yellow */
+            --surface-color: #1a1a1a;
+            --card-color: #2a2a2a;
+            --border-color: #00ffff; /* Borders glow */
+            --text-primary: #00ff00; /* Neon Green */
+            --text-secondary: #00ccff; /* Lighter Cyber Blue */
+            --status-success: #00ff00;
+            --status-warning: #ffea00;
+            --status-danger: #ff3300;
+            --highlight-effect: rgba(0, 255, 255, 0.25);
         }
 
 
-        /* Base CSS for Tatti Players (continued) */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif; /* Changed to Inter */
         }
 
         body {
@@ -477,6 +115,15 @@
             border-bottom: 1px solid var(--border-color);
             position: relative;
             z-index: 10;
+        }
+
+        body.light-theme .site-header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        body.cyberpunk-theme .site-header {
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .site-header h1 {
@@ -806,6 +453,12 @@
             color: var(--status-success);
             border: 1px solid var(--status-success);
         }
+        
+        .status-busy {
+            background: rgba(255, 145, 0, 0.15);
+            color: var(--status-warning);
+            border: 1px solid var(--status-warning);
+        }
 
         .status-away {
             background: rgba(255, 145, 0, 0.15);
@@ -967,112 +620,6 @@
             line-height: 1.6;
         }
 
-        /* What If Page Specific Styling */
-        .what-if-content {
-            background: var(--card-color);
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            margin-top: 30px;
-        }
-
-        .what-if-content h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .what-if-content p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-
-        .story-form {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .story-form label {
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
-
-        .story-form textarea {
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: var(--surface-color);
-            color: var(--text-primary);
-            font-size: 1rem;
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        .story-form button {
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 240, 255, 0.3);
-        }
-
-        .story-form button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 240, 255, 0.4);
-        }
-
-        .stories-list {
-            margin-top: 40px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-
-        .stories-list h3 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--accent-pink), var(--accent-blue));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .story-item {
-            background: var(--surface-color);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .story-item p {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-
-        .story-meta {
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            text-align: right;
-            opacity: 0.7;
-        }
-
         /* Custom Modal Styling */
         .modal-overlay {
             position: fixed;
@@ -1143,67 +690,6 @@
         .modal-btn:hover {
             opacity: 0.9;
             transform: translateY(-2px);
-        }
-
-        /* Story Action Buttons Styling */
-        .story-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end; /* Align buttons to the right */
-        }
-
-        .story-actions button {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
-        }
-
-        .story-actions .edit-story-btn {
-            background-color: var(--accent-blue);
-            color: var(--darker-bg);
-        }
-
-        .story-actions .delete-story-btn {
-            background-color: var(--status-danger);
-            color: white;
-        }
-
-        .story-actions .save-story-btn {
-            background-color: var(--status-success);
-            color: white;
-        }
-
-        .story-actions .cancel-edit-btn {
-            background-color: var(--text-secondary);
-            color: var(--darker-bg);
-        }
-
-        .story-actions button:hover {
-            opacity: 0.8;
-        }
-
-        .story-item textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
-            background-color: var(--darker-bg);
-            color: var(--text-primary);
-            font-size: 1rem;
-            min-height: 80px;
-            resize: vertical;
-            margin-bottom: 10px;
-        }
-        .story-item p[contenteditable="true"] {
-            border: 1px solid var(--accent-blue);
-            padding: 10px;
-            border-radius: 5px;
-            background-color: var(--surface-color);
         }
 
         /* Welcome Modal Specific Styling */
@@ -1329,35 +815,6 @@
             margin-bottom: 15px;
         }
 
-        .user-list {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .user-list-item {
-            background: var(--surface-color);
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.95rem;
-            color: var(--text-primary);
-        }
-
-        .user-list-item span:first-child {
-            font-weight: 600;
-            color: var(--accent-blue);
-        }
-
-        .user-list-item span:last-child {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
         .admin-pin-section {
             display: flex;
             flex-direction: column;
@@ -1421,66 +878,6 @@
             transform: translateY(-1px);
         }
 
-        .user-list-item button {
-            background: var(--accent-purple);
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .user-list-item button:hover {
-            background-color: #7a1be2;
-        }
-
-        .admin-stories-view .story-item {
-            background: var(--surface-color);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .admin-stories-view .story-item .story-actions {
-            justify-content: flex-start; /* Align delete button to left in admin view */
-        }
-
-        .admin-stories-view .story-item .delete-story-btn {
-            background-color: var(--status-danger);
-            color: white;
-        }
-
-        .admin-stories-view h3 {
-            margin-bottom: 15px;
-            color: var(--accent-blue);
-        }
-
-        .back-button-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .back-button-container button {
-            background: var(--accent-pink);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .back-button-container button:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
         /* Theme Selector Styling */
         .theme-selector {
             margin-top: 30px;
@@ -1517,301 +914,7 @@
             box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.3);
         }
 
-        /* Polls Page Specific Styling */
-        .polls-content {
-            background: var(--card-color);
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            margin-top: 30px;
-        }
-
-        .polls-content h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .polls-content p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-
-        .poll-form {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 30px;
-        }
-
-        .poll-form label {
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
-
-        .poll-form input[type="text"],
-        .poll-form textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: var(--surface-color);
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
-
-        .poll-options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .poll-option-item {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping for smaller screens */
-            gap: 10px;
-            align-items: center;
-        }
-
-        .poll-option-item input {
-            flex: 1;
-            min-width: 120px; /* Ensure inputs don't get too small */
-        }
-
-        .poll-option-item button {
-            background-color: var(--status-danger);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background-color 0.2s ease;
-        }
-
-        .poll-option-item button:hover {
-            background-color: #c0392b;
-        }
-
-        .add-option-btn {
-            background: var(--accent-blue);
-            color: var(--darker-bg);
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .add-option-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .create-poll-btn {
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 240, 255, 0.3);
-            margin-top: 20px;
-        }
-
-        .create-poll-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 240, 255, 0.4);
-        }
-
-        /* Loading indicator for poll creation */
-        #createPollLoader {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-            color: var(--accent-blue);
-            font-size: 1.1rem;
-        }
-        #createPollLoader i {
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-
-        .polls-list {
-            margin-top: 40px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-
-        .polls-list h3 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--accent-pink), var(--accent-blue));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .poll-item {
-            background: var(--surface-color);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease;
-        }
-
-        .poll-item:hover {
-            transform: translateY(-3px);
-        }
-
-        .poll-question {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--accent-blue);
-            margin-bottom: 15px;
-        }
-
-        .poll-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .poll-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: var(--card-color);
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-            position: relative; /* For progress bar */
-            overflow: hidden; /* For progress bar */
-        }
-
-        .poll-option:hover:not(.voted) { /* Only hover if not already voted */
-            background-color: rgba(0, 240, 255, 0.1);
-            border-color: var(--accent-blue);
-        }
-
-        .poll-option.voted {
-            border-color: var(--status-success); /* Highlight voted option */
-            background-color: rgba(0, 230, 118, 0.1);
-        }
-
-        .poll-option input[type="radio"] {
-            margin-right: 5px;
-            accent-color: var(--accent-purple); /* Style radio button */
-            z-index: 1; /* Ensure radio button is clickable */
-            position: relative;
-        }
-
-        .poll-option img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
-            flex-shrink: 0; /* Prevent image from shrinking */
-            z-index: 1; /* Ensure image is above progress bar */
-            position: relative;
-        }
-
-        .poll-option span {
-            flex-grow: 1;
-            font-size: 1rem;
-            color: var(--text-primary);
-            z-index: 1; /* Ensure text is above progress bar */
-            position: relative;
-        }
-
-        .poll-vote-count {
-            font-weight: bold;
-            color: var(--accent-pink);
-            min-width: 30px;
-            text-align: right;
-            z-index: 1; /* Ensure count is above progress bar */
-            position: relative;
-        }
-
-        /* Progress bar styling */
-        .poll-progress-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(0, 240, 255, 0.2), rgba(138, 43, 226, 0.2));
-            width: 0%; /* Will be set by JS */
-            transition: width 0.5s ease-out;
-            z-index: 0; /* Behind other content */
-        }
-
-        .poll-meta {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-align: right;
-            margin-top: 10px;
-        }
-
-        .poll-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .poll-actions button {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
-        }
-
-        .poll-actions .delete-poll-btn {
-            background-color: var(--status-danger);
-            color: white;
-        }
-        .poll-actions .delete-poll-btn:hover {
-            background-color: #c0392b;
-        }
-
         /* Responsive design */
-        @media (max-width: 1200px) {
-            .evidence-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
-        }
-
         @media (max-width: 768px) {
             .main-nav {
                 flex-wrap: wrap;
@@ -1842,11 +945,7 @@
                 justify-content: center;
             }
             
-    .members-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .analytics-grid { /* This will now only affect the overall analytics content */
+            .members-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -1874,78 +973,10 @@
             .admin-pin-section input[type="password"] {
                 width: 100%;
             }
-
-            .user-list-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-
-            .user-list-item span:last-child {
-                text-align: left;
-                width: 100%;
-            }
-
-            .user-list-item button {
-                width: 100%;
-                margin-top: 10px;
-            }
-
+            
             .theme-options {
                 grid-template-columns: 1fr;
             }
-
-            .poll-option-item {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .poll-option-item input {
-                width: 100%; /* Full width on small screens */
-                min-width: unset;
-            }
-            .audio-item button {
-                width: auto; /* Buttons can size naturally */
-            }
-            .audio-controls {
-                width: 100%;
-                justify-content: center;
-            }
-
-            /* Responsive for Historic Evidence elements */
-            .audio-library-content .section-title {
-                font-size: 1.8rem;
-            }
-        }
-        /* New CSS for the mini admin badge */
-        .admin-badge-mini {
-            background: rgba(78, 84, 200, 0.2);
-            color: var(--accent-light);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            margin-left: 5px;
-        }
-        /* Style for the message when upload section is hidden */
-        .upload-restricted-message {
-            background: var(--surface-color);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        .upload-restricted-message i {
-            font-size: 3rem;
-            color: var(--accent-blue);
-            opacity: 0.5;
         }
 
         /* New styles for editable player profiles */
@@ -2019,35 +1050,6 @@
             opacity: 0.9;
             transform: translateY(-2px);
         }
-
-        /* Styles for detailed progress info */
-        .upload-progress-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-top: 10px;
-        }
-
-        .file-validation-message {
-            font-size: 0.9rem;
-            margin-top: 10px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .file-validation-message.error {
-            background-color: rgba(255, 23, 68, 0.15);
-            color: var(--status-danger);
-            border: 1px solid var(--status-danger);
-        }
-
-        .file-validation-message.success {
-            background-color: rgba(0, 230, 118, 0.15);
-            color: var(--status-success);
-            border: 1px solid var(--status-success);
-        }
     </style>
 </head>
 <body>
@@ -2074,10 +1076,6 @@
         <nav class="main-nav">
             <a href="#" class="nav-link active" data-target="dashboard-page"><i class="fas fa-home"></i> Dashboard</a>
             <a href="#" class="nav-link" data-target="analytics-page"><i class="fas fa-chart-line"></i> Analytics</a>
-            <a href="#" class="nav-link" data-target="what-if-page"><i class="fas fa-question-circle"></i> What If</a>
-            <a href="#" class="nav-link" data-target="community-stories-page"><i class="fas fa-users"></i> Community Stories</a>
-            <a href="#" class="nav-link" data-target="polls-page"><i class="fas fa-poll"></i> Polls</a>
-            <a href="#" class="nav-link" data-target="audio-library-page"><i class="fas fa-archive"></i> Historic Evidence</a>
             <a href="#" class="nav-link" data-target="settings-page"><i class="fas fa-cog"></i> Settings</a>
         </nav>
     </div>
@@ -2116,145 +1114,6 @@
             </div>
         </div>
 
-        <!-- What If Page Content -->
-        <div id="what-if-page" class="dashboard page-content">
-            <div class="what-if-content">
-                <h2><i class="fas fa-feather-alt"></i> Share Your Story</h2>
-                <p>Here you can share your "What If" stories. Your stories will be linked to your unique ID, and you will only be able to edit or delete your own stories.</p>
-                
-                <form id="storyForm" class="story-form">
-                    <label for="storyText">Write Your Story:</label>
-                    <textarea id="storyText" placeholder="Write your story here..." required></textarea>
-                    <button type="submit">Submit Story</button>
-                </form>
-
-                <div class="stories-list">
-                    <h3>Your Shared Stories</h3>
-                    <div id="sharedStoriesContainer">
-                        <!-- Stories will be dynamically loaded here -->
-                        <p style="text-align: center; color: var(--text-secondary);">Loading stories...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Community Stories Page Content -->
-        <div id="community-stories-page" class="dashboard page-content">
-            <div class="what-if-content">
-                <h2><i class="fas fa-globe"></i> Community Stories</h2>
-                <p>Here you can view all shared stories from other users. You will only be able to edit or delete your own stories.</p>
-                
-                <div class="stories-list">
-                    <h3>All Shared Stories</h3>
-                    <div id="allSharedStoriesContainer">
-                        <!-- All stories will be dynamically loaded here -->
-                        <p style="text-align: center; color: var(--text-secondary);">Loading community stories...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Polls Page Content -->
-        <div id="polls-page" class="dashboard page-content">
-            <div class="polls-content">
-                <h2><i class="fas fa-poll"></i> Create & Participate in Polls</h2>
-                <p>Here you can create new polls and participate in polls from other users.</p>
-                
-                <form id="pollForm" class="poll-form">
-                    <h3>Create a New Poll</h3>
-                    <label for="pollQuestion">Poll Question:</label>
-                    <input type="text" id="pollQuestion" placeholder="Enter your poll question" required>
-
-                    <label>Poll Options (Minimum 2):</label>
-                    <div id="pollOptionsContainer" class="poll-options-container">
-                        <div class="poll-option-item">
-                            <input type="text" class="poll-option-text" placeholder="Option 1 Text" required>
-                            <input type="text" class="poll-option-image-url" placeholder="Option 1 Image URL (Optional)">
-                            <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
-                        </div>
-                        <div class="poll-option-item">
-                            <input type="text" class="poll-option-image-url" placeholder="Option 2 Image URL (Optional)">
-                            <input type="text" class="poll-option-text" placeholder="Option 2 Text" required>
-                            <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
-                        </div>
-                    </div>
-                    <button type="button" id="addOptionBtn" class="add-option-btn"><i class="fas fa-plus-circle"></i> Add Option</button>
-                    <button type="submit" class="create-poll-btn">Create Poll</button>
-                    <div id="createPollLoader"><i class="fas fa-spinner fa-spin"></i> Creating poll...</div>
-                </form>
-
-                <div class="polls-list">
-                    <h3>Active Polls</h3>
-                    <div id="activePollsContainer">
-                        <!-- Active polls will be dynamically loaded here -->
-                        <p style="text-align: center; color: var(--text-secondary);">Loading polls...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Audio Library Page Content (now Historic Evidence) -->
-        <div id="audio-library-page" class="dashboard page-content">
-            <div class="audio-library-content">
-                <h2 class="section-title">Historic Evidence Repository</h2>
-                
-                <!-- Upload section -->
-                <div class="upload-section" id="uploadSection">
-                    <h3><i class="fas fa-cloud-upload-alt"></i> Upload New Evidence</h3>
-                    <form class="upload-form" id="uploadForm">
-                        <div class="form-group">
-                            <label for="evidenceTitle"><i class="fas fa-heading"></i> Evidence Title</label>
-                            <input type="text" id="evidenceTitle" placeholder="Enter evidence title" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="audioFile"><i class="fas fa-file-audio"></i> Audio File</label>
-                            <div class="file-input-container">
-                                <input type="file" id="audioFile" accept="audio/*" required style="display: none;">
-                                <label for="audioFile" class="file-input-label">
-                                    <span id="fileName">Select audio file</span>
-                                    <i class="fas fa-folder-open"></i>
-                                </label>
-                            </div>
-                            <div id="fileValidation" class="file-validation-message"></div>
-                            <div class="progress-container" style="display: none;">
-                                <div class="progress-bar">
-                                    <div class="progress" id="uploadProgress"></div>
-                                </div>
-                                <div class="upload-progress-info">
-                                    <span>Progress: <span id="uploadPercentage">0%</span></span>
-                                    <span>Speed: <span id="uploadSpeed">-</span></span>
-                                    <span>ETA: <span id="uploadETA">-</span></span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="upload-btn" id="uploadBtn" disabled>
-                            <i class="fas fa-upload"></i> Upload Evidence
-                        </button>
-                        <button type="button" id="cancelUploadBtn" class="upload-btn" style="display:none; margin-top: 10px; background-color: var(--status-danger);">
-                            <i class="fas fa-times-circle"></i> Cancel Upload
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Message for non-admins -->
-                <div class="upload-restricted-message" id="uploadRestrictedMessage" style="display: none;">
-                    <i class="fas fa-lock"></i>
-                    <p>Only administrators can upload new evidence.</p>
-                </div>
-                
-                <!-- Evidence grid -->
-                <div class="evidence-grid" id="evidenceGrid">
-                    <div class="no-evidence" id="noEvidenceMessage">
-                        <i class="fas fa-box-open"></i>
-                        <h3>No Evidence Found</h3>
-                        <p>Upload new evidence to begin preservation</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Settings Page Content -->
         <div id="settings-page" class="dashboard page-content">
             <div class="analytics-content">
@@ -2286,7 +1145,7 @@
                 <!-- Admin Panel Content - Moved Here -->
                 <div class="admin-content" style="margin-top: 40px;">
                     <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
-                    <p>Here you can view the display names and unique IDs of all users.</p>
+                    <p>Here you can manage your own admin status.</p>
                     
                     <!-- Admin PIN Section (initially visible if not admin) -->
                     <div id="adminPinSection" class="admin-pin-section">
@@ -2297,18 +1156,7 @@
 
                     <!-- Admin User List Section (initially hidden) -->
                     <div id="adminUserListSection" style="display: none;">
-                        <div id="userListContainer" class="user-list">
-                            <p style="text-align: center; color: var(--text-secondary);">Loading users...</p>
-                        </div>
-                        <div id="adminUserStoriesView" class="admin-stories-view" style="display: none;">
-                            <h3>Stories by <span id="currentAdminUserDisplayName"></span> (<span id="currentAdminUserId"></span>)</h3>
-                            <div id="adminSpecificUserStoriesContainer">
-                                <p style="text-align: center; color: var(--text-secondary);">Loading stories...</p>
-                            </div>
-                            <div class="back-button-container">
-                                <button id="backToAllUsersBtn">Back to All Users</button>
-                            </div>
-                        </div>
+                        <p>You currently have admin privileges.</p>
                         <button id="revokeAdminBtn">Revoke Admin Access</button>
                     </div>
                 </div>
@@ -2332,58 +1180,23 @@
     <div id="welcomeModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <h2>Welcome to Tatti Players!</h2>
-            <p>Please enter a display name to start exploring the app and sharing your stories.</p>
+            <p>Please enter a display name to start exploring the app.</p>
             <input type="text" id="welcomeDisplayNameInput" placeholder="Enter your display name" required>
             <button id="startExploringBtn">Start Exploring</button>
         </div>
     </div>
 
     <script>
-        console.log("JavaScript script tag started."); // Debug Log
-
-        // --- SACRED KEYS OF ACCESS ---
-        // Dynamically get firebaseConfig from the Canvas environment if available
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            // Fallback hardcoded config for local development/testing outside Canvas
-            apiKey: "AIzaSyARthJvOkPjkj2xoA1hE1pjRbRK83N15Cg",
-            authDomain: "tatti-player.firebaseapp.com",
-            databaseURL: "https://tatti-player-default-rtdb.firebaseio.com",
-            projectId: "tatti-player",
-            storageBucket: "tatti-player.firebasestorage.app",
-            messagingSenderId: "657586845911",
-            appId: "1:657586845911:web:70b7028b55854a7873d892",
-        };
-        console.log("Firebase Config:", firebaseConfig); // Debug Log
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database(); // Get a reference to the database service
-        const storage = firebase.storage(); // Get a reference to the storage service
-        const auth = firebase.auth(); // Get a reference to the auth service
-        console.log("Firebase initialized."); // Debug Log
-
         // Global variables
         let userId; 
         let userDisplayName = ""; 
         let isAdmin = false; 
         let currentTheme = 'original'; 
-        let currentAudioPlayer = null; // To manage currently playing audio
-
-        // New global variables for upload
-        let uploadStartTime;
-        let lastUpdateTime;
-        let lastUploaded = 0;
-        let uploadTask; // To allow cancellation
-        const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
-        const UPLOAD_TIMEOUT = 5 * 60 * 1000; // 5 minutes
-        const PROGRESS_UPDATE_INTERVAL = 500; // ms, for debouncing UI updates
-        let lastProgressUpdate = 0;
-
-        // Local storage key for initial userId (will be overridden by Firebase UID if authenticated)
-        const USER_ID_LOCAL_KEY = 'tatti_userId';
         
-        // Define admin PIN
         const ADMIN_PIN = "6789"; 
+
+        // Local Storage Keys
+        const LOCAL_PROFILE_KEY_PREFIX = 'tatti_userProfile_';
 
         // Theme configurations
         const themes = {
@@ -2455,8 +1268,6 @@
 
         // Helper function for modal/content visibility with transitions
         function toggleVisibility(element, show, displayType = 'flex', transitionDuration = 300) {
-            console.log(`[toggleVisibility] Toggling visibility for element: #${element.id || element.className}. Show: ${show}, Display Type: ${displayType}.`); // Debug Log
-            
             if (show) {
                 element.style.display = displayType;
                 element.offsetHeight; 
@@ -2474,7 +1285,6 @@
         // Custom Confirmation Modal Logic
         let confirmModalResolve;
         function showConfirmModal(message, onConfirmCallback = null) {
-            console.log(`[showConfirmModal] Showing confirmation modal with message: "${message}".`); // Debug Log
             return new Promise((resolve) => {
                 const modal = document.getElementById('customConfirmModal');
                 const confirmMessage = document.getElementById('confirmMessage');
@@ -2503,7 +1313,6 @@
 
         // Apply theme to the document
         function applyTheme(themeName) {
-            console.log(`[applyTheme] Applying theme: ${themeName}.`); // Debug Log
             const theme = themes[themeName];
             if (!theme) return;
 
@@ -2529,20 +1338,29 @@
 
         // Helper function to darken a color
         function darkenColor(color, percent) {
-            let r = parseInt(color.substring(1, 3), 16);
-            let g = parseInt(color.substring(3, 5), 16);
-            let b = parseInt(color.substring(5, 7), 16);
-            
-            r = Math.floor(r * (100 - percent) / 100);
-            g = Math.floor(g * (100 - percent) / 100);
-            b = Math.floor(b * (100 - percent) / 100);
-            
-            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+            if (!color || typeof color !== 'string') {
+                console.warn("darkenColor received invalid color:", color, ". Using default.");
+                return '#888888'; // Return a default grey color
+            }
+            // Handle hex colors
+            if (color.startsWith('#')) {
+                let r = parseInt(color.substring(1, 3), 16);
+                let g = parseInt(color.substring(3, 5), 16);
+                let b = parseInt(color.substring(5, 7), 16);
+                
+                r = Math.floor(r * (100 - percent) / 100);
+                g = Math.floor(g * (100 - percent) / 100);
+                b = Math.floor(b * (100 - percent) / 100);
+                
+                return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+            }
+            // Handle rgba colors (if needed, but for this app, hex is primary)
+            console.warn("darkenColor currently only supports hex colors. Received:", color);
+            return color; // Return original if not hex
         }
 
         // Enhanced function to draw the bar chart with colors and legend
         function drawBarChart(canvasId, data, labels, colors) {
-            console.log(`[drawBarChart] Drawing bar chart for ${canvasId}.`); // Debug Log
             const canvas = document.getElementById(canvasId);
             if (!canvas) {
                 console.error(`[drawBarChart] Canvas with ID '${canvasId}' not found.`);
@@ -2580,7 +1398,7 @@
                 ctx.stroke();
                 
                 ctx.fillStyle = 'var(--text-primary)';
-                ctx.font = '12px Arial';
+                ctx.font = '12px Inter'; // Changed font
                 ctx.textAlign = 'right';
                 ctx.fillText(Math.round(maxVal * i / gridLineCount), 25, y + 4);
             }
@@ -2591,8 +1409,9 @@
                 const y = chartHeight - bottomPadding - barHeight;
                 
                 const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
-                gradient.addColorStop(0, colors[i]);
-                gradient.addColorStop(1, darkenColor(colors[i], 20));
+                const color = colors[i % colors.length]; // Use modulo to cycle through colors
+                gradient.addColorStop(0, color);
+                gradient.addColorStop(1, darkenColor(color, 20));
                 
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
@@ -2606,766 +1425,179 @@
                 ctx.shadowColor = 'transparent';
                 
                 ctx.fillStyle = 'var(--text-primary)';
-                ctx.font = 'bold 14px Arial';
+                ctx.font = 'bold 14px Inter'; // Changed font
                 ctx.textAlign = 'center';
                 ctx.fillText(data[i], x + barWidth / 2, y - 8);
                 
                 ctx.fillStyle = 'var(--text-primary)';
-                ctx.font = '14px Arial';
+                ctx.font = '14px Inter'; // Changed font
                 ctx.fillText(labels[i], x + barWidth / 2, chartHeight - 15);
             }
             
             ctx.save();
             ctx.fillStyle = 'var(--text-primary)';
-            ctx.font = '14px Arial';
+            ctx.font = '14px Inter'; // Changed font
             ctx.textAlign = 'center';
             ctx.translate(15, chartHeight / 2);
             ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Tatti Score', 0, 0);
+            ctx.fillText('Player Score', 0, 0); // Changed from Tatti Score
             ctx.restore();
         }
 
-        // --- Firebase Functions ---
-
-        // This function is no longer the primary source of userId.
-        // userId will now be derived from Firebase Auth's currentUser.uid.
-        // This function is kept for backward compatibility if needed, but its usage is reduced.
-        function getOrCreateLocalUserId() {
-            let id = localStorage.getItem(USER_ID_LOCAL_KEY);
-            if (!id) {
-                id = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-                localStorage.setItem(USER_ID_LOCAL_KEY, id);
-            }
-            return id;
+        // --- Local Storage Profile Functions ---
+        function getLocalProfile() {
+            if (!userId) return null;
+            const profileJSON = localStorage.getItem(LOCAL_PROFILE_KEY_PREFIX + userId);
+            return profileJSON ? JSON.parse(profileJSON) : null;
         }
 
-        async function saveUserDisplayNameFirebase(name) {
-            // Ensure userId is available from Firebase Auth before saving
-            if (!userId) {
-                console.error("Cannot save display name: userId is not set (user not authenticated).");
-                showConfirmModal('Please ensure you are authenticated before saving your display name.');
-                return false;
-            }
-            try {
-                const updates = {
-                    displayName: name,
-                    isAdmin: isAdmin,
-                    theme: currentTheme
-                };
-                await database.ref('users/' + userId + '/profile').update(updates);
-                userDisplayName = name;
-                document.getElementById('displayUserId').textContent = userDisplayName;
-                console.log(`[saveUserDisplayNameFirebase] Display name saved for ${userId}: ${name}`);
-                return true;
-            } catch (error) {
-                console.error('Error saving display name to Firebase:', error);
-                showConfirmModal('Failed to save display name. Please try again.');
-                return false;
-            }
+        function saveLocalProfile(profileData) {
+            if (!userId) return;
+            localStorage.setItem(LOCAL_PROFILE_KEY_PREFIX + userId, JSON.stringify(profileData));
         }
 
-        // Global map to store admin status of all users
-        let allUsersAdminStatus = {};
+        async function saveUserProfile(profileData) {
+            // Step 1: Save to localStorage and update UI immediately
+            saveLocalProfile(profileData);
+            userDisplayName = profileData.displayName;
+            isAdmin = profileData.isAdmin;
+            currentTheme = profileData.theme;
+            document.getElementById('displayUserId').textContent = userDisplayName;
+            document.getElementById('displayNameInput').value = userDisplayName;
+            applyTheme(currentTheme);
+            updateAdminPanelUI();
+            console.log("Profile saved to localStorage and UI updated.");
+        }
 
-        async function loadUserProfileFirebase() {
-            // This function is now called AFTER Firebase Auth has set the global userId.
+        async function loadUserProfile() {
             if (!userId) {
-                console.warn("[loadUserProfileFirebase] userId is not set. Cannot load profile.");
-                // This case should ideally not happen if onAuthStateChanged works as expected.
-                // If it does, it means anonymous sign-in failed or is still pending.
-                document.getElementById('displayUserId').textContent = 'Error: Not Authenticated';
-                showWelcomeModal(); // Re-prompt for display name if auth failed
+                console.error("loadUserProfile called without userId.");
                 return;
             }
 
-            console.log(`[loadUserProfileFirebase] Attempting to load profile for userId: ${userId}`);
-            try {
-                const userProfileSnapshot = await database.ref('users/' + userId + '/profile').once('value');
-                const profile = userProfileSnapshot.val();
-                
-                if (profile) {
-                    userDisplayName = profile.displayName || userId;
-                    isAdmin = profile.isAdmin || false; 
-                    currentTheme = profile.theme || 'original';
-                    console.log(`[loadUserProfileFirebase] Profile loaded for ${userId}. Display Name: ${userDisplayName}, IsAdmin: ${isAdmin}, Theme: ${currentTheme}`);
-                } else {
-                    // Profile does not exist, create a default one and prompt for display name
-                    userDisplayName = userId; // Default to UID
-                    isAdmin = false; 
-                    currentTheme = 'original';
-                    console.log(`[loadUserProfileFirebase] No profile found for ${userId}. Creating default.`);
-                    // Save default profile to database
-                    await database.ref('users/' + userId + '/profile').set({
-                        displayName: userDisplayName,
-                        isAdmin: isAdmin,
-                        theme: currentTheme,
-                        createdAt: firebase.database.ServerValue.TIMESTAMP
-                    });
-                    showWelcomeModal(); // Show welcome modal for new users
-                }
-                
-                document.getElementById('displayUserId').textContent = userDisplayName;
-                document.getElementById('displayNameInput').value = userDisplayName;
-                applyTheme(currentTheme);
-                showMainContent(); // Show main content once authenticated and profile loaded
+            let localProfile = getLocalProfile();
 
-                // Fetch all user profiles to determine admin status for filtering evidence
-                const allUsersSnapshot = await database.ref('users').once('value');
-                const allUsersData = allUsersSnapshot.val();
-                if (allUsersData) {
-                    for (const uid in allUsersData) {
-                        if (allUsersData[uid].profile) {
-                            allUsersAdminStatus[uid] = allUsersData[uid].profile.isAdmin || false;
-                        }
-                    }
-                }
-                console.log("All users admin status loaded:", allUsersAdminStatus);
-
-            } catch (error) {
-                console.error('Error loading user profile or all users from Firebase:', error);
-                document.getElementById('displayUserId').textContent = 'Error loading profile';
-                // If there's an error loading profile, still show welcome modal to allow user to try setting name
-                showWelcomeModal(); 
-            }
-        }
-
-        async function grantAdminAccessFirebase(userIdToGrant) {
-            try {
-                const updates = {
-                    isAdmin: true,
-                    lastAdminGranted: firebase.database.ServerValue.TIMESTAMP
-                };
-                await database.ref('users/' + userIdToGrant + '/profile').update(updates);
-                isAdmin = true;
-                // Update the global admin status map immediately
-                allUsersAdminStatus[userIdToGrant] = true; 
-                updateAdminPanelUI();
-                showConfirmModal('Admin access granted successfully!');
-                console.log(`[grantAdminAccessFirebase] Admin access granted to ${userIdToGrant}`);
-            } catch (error) {
-                console.error('Error granting admin access:', error);
-                showConfirmModal('Failed to grant admin access. Please try again.');
-            }
-        }
-
-        async function revokeAdminAccessFirebase(userIdToRevoke) {
-            try {
-                const updates = {
-                    isAdmin: false,
-                    lastAdminRevoked: firebase.database.ServerValue.TIMESTAMP
-                };
-                await database.ref('users/' + userIdToRevoke + '/profile').update(updates);
+            if (localProfile) {
+                console.log("Loading profile from localStorage:", localProfile);
+                userDisplayName = localProfile.displayName || userId;
+                isAdmin = localProfile.isAdmin || false;
+                currentTheme = localProfile.theme || 'original';
+            } else {
+                console.log("No local profile found. Creating default.");
+                userDisplayName = userId;
                 isAdmin = false;
-                // Update the global admin status map immediately
-                allUsersAdminStatus[userIdToRevoke] = false;
-                updateAdminPanelUI();
-                showConfirmModal('Admin access revoked.');
-                console.log(`[revokeAdminAccessFirebase] Admin access revoked for ${userIdToRevoke}`);
-            } catch (error) {
-                console.error('Error revoking admin access:', error);
-                showConfirmModal('Failed to revoke admin access. Please try again.');
-            }
-        }
-
-        async function checkAdminAccessFirebase(userIdToCheck) {
-            if (!userIdToCheck) return false;
-            try {
-                const snapshot = await database.ref('users/' + userIdToCheck + '/profile/isAdmin').once('value');
-                return snapshot.val() === true;
-            } catch (error) {
-                console.error('Error checking admin access:', error);
-                return false;
-            }
-        }
-
-        async function saveThemeFirebase(themeName) {
-            // Ensure userId is available from Firebase Auth before saving
-            if (!userId) {
-                console.error("Cannot save theme: userId is not set (user not authenticated).");
-                return;
-            }
-            try {
-                await database.ref('users/' + userId + '/profile/theme').set(themeName);
-                console.log(`[saveThemeFirebase] Theme saved for ${userId}: ${themeName}`);
-            } catch (error) {
-                console.error('Error saving theme to Firebase:', error);
-            }
-        }
-
-        const storiesRef = database.ref('stories');
-
-        async function addStoryToFirebase(storyText) {
-            if (!userId) {
-                showConfirmModal('You must be logged in to share stories.');
-                return;
-            }
-            if (!userDisplayName || userDisplayName === userId) {
-                 showConfirmModal('Please set your display name first to share stories.');
-                 return;
+                currentTheme = 'original';
+                saveLocalProfile({ displayName: userDisplayName, isAdmin, theme: currentTheme });
+                showWelcomeModal();
             }
 
-            try {
-                const newStoryRef = storiesRef.push();
-                const storyData = {
-                    userId: userId, // Use authenticated userId
-                    displayName: userDisplayName,
-                    text: storyText,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                };
-                await newStoryRef.set(storyData);
-                document.getElementById('storyText').value = '';
-                showConfirmModal('Story submitted successfully!');
-                console.log(`[addStoryToFirebase] Story added by ${userId}`);
-            } catch (error) {
-                console.error('Error adding story to Firebase:', error);
-                showConfirmModal('Failed to add story. Please try again.');
-            }
-        }
-
-        function loadSharedStoriesFirebase() {
-            const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
-            sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading your stories...</p>';
-            
-            if (!userId) {
-                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Please log in to view your stories.</p>';
-                return;
-            }
-
-            storiesRef.off('value', handleStoriesSnapshot);
-            storiesRef.orderByChild('userId').equalTo(userId).on('value', handleStoriesSnapshot, (error) => {
-                console.error("Error loading stories from Firebase:", error);
-                sharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
-            });
-            console.log(`[loadSharedStoriesFirebase] Loading stories for userId: ${userId}`);
-        }
-
-        function loadAllStoriesFirebase() {
-            const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
-            allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading community stories...</p>';
-
-            storiesRef.off('value', handleAllStoriesSnapshotForCommunity);
-            storiesRef.on('value', handleAllStoriesSnapshotForCommunity, (error) => {
-                console.error("Error loading all stories from Firebase:", error);
-                allSharedStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading community stories.</p>';
-            });
-            console.log("[loadAllStoriesFirebase] Loading all community stories.");
-        }
-
-        function handleStoriesSnapshot(snapshot) {
-            const sharedStoriesContainer = document.getElementById('sharedStoriesContainer');
-            displayStories(snapshot, sharedStoriesContainer, true);
-        }
-
-        function handleAllStoriesSnapshotForCommunity(snapshot) {
-            const allSharedStoriesContainer = document.getElementById('allSharedStoriesContainer');
-            displayStories(snapshot, allSharedStoriesContainer, false);
-        }
-
-        function displayStories(snapshot, containerElement, showActions) {
-            const storiesData = snapshot.val();
-            containerElement.innerHTML = '';
-
-            if (storiesData) {
-                const storiesArray = Object.keys(storiesData).map(key => ({
-                    id: key,
-                    ...storiesData[key]
-                })).sort((a, b) => b.timestamp - a.timestamp);
-
-                if (storiesArray.length === 0) {
-                    containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No stories found.</p>';
-                    return;
-                }
-
-                storiesArray.forEach(story => {
-                    const storyItem = document.createElement('div');
-                    storyItem.className = 'story-item';
-                    storyItem.dataset.storyId = story.id;
-                    storyItem.dataset.userId = story.userId;
-                    const timestamp = story.timestamp ? new Date(story.timestamp).toLocaleString() : 'Unknown Date';
-                    
-                    let actionsHtml = '';
-                    if (showActions && (story.userId === userId || isAdmin)) {
-                        actionsHtml = `
-                            <div class="story-actions">
-                                <button data-story-id="${story.id}" class="edit-story-btn">Edit</button>
-                                <button data-story-id="${story.id}" class="delete-story-btn">Delete</button>
-                            </div>
-                        `;
-                    } else if (!showActions && isAdmin) {
-                         actionsHtml = `
-                            <div class="story-actions">
-                                <button data-story-id="${story.id}" class="delete-story-btn">Delete (Admin)</button>
-                            </div>
-                        `;
-                    }
-
-                    storyItem.innerHTML = `
-                        <p class="story-text" contenteditable="false">${story.text}</p>
-                        <div class="story-meta">Shared by: ${story.displayName || 'Anonymous'} on ${timestamp}</div>
-                        ${actionsHtml}
-                    `;
-                    containerElement.appendChild(storyItem);
-                });
-                if (showActions || isAdmin) {
-                    attachStoryActionListeners(containerElement); 
-                }
-            } else {
-                containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No stories found.</p>';
-            }
-        }
-
-        async function updateStoryInFirebase(storyId, newText) {
-            if (!userId) {
-                showConfirmModal('You must be logged in to edit stories.');
-                return;
-            }
-            try {
-                const storyRef = database.ref('stories/' + storyId);
-                const snapshot = await storyRef.once('value');
-                const story = snapshot.val();
-
-                if (story && (story.userId === userId || isAdmin)) {
-                    const updates = {
-                        text: newText,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    await storyRef.update(updates);
-                    showConfirmModal('Story updated successfully!');
-                    console.log(`[updateStoryInFirebase] Story ${storyId} updated by ${userId}`);
-                } else {
-                    showConfirmModal('You are not authorized to edit this story.');
-                }
-            } catch (error) {
-                console.error('Error updating story in Firebase:', error);
-                showConfirmModal('Failed to update story. Please try again.');
-            }
-        }
-
-        async function deleteStoryFromFirebase(storyId) {
-            if (!userId) {
-                showConfirmModal('You must be logged in to delete stories.');
-                return;
-            }
-            try {
-                const storyRef = database.ref('stories/' + storyId);
-                const snapshot = await storyRef.once('value');
-                const story = snapshot.val();
-
-                const isAdminUser = isAdmin;
-                if (story && (story.userId === userId || isAdminUser)) {
-                    await storyRef.remove();
-                    showConfirmModal('Story deleted successfully!');
-                    console.log(`[deleteStoryFromFirebase] Story ${storyId} deleted by ${userId}`);
-                } else {
-                    showConfirmModal('You are not authorized to delete this story.');
-                }
-            } catch (error) {
-                console.error('Error deleting story from Firebase:', error);
-                showConfirmModal('Failed to delete story. Please try again.');
-            }
-        }
-
-        function attachStoryActionListeners(container) {
-            container.querySelectorAll('.edit-story-btn').forEach(button => {
-                button.onclick = null;
-                button.addEventListener('click', (event) => {
-                    const storyId = event.target.dataset.storyId;
-                    const storyItem = event.target.closest('.story-item');
-                    const storyTextElement = storyItem.querySelector('.story-text');
-                    const originalText = storyTextElement.textContent;
-
-                    storyTextElement.contentEditable = true;
-                    storyTextElement.focus();
-                    storyItem.classList.add('editing');
-
-                    const actionsDiv = storyItem.querySelector('.story-actions');
-                    actionsDiv.innerHTML = `
-                        <button data-story-id="${storyId}" class="save-story-btn">Save</button>
-                        <button data-story-id="${storyId}" class="cancel-edit-btn">Cancel</button>
-                    `;
-                    attachEditSaveCancelListeners(storyId, storyTextElement, actionsDiv, originalText);
-                });
-            });
-
-            container.querySelectorAll('.delete-story-btn').forEach(button => {
-                button.onclick = null;
-                button.addEventListener('click', (event) => {
-                    const storyId = event.target.dataset.storyId;
-                    showConfirmModal('Are you sure you want to delete this story?', async () => {
-                        await deleteStoryFromFirebase(storyId);
-                    });
-                });
-            });
-        }
-
-        function attachEditSaveCancelListeners(storyId, storyTextElement, actionsDiv, originalText) {
-            actionsDiv.querySelector('.save-story-btn').addEventListener('click', async () => {
-                const newText = storyTextElement.textContent.trim();
-                if (!newText) {
-                    showConfirmModal('Story cannot be empty.');
-                    return;
-                }
-                await updateStoryInFirebase(storyId, newText);
-                storyTextElement.contentEditable = false;
-                storyTextElement.closest('.story-item').classList.remove('editing');
-                if (document.getElementById('what-if-page').classList.contains('active-page')) {
-                    loadSharedStoriesFirebase();
-                } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
-                    loadAllStoriesFirebase();
-                } else if (document.getElementById('settings-page').classList.contains('active-page')) {
-                    const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
-                    const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
-                    if (currentAdminUserIdSpan.textContent) {
-                        viewUserStoriesAsAdmin(currentAdminUserIdSpan.textContent, currentAdminUserDisplayNameSpan.textContent);
-                    } else {
-                        loadAllUserProfilesFirebase();
-                    }
-                }
-            });
-
-            actionsDiv.querySelector('.cancel-edit-btn').addEventListener('click', () => {
-                storyTextElement.textContent = originalText;
-                storyTextElement.contentEditable = false;
-                storyTextElement.closest('.story-item').classList.remove('editing');
-                if (document.getElementById('what-if-page').classList.contains('active-page')) {
-                    loadSharedStoriesFirebase();
-                } else if (document.getElementById('community-stories-page').classList.contains('active-page')) {
-                    loadAllStoriesFirebase();
-                } else if (document.getElementById('settings-page').classList.contains('active-page')) {
-                    const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
-                    const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
-                    if (currentAdminUserIdSpan.textContent) {
-                        viewUserStoriesAsAdmin(currentAdminUserIdSpan.textContent, currentAdminUserDisplayNameSpan.textContent);
-                    } else {
-                        loadAllUserProfilesFirebase();
-                    }
-                }
-            });
-        }
-        
-        function loadAllUserProfilesFirebase() {
-            const userListContainer = document.getElementById('userListContainer');
-            userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading users...</p>';
-            
-            database.ref('users').off('value', handleAllUsersSnapshot);
-            database.ref('users').on('value', handleAllUsersSnapshot, (error) => {
-                console.error("Error loading all user profiles from Firebase:", error);
-                userListContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading user list.</p>';
-            });
-            console.log("[loadAllUserProfilesFirebase] Loading all user profiles.");
-        }
-
-        function handleAllUsersSnapshot(snapshot) {
-            const userListContainer = document.getElementById('userListContainer');
-            const usersData = snapshot.val();
-            userListContainer.innerHTML = '';
-
-            if (usersData) {
-                const usersArray = Object.keys(usersData).map(key => ({
-                    userId: key,
-                    displayName: usersData[key].profile?.displayName || key
-                }));
-
-                if (usersArray.length === 0) {
-                    userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No users found.</p>';
-                    return;
-                }
-                
-                usersArray.forEach(userData => {
-                    const listItem = document.createElement('div');
-                    listItem.className = 'user-list-item';
-                    listItem.innerHTML = `
-                        <span>${userData.displayName}</span>
-                        <span>(ID: ${userData.userId})</span>
-                        <button data-user-id="${userData.userId}" data-display-name="${userData.displayName}" class="view-user-stories-btn">View Stories</button>
-                    `;
-                    userListContainer.appendChild(listItem);
-                });
-                
-                document.querySelectorAll('.view-user-stories-btn').forEach(button => {
-                    button.onclick = null;
-                    button.addEventListener('click', (event) => {
-                        const targetUserId = event.target.dataset.userId;
-                        const targetDisplayName = event.target.dataset.displayName;
-                        viewUserStoriesAsAdmin(targetUserId, targetDisplayName);
-                    });
-                });
-                
-            } else {
-                userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No users found.</p>';
-            }
-        }
-
-        function viewUserStoriesAsAdmin(targetUserId, targetDisplayName) {
-            const userListContainer = document.getElementById('userListContainer');
-            const adminUserStoriesView = document.getElementById('adminUserStoriesView');
-            const currentAdminUserDisplayNameSpan = document.getElementById('currentAdminUserDisplayName');
-            const currentAdminUserIdSpan = document.getElementById('currentAdminUserId');
-            const adminSpecificUserStoriesContainer = document.getElementById('adminSpecificUserStoriesContainer');
-
-            userListContainer.style.display = 'none';
-            adminUserStoriesView.style.display = 'block';
-
-            currentAdminUserDisplayNameSpan.textContent = targetDisplayName;
-            currentAdminUserIdSpan.textContent = targetUserId;
-            adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading stories for this user...</p>';
-
-            storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
-            storiesRef.orderByChild('userId').equalTo(targetUserId).on('value', (snapshot) => {
-                handleAdminSpecificUserStoriesSnapshot(snapshot, adminSpecificUserStoriesContainer);
-            }, (error) => {
-                console.error("Error fetching specific user stories for admin:", error);
-                adminSpecificUserStoriesContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading stories.</p>';
-            });
-            console.log(`[viewUserStoriesAsAdmin] Viewing stories for ${targetDisplayName} (${targetUserId})`);
-        }
-
-        function handleAdminSpecificUserStoriesSnapshot(snapshot, containerElement) {
-            const userStoriesData = snapshot.val();
-            containerElement.innerHTML = '';
-            
-            if (userStoriesData) {
-                const userStories = Object.keys(userStoriesData).map(key => ({
-                    id: key,
-                    ...userStoriesData[key]
-                })).sort((a, b) => b.timestamp - a.timestamp);
-                
-                if (userStories.length === 0) {
-                    containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">This user has not posted any stories.</p>';
-                    return;
-                }
-                
-                userStories.forEach(story => {
-                    const storyItem = document.createElement('div');
-                    storyItem.className = 'story-item';
-                    storyItem.dataset.storyId = story.id;
-                    storyItem.dataset.userId = story.userId;
-                    const timestamp = story.timestamp ? new Date(story.timestamp).toLocaleString() : 'Unknown Date';
-                    
-                    storyItem.innerHTML = `
-                        <p class="story-text">${story.text}</p>
-                        <div class="story-meta">Shared by: ${story.displayName || story.userId} on ${timestamp}</div>
-                        <div class="story-actions">
-                            <button data-story-id="${story.id}" class="delete-story-btn">Delete Story (Admin)</button>
-                        </div>
-                    `;
-                    containerElement.appendChild(storyItem);
-                });
-                
-                document.querySelectorAll('#adminSpecificUserStoriesContainer .delete-story-btn').forEach(button => {
-                    button.onclick = null;
-                    button.addEventListener('click', (event) => {
-                        const storyIdToDelete = event.target.dataset.storyId;
-                        showConfirmModal('Are you sure you want to delete this story for ALL users?', async () => {
-                            await deleteStoryFromFirebase(storyIdToDelete);
-                        });
-                    });
-                });
-                
-            } else {
-                containerElement.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">This user has not posted any stories.</p>';
-            }
-        }
-
-        function backToAllUsers() {
-            document.getElementById('userListContainer').style.display = 'flex';
-            document.getElementById('adminUserStoriesView').style.display = 'none';
-            storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
-            loadAllUserProfilesFirebase();
+            // Update UI with the determined profile data
+            document.getElementById('displayUserId').textContent = userDisplayName;
+            document.getElementById('displayNameInput').value = userDisplayName;
+            applyTheme(currentTheme);
+            updateAdminPanelUI();
+            showMainContent();
         }
 
         async function initializeApp() {
             console.log("[initializeApp] Starting app initialization.");
-            // Listen for Firebase Auth state changes
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    // User is signed in.
-                    userId = user.uid;
-                    console.log(`[onAuthStateChanged] User signed in. UID: ${userId}`);
-                    await loadUserProfileFirebase(); // Load profile using the authenticated UID
-                } else {
-                    // User is signed out. Attempt to sign in.
-                    console.log("[onAuthStateChanged] User signed out. Attempting sign-in...");
-                    userId = getOrCreateLocalUserId(); // Get a local ID as a fallback/initial placeholder
-
-                    try {
-                        // Use __initial_auth_token provided by Canvas for seamless login
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            console.log("[onAuthStateChanged] Signing in with custom token...");
-                            await auth.signInWithCustomToken(__initial_auth_token);
-                        } else {
-                            // Fallback to anonymous sign-in if no custom token is available (e.g., local testing)
-                            console.log("[onAuthStateChanged] Signing in anonymously...");
-                            await auth.signInAnonymously();
-                        }
-                    } catch (error) {
-                        console.error("Firebase sign-in failed:", error);
-                        showConfirmModal('Failed to sign in. Some features may be limited.');
-                        // If sign-in fails, still try to load profile with local ID, but features might be restricted by rules
-                        await loadUserProfileFirebase(); 
-                    }
-                }
-            });
+            // Use a simple local user ID since Firebase is removed
+            userId = localStorage.getItem('tatti_local_userId');
+            if (!userId) {
+                userId = 'user_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('tatti_local_userId', userId);
+            }
+            console.log(`Using local userId: ${userId}`);
+            
+            await loadUserProfile();
 
             initDynamicBackground();
             setupPageSwitching();
             setupThemeSelection();
-            renderPlayerProfiles(playersData); // Initial render
+            renderPlayerProfiles(playersData);
             updateAnalyticsAndChart();
         }
 
         function updateAdminPanelUI() {
             const adminPinSection = document.getElementById('adminPinSection');
             const adminUserListSection = document.getElementById('adminUserListSection');
-            const userListContainer = document.getElementById('userListContainer');
-            const adminUserStoriesView = document.getElementById('adminUserStoriesView');
-            const revokeAdminBtn = document.getElementById('revokeAdminBtn');
-
+            
             if (isAdmin) {
                 adminPinSection.style.display = 'none';
                 adminUserListSection.style.display = 'block';
-                revokeAdminBtn.style.display = 'block';
-                userListContainer.style.display = 'flex';
-                adminUserStoriesView.style.display = 'none';
-                loadAllUserProfilesFirebase();
-                console.log("[updateAdminPanelUI] Admin UI enabled.");
             } else {
                 adminPinSection.style.display = 'flex';
                 adminUserListSection.style.display = 'none';
-                revokeAdminBtn.style.display = 'none';
-                adminUserStoriesView.style.display = 'none';
-                userListContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Enter PIN to view user list.</p>';
-                database.ref('users').off('value', handleAllUsersSnapshot);
-                storiesRef.off('value', handleAdminSpecificUserStoriesSnapshot);
-                console.log("[updateAdminPanelUI] Admin UI disabled.");
             }
         }
 
-        function startEditStory(storyId, currentText) {
-            const storyItem = document.querySelector(`.story-item[data-story-id="${storyId}"]`);
-            if (!storyItem) return;
-
-            const storyTextP = storyItem.querySelector('.story-text');
-            const storyActionsDiv = storyItem.querySelector('.story-actions');
-
-            storyTextP.contentEditable = true;
-            storyTextP.focus();
-            storyItem.classList.add('editing');
-
-            storyActionsDiv.innerHTML = '';
-
-            const saveButton = document.createElement('button');
-            saveButton.textContent = 'Save';
-            saveButton.className = 'save-story-btn';
-            saveButton.addEventListener('click', () => updateStoryInFirebase(storyId, storyTextP.textContent.trim()));
-            storyActionsDiv.appendChild(saveButton);
-
-            const cancelButton = document.createElement('button');
-            cancelButton.textContent = 'Cancel';
-            cancelButton.className = 'cancel-edit-btn';
-            cancelButton.addEventListener('click', () => {
-                storyTextP.textContent = currentText;
-                storyTextP.contentEditable = false;
-                storyItem.classList.remove('editing');
-                loadSharedStoriesFirebase();
-            });
-            storyActionsDiv.appendChild(cancelButton);
-        }
-
-        // Static Player Data - NOTE: Changes made via admin edit will NOT persist across sessions
-        // For persistent changes, this data would need to be moved to Firebase Realtime Database.
+        // Static Player Data
         const playersData = [
             { 
                 name: 'Naga Saki', 
                 status: 'online', 
                 tattiScore: 80, 
-                description: 'Naga Saki is considered the darkest person in the world. Their performance has been consistent, making them an important player for the team.',
-                pros: ['Respects their mother a lot.'],
-                cons: ['But makes many mistakes.'],
+                description: 'Naga Saki is known for their consistent performance and is a crucial player for the team. They are considered one of the most intense players.',
+                pros: ['Highly respects their mother.'],
+                cons: ['Prone to making many mistakes.'],
                 imageUrl: 'naga.png',
-                historicalEvidence: [ // Keeping this data structure, though not used on the new audio page
-                    { year: '2022', event: 'Discovered to have a unique ability to blend into shadows during night matches.' },
-                    { year: '2023', event: 'Led the team to an unexpected victory in the "Midnight Gauntlet" tournament.' },
-                    { year: '2024', event: 'Controversy arose after a "dark matter" incident, but no official charges were filed.' }
-                ]
             },
             { 
                 name: 'Ali Khan', 
                 status: 'offline', 
                 tattiScore: 99, 
-                description: 'Ali Khan has shown exceptional performance, placing them at the top. Some circles refer to them as "Tatti" or "Shishimaru". Their fictional father is Barfula Khan. This breed is primarily found in indoor environments.',
-                pros: ['Has many fathers.'],
-                cons: ['But only calls Shailu, Ishan, Rounak \'father\'.'],
+                description: 'Ali Khan demonstrates exceptional performance, consistently ranking at the top. They are sometimes referred to as "Tatti" or "Shishimaru" in certain circles. Their fictional father is Barfula Khan, and this player thrives in indoor environments.',
+                pros: ['Possesses many mentors/father figures.'],
+                cons: ['Only acknowledges Shailu, Ishan, and Rounak as "father" figures.'],
                 imageUrl: 'ali.png',
-                historicalEvidence: [
-                    { year: '2021', event: 'First appeared on the scene, quickly dominating local indoor circuits.' },
-                    { year: '2022', event: 'Achieved the highest "Tatti Score" ever recorded in a single season.' },
-                    { year: '2023', event: 'Rumored to have multiple mentors, leading to the "many fathers" nickname.' }
-                ]
             },
             { 
                 name: 'Nxt Figo', 
                 status: 'offline', 
                 tattiScore: 75, 
-                description: 'Nxt Figo is the most respected person in the Nxt group. His work is that he forced Nxt Sanya for self-happiness.',
-                pros: ['Everyone respects them.'],
-                cons: ['Sanya is their best friend.'],
+                description: 'Nxt Figo is the most respected member of the Nxt group. They are known for having influenced Nxt Sanya for personal gratification.',
+                pros: ['Highly respected by everyone.'],
+                cons: ['Sanya is their closest friend.'],
                 imageUrl: 'figo.png',
-                historicalEvidence: [
-                    { year: '2020', event: 'Founded the "Nxt" group, aiming to revolutionize player training.' },
-                    { year: '2021', event: 'Introduced controversial "happiness protocols" within the group, sparking debate.' },
-                    { year: '2022', event: 'Successfully led "Nxt" to become a prominent force in the player community.' }
-                ]
             },
             {
                 name: 'Rudy',
                 status: 'online',
                 tattiScore: 88,
-                description: 'Rudy, the "Punjab Ka Sher" of Indoor boxing, was born from the fierce spirit of Punjab. He\'s a famous boxer, known for his signature "Whoo Wooo Waa" cry and his unique choice of plastic underwear in public. Beyond the ring, he surprisingly possesses a keen understanding of data analytics,he is a model.',
-                pros: ['Very famous boxer', 'Wears plastic underwear in public (unique style)', 'Knows data analytics'],
-                cons: ['They only analyze data, not implement solutions'],
+                description: 'Rudy, the "Lion of Punjab" in indoor boxing, embodies the fierce spirit of Punjab. He is a renowned boxer, famous for his signature "Whoo Wooo Waa" cry and his peculiar habit of wearing plastic underwear in public. Surprisingly, outside the ring, he has a deep understanding of data analytics and also works as a model.',
+                pros: ['Very famous boxer.', 'Unique style, wears plastic underwear in public.', 'Skilled in data analytics.'],
+                cons: ['Only analyzes data, does not implement solutions.'],
                 imageUrl: 'rudy.png',
-                historicalEvidence: [
-                    { year: '2019', event: 'Rose to fame in the underground indoor boxing scene with his signature cry.' },
-                    { year: '2020', event: 'Began incorporating data analytics into his training, leading to unexpected victories.' },
-                    { year: '2022', event: 'Became a fashion icon after his plastic underwear choice went viral.' }
-                ]
             },
             {
                 name: 'Yuvi',
                 status: 'online',
                 tattiScore: 92,
-                description: 'Yuvi, a boy from Indoor, resembles a hamster and possesses the unique power of cutting trees with his destructive teeth. His father, a Spider-Man villain named Electro, gifted him a handmade electric bullet.',
-                pros: ['Girlfriend is Prostitute Jiya', 'God gave him chainsaw teeth'],
-                cons: ['Latringboy beats him everyday,he carry a football ,Owner of bullet but rides chetak '],
+                description: 'Yuvi, a boy from Indoor, resembles a hamster and possesses the unique ability to cut trees with his powerful teeth. His father, Electro (a Spider-Man villain), gifted him a handmade electric bullet.',
+                pros: ['His girlfriend is Jiya.', 'Possesses unique "chainsaw" teeth.'],
+                cons: ['Gets beaten daily by "Latringboy".', 'Carries a football everywhere.', 'Owns a powerful bullet but rides a scooter.'],
                  imageUrl: 'yuvi.png',
-                historicalEvidence: [
-                    { year: '2018', event: 'First documented instance of "chainsaw teeth" ability during a local deforestation project.' },
-                    { year: '2019', event: 'Received the "electric bullet" from his alleged father, Electro.' },
-                    { year: '2021', event: 'Controversies surrounding his relationship with "Prostitute Jiya" made headlines.' }
-                ]
             },
             {
                 name: 'Francture',
                 status: 'online',
                 tattiScore: 95,
-                description: 'Francture is a mythical creature from Japan named Kappa. He came to India to crack JEE and is a born chef. At night, he owns a sweet shop named "Francture ke Rasgulla". He wants to become an esport player but became an escort girl.',
-                pros: ['Looks like Kappa', 'Has a record of making 50 samosas naked'],
-                cons: ['His best friend is Ashiq', 'Has an iPhone but not a single bed'],
-                imageUrl: 'franky.png', // Placeholder image for Francture
-                historicalEvidence: [
-                    { year: '2017', event: 'Migrated from Japan to India with the ambitious goal of cracking the JEE exam.' },
-                    { year: '2018', event: 'Opened "Francture ke Rasgulla" sweet shop, becoming a local culinary sensation.' },
-                    { year: '2020', event: 'The infamous "50 naked samosas" challenge was completed, cementing his legend.' }
-                ]
+                description: 'Francture is a mythical creature from Japan known as Kappa. He came to India with the goal of passing the JEE exam and is a natural-born chef. At night, he runs a sweet shop called "Francture\'s Rasgulla". He aspired to be an esports player but ended up as an escort girl.',
+                pros: ['Resembles a Kappa.', 'Holds a record for making 50 samosas while unclothed.'],
+                cons: ['His best friend is Ashiq.', 'Owns an iPhone but doesn\'t have a proper bed.'],
+                imageUrl: 'franky.png',
+            },
+            {
+                name: 'Raja Hujjar',
+                status: 'busy',
+                tattiScore: 98,
+                description: "Raja Hujjar, also known as 'Heart Shooter', is a famous Instagram star. He claims to be Neeraj Pepsu's personal chef, for whom he used to make chili potatoes daily while wearing a supporter. He has a broken back, which prevents him from attending school, but he still flexes his back in his reels. His fan following surpasses even the 'Elvish Bhai system'.",
+                pros: ['Very kind-hearted (Heart Shooter).', 'Famous Instagram star with a large fan following.', 'Has not been a virgin since 7th grade.'],
+                cons: ["Flexes his broken back in reels.", "Always busy thinking about who to pick a fight with today.", "Plays with his brother's cricket kit (it's not stolen)."],
+                imageUrl: 'raja.png',
             }
         ];
 
-        /**
-         * Renders player profiles into the grid.
-         * Includes "Edit" button for admins.
-         * @param {Array<Object>} players The array of player data.
-         */
         function renderPlayerProfiles(players) {
             const playerProfilesGrid = document.getElementById('playerProfilesGrid');
             playerProfilesGrid.innerHTML = '';
@@ -3376,14 +1608,14 @@
                     <ul class="trait-list-pros">
                         ${player.pros.map(pro => `<li><i class="fas fa-check-circle" style="color: var(--status-success);"></i> ${pro}</li>`).join('')}
                     </ul>
-                ` : '<ul class="trait-list-pros"></ul>'; // Keep empty ul for consistency
+                ` : '<ul class="trait-list-pros"></ul>';
 
                 const consHtml = player.cons && player.cons.length > 0 ? `
                     <h3>Cons:</h3>
                     <ul class="trait-list-cons">
                         ${player.cons.map(con => `<li><i class="fas fa-times-circle" style="color: var(--status-danger);"></i> ${con}</li>`).join('')}
                     </ul>
-                ` : '<ul class="trait-list-cons"></ul>'; // Keep empty ul for consistency
+                ` : '<ul class="trait-list-cons"></ul>';
 
 
                 const profileCard = document.createElement('div');
@@ -3406,7 +1638,7 @@
                         ${prosHtml}
                         ${consHtml}
                         <ul class="trait-list">
-                            <li><i class="fas fa-star"></i> <strong>Tatti Score:</strong> <span class="player-score-display">${player.tattiScore}</span></li>
+                            <li><i class="fas fa-star"></i> <strong>Player Score:</strong> <span class="player-score-display">${player.tattiScore}</span></li>
                             <li><i class="fas fa-gamepad"></i> <strong>Favorite Game:</strong> <span class="player-fav-game-display">Not set</span></li>
                             <li><i class="fas fa-users"></i> <strong>Team Role:</strong> <span class="player-team-role-display">Player</span></li>
                             <li><i class="fas fa-fire"></i> <strong>Play Style:</strong> <span class="player-play-style-display">Adaptive</span></li>
@@ -3424,12 +1656,9 @@
             }
         }
 
-        /**
-         * Attaches event listeners for "Edit Player" buttons.
-         */
         function attachPlayerEditListeners() {
             document.querySelectorAll('.edit-player-btn').forEach(button => {
-                button.onclick = null; // Clear previous listeners
+                button.onclick = null;
                 button.addEventListener('click', (event) => {
                     const playerId = event.target.dataset.playerId;
                     const playerCard = event.target.closest('.profile-card');
@@ -3438,18 +1667,12 @@
             });
         }
 
-        /**
-         * Transforms a player card into an editable form.
-         * @param {string} playerId The ID of the player to edit.
-         * @param {HTMLElement} playerCard The HTML element of the player card.
-         */
         function startEditPlayer(playerId, playerCard) {
             const player = playersData.find(p => p.name.toLowerCase().replace(/\s/g, '-') === playerId);
             if (!player) return;
 
             playerCard.classList.add('editing');
 
-            // Store original values for cancel
             playerCard.dataset.originalName = player.name;
             playerCard.dataset.originalStatus = player.status;
             playerCard.dataset.originalScore = player.tattiScore;
@@ -3458,7 +1681,6 @@
             playerCard.dataset.originalCons = JSON.stringify(player.cons || []);
             playerCard.dataset.originalImageUrl = player.imageUrl || '';
 
-            // Replace display elements with input fields
             playerCard.querySelector('.player-name-display').innerHTML = `<input type="text" class="edit-player-name" value="${player.name}">`;
             playerCard.querySelector('.player-status-display').innerHTML = `
                 <select class="edit-player-status">
@@ -3471,7 +1693,6 @@
             playerCard.querySelector('.profile-description-display').innerHTML = `<textarea class="edit-player-description">${player.description}</textarea>`;
             playerCard.querySelector('.player-image-url-display').innerHTML = `<input type="text" class="edit-player-image-url" value="${player.imageUrl || ''}" placeholder="Image URL">`;
 
-            // For pros and cons, convert list items to editable textareas (simple approach)
             const prosList = playerCard.querySelector('.trait-list-pros');
             const consList = playerCard.querySelector('.trait-list-cons');
 
@@ -3483,23 +1704,16 @@
             `;
 
 
-            // Change buttons
             const playerActionsDiv = playerCard.querySelector('.player-actions');
             playerActionsDiv.innerHTML = `
                 <button class="save-player-btn" data-player-id="${playerId}">Save</button>
                 <button class="cancel-player-btn" data-player-id="${playerId}">Cancel</button>
             `;
 
-            // Attach new listeners for Save/Cancel
             playerActionsDiv.querySelector('.save-player-btn').addEventListener('click', () => savePlayerChanges(playerId, playerCard));
             playerActionsDiv.querySelector('.cancel-player-btn').addEventListener('click', () => cancelPlayerEdit(playerId, playerCard));
         }
 
-        /**
-         * Saves changes made to a player profile.
-         * @param {string} playerId The ID of the player being edited.
-         * @param {HTMLElement} playerCard The HTML element of the player card.
-         */
         function savePlayerChanges(playerId, playerCard) {
             const playerIndex = playersData.findIndex(p => p.name.toLowerCase().replace(/\s/g, '-') === playerId);
             if (playerIndex === -1) return;
@@ -3513,11 +1727,10 @@
             const newImageUrl = playerCard.querySelector('.edit-player-image-url').value.trim();
 
             if (!newName || isNaN(newScore) || newScore < 0 || newScore > 100) {
-                showConfirmModal('Please enter a valid player name and a Tatti Score between 0 and 100.');
+                showConfirmModal('Please enter a valid player name and a Player Score between 0 and 100.');
                 return;
             }
 
-            // Update the static playersData array
             playersData[playerIndex].name = newName;
             playersData[playerIndex].status = newStatus;
             playersData[playerIndex].tattiScore = newScore;
@@ -3526,19 +1739,12 @@
             playersData[playerIndex].cons = newCons;
             playersData[playerIndex].imageUrl = newImageUrl;
 
-            // Re-render all player profiles to reflect changes
             renderPlayerProfiles(playersData);
-            updateAnalyticsAndChart(); // Update chart with potentially changed scores
-            showConfirmModal('Player profile updated (session-only). For persistent changes, data needs to be in a database.');
+            updateAnalyticsAndChart();
+            showConfirmModal('Player profile updated (session-only).');
         }
 
-        /**
-         * Cancels editing a player profile and reverts to original values.
-         * @param {string} playerId The ID of the player being edited.
-         * @param {HTMLElement} playerCard The HTML element of the player card.
-         */
         function cancelPlayerEdit(playerId, playerCard) {
-            // Revert to original values using dataset attributes
             const originalName = playerCard.dataset.originalName;
             const originalStatus = playerCard.dataset.originalStatus;
             const originalScore = parseInt(playerCard.dataset.originalScore);
@@ -3558,9 +1764,8 @@
                 playersData[playerIndex].imageUrl = originalImageUrl;
             }
             
-            // Re-render all player profiles to revert
             renderPlayerProfiles(playersData);
-            updateAnalyticsAndChart(); // Update chart to reflect original scores
+            updateAnalyticsAndChart();
             showConfirmModal('Player profile edit cancelled.');
         }
 
@@ -3574,12 +1779,12 @@
             const chartData = [];
             const chartLabels = [];
             const chartColors = currentTheme === 'hacker' ? 
-                ['#00ff00', '#00cc00', '#009900', '#006600', '#003300'] : 
+                ['#00ff00', '#00cc00', '#009900', '#006600', '#003300', '#00ff88'] : 
                 currentTheme === 'royal' ? 
-                ['#9b59b6', '#8e44ad', '#6c3483', '#562d7c', '#401f5c'] :
+                ['#9b59b6', '#8e44ad', '#6c3483', '#562d7c', '#401f5c', '#e74c3c'] :
                 currentTheme === 'anime' ?
-                ['#89dceb', '#cba6f7', '#f5c2e7', '#b5a2e2', '#9786f0'] :
-                ['#00f0ff', '#8a2be2', '#ff00d0', '#00aaff', '#ffcc00'];
+                ['#89dceb', '#cba6f7', '#f5c2e7', '#b5a2e2', '#9786f0', '#f2cdcd'] :
+                ['#00f0ff', '#8a2be2', '#ff00d0', '#00aaff', '#ffcc00', '#ff6384'];
 
             sortedPlayers.forEach((player, index) => {
                 chartData.push(player.tattiScore);
@@ -3597,910 +1802,7 @@
             
             drawBarChart('playerBarChart', chartData, chartLabels, chartColors);
         }
-
-        // --- Historic Evidence Functions (formerly Audio Library) ---
-        // DOM Elements for Historic Evidence
-        const evidenceTitleInput = document.getElementById('evidenceTitle');
-        const audioFileInput = document.getElementById('audioFile');
-        const fileNameSpan = document.getElementById('fileName');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const uploadProgress = document.getElementById('uploadProgress');
-        const evidenceGrid = document.getElementById('evidenceGrid');
-        // const loadingOverlay = document.getElementById('loadingOverlay'); // This element doesn't exist in the current HTML
-        // const notification = document.getElementById('notification'); // This element doesn't exist in the current HTML
-        const uploadForm = document.getElementById('uploadForm');
-        const uploadSection = document.getElementById('uploadSection');
-        const noEvidenceMessage = document.getElementById('noEvidenceMessage');
-        const uploadRestrictedMessage = document.getElementById('uploadRestrictedMessage'); // New element
-        let selectedFile = null; // Declare selectedFile here
-
-        // Firebase References for Historic Evidence
-        const historicEvidenceRef = database.ref('historicEvidence'); // New Firebase node for historic evidence
-
-        // AudioContext and related objects
-        let audioCtx;
-        // Map to store audio elements, their contexts, and analysers by evidence ID
-        const audioPlayerInstances = new Map();
-
-        /**
-         * Renders the historic evidence from Firebase data.
-         */
-        function renderHistoricEvidence() {
-            console.log(`[renderHistoricEvidence] Function called. isAdmin: ${isAdmin}, userId: ${userId}`); 
-            
-            // Control visibility of upload section based on admin status
-            if (isAdmin) {
-                console.log("[renderHistoricEvidence] User is ADMIN. Showing upload section.");
-                uploadSection.style.display = 'block'; // Show for admins
-                uploadRestrictedMessage.style.display = 'none'; // Hide restricted message
-            } else {
-                console.log("[renderHistoricEvidence] User is NOT ADMIN. Hiding upload section.");
-                uploadSection.style.display = 'none'; // Hide for regular users
-                uploadRestrictedMessage.style.display = 'flex'; // Show restricted message
-            }
-
-            // Stop all currently playing audio before re-rendering
-            audioPlayerInstances.forEach(instance => {
-                if (!instance.audio.paused) {
-                    instance.audio.pause();
-                    instance.playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                }
-            });
-            audioPlayerInstances.clear(); // Clear the map
-
-            // showLoadingOverlay(true, "Loading evidence..."); // Commented out as loadingOverlay is not in HTML
-            
-            historicEvidenceRef.on('value', (snapshot) => {
-                evidenceGrid.innerHTML = ''; // Clear existing cards
-                const evidenceData = snapshot.val();
-                let hasVisibleEvidence = false;
-
-                if (evidenceData) {
-                    const evidenceArray = Object.keys(evidenceData).map(key => ({
-                        id: key,
-                        ...evidenceData[key]
-                    })).sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
-
-                    evidenceArray.forEach(evidence => {
-                        // Corrected logic:
-                        // If current user is admin, show all evidence.
-                        // If current user is NOT admin, only show evidence uploaded by the current user.
-                        if (isAdmin || (evidence.uploaderId === userId)) {
-                            const uploaderIsAdmin = allUsersAdminStatus[evidence.uploaderId] || false; // Still need this for the badge
-                            addEvidenceCard(evidence, uploaderIsAdmin); 
-                            hasVisibleEvidence = true;
-                        } else {
-                            console.log(`[renderHistoricEvidence] Hiding evidence '${evidence.title}' (ID: ${evidence.id}) from non-admin user. Uploader: ${evidence.uploaderId}, Current User: ${userId}`);
-                        }
-                    });
-                }
-
-                if (!hasVisibleEvidence) {
-                    noEvidenceMessage.style.display = 'block';
-                } else {
-                    noEvidenceMessage.style.display = 'none';
-                }
-                // showLoadingOverlay(false); // Commented out as loadingOverlay is not in HTML
-            }, (error) => {
-                console.error("Error loading evidence:", error);
-                // showNotification("Failed to load evidence.", "error"); // Commented out as notification is not in HTML
-                // showLoadingOverlay(false); // Commented out as loadingOverlay is not in HTML
-            });
-        }
-
-        /**
-         * Adds a new evidence card to the grid.
-         * @param {Object} evidence The evidence object from Firebase.
-         * @param {boolean} uploaderIsAdmin True if the uploader of this evidence is an admin.
-         */
-        function addEvidenceCard(evidence, uploaderIsAdmin) {
-            const card = document.createElement('div');
-            card.className = 'evidence-card';
-            card.dataset.id = evidence.id;
-            
-            // Format timestamp
-            const date = evidence.timestamp ? new Date(evidence.timestamp).toLocaleDateString() : 'Unknown Date';
-            const time = evidence.timestamp ? new Date(evidence.timestamp).toLocaleTimeString() : 'Unknown Time';
-
-            let deleteButtonHtml = '';
-            // Only show delete button if current user is admin OR the uploader
-            if (isAdmin || evidence.uploaderId === userId) {
-                deleteButtonHtml = `
-                    <div class="evidence-actions">
-                        <button class="delete-evidence-btn" data-id="${evidence.id}" data-file-url="${evidence.url}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                `;
-            }
-            
-            // Display "Admin" badge next to uploader's name if they are an admin
-            const uploaderDisplay = `${evidence.uploadedBy || 'Anonymous'} ${uploaderIsAdmin ? '<span class="admin-badge-mini">(Admin)</span>' : ''}`;
-
-            card.innerHTML = `
-                <div class="card-header">
-                    <h3 class="evidence-title">${evidence.title}</h3>
-                    <div class="evidence-meta">
-                        <span><i class="fas fa-calendar-alt"></i> ${date}</span>
-                        <span><i class="fas fa-clock"></i> ${time}</span>
-                        <span><i class="fas fa-user"></i> ${uploaderDisplay}</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="visualization-container">
-                        <canvas class="visualization-canvas" id="canvas-${evidence.id}"></canvas>
-                    </div>
-                    <div class="audio-controls">
-                        <button class="control-btn skip-back-btn" data-id="${evidence.id}">
-                            <i class="fas fa-step-backward"></i>
-                        </button>
-                        <button class="control-btn play-btn" id="playBtn-${evidence.id}" data-id="${evidence.id}">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <button class="control-btn skip-forward-btn" data-id="${evidence.id}">
-                            <i class="fas fa-step-forward"></i>
-                        </button>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" data-id="${evidence.id}">
-                            <div class="progress" id="progress-${evidence.id}"></div>
-                        </div>
-                        <div class="time-info">
-                            <span class="current-time">0:00</span>
-                            <span class="duration">0:00</span>
-                        </div>
-                    </div>
-                    ${deleteButtonHtml}
-                </div>
-            `;
-            evidenceGrid.appendChild(card);
-
-            // Setup player controls for the new card
-            setupPlayerControls(evidence.id, evidence.url);
-
-            // Attach event listener for delete button
-            if (deleteButtonHtml) {
-                card.querySelector('.delete-evidence-btn').addEventListener('click', function() {
-                    const id = this.dataset.id;
-                    const fileUrl = this.dataset.fileUrl;
-                    showConfirmModal('Are you sure you want to delete this evidence? This action cannot be undone.', async () => {
-                        await deleteEvidence(id, fileUrl);
-                    });
-                });
-            }
-        }
-
-        /**
-         * Sets up custom player controls and audio visualization for a given evidence ID.
-         * @param {string} id The ID of the evidence.
-         * @param {string} audioUrl The URL of the audio file.
-         */
-        function setupPlayerControls(id, audioUrl) {
-            const playBtn = document.getElementById(`playBtn-${id}`);
-            const skipBackBtn = playBtn.previousElementSibling;
-            const skipForwardBtn = playBtn.nextElementSibling;
-            const progressDiv = document.getElementById(`progress-${id}`);
-            const progressBar = progressDiv.parentElement;
-            const currentTimeEl = progressBar.nextElementSibling.querySelector('.current-time');
-            const durationEl = progressBar.nextElementSibling.querySelector('.duration');
-            const canvas = document.getElementById(`canvas-${id}`);
-            const ctx = canvas.getContext('2d');
-
-            // Initialize AudioContext if it hasn't been already
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            const audio = new Audio(audioUrl);
-            const source = audioCtx.createMediaElementSource(audio);
-            const analyser = audioCtx.createAnalyser();
-            source.connect(analyser);
-            analyser.connect(audioCtx.destination);
-            analyser.fftSize = 256; // Adjust for more or less detail
-            
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-
-            // Store instance details
-            audioPlayerInstances.set(id, {
-                audio: audio,
-                analyser: analyser,
-                dataArray: dataArray,
-                canvas: canvas,
-                ctx: ctx,
-                playBtn: playBtn,
-                progressBar: progressBar,
-                progressDiv: progressDiv,
-                currentTimeEl: currentTimeEl,
-                durationEl: durationEl,
-                animationFrameId: null // To store the requestAnimationFrame ID
-            });
-
-            // Set canvas size
-            const container = canvas.parentElement;
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
-
-            // Format time utility
-            const formatTime = (seconds) => {
-                const mins = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            };
-
-            // Visualization function
-            const drawVisualization = (instance) => {
-                instance.animationFrameId = requestAnimationFrame(() => drawVisualization(instance));
-                
-                // If audio is paused, stop drawing
-                if (instance.audio.paused) {
-                    cancelAnimationFrame(instance.animationFrameId);
-                    instance.animationFrameId = null;
-                    return;
-                }
-
-                instance.analyser.getByteFrequencyData(instance.dataArray);
-                
-                const canvas = instance.canvas;
-                const ctx = instance.ctx;
-                const bufferLength = instance.analyser.frequencyBinCount;
-                const dataArray = instance.dataArray;
-
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw waveform
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = `rgba(106, 90, 249, ${instance.audio.volume})`; // Use HE accent color
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = 'var(--he-accent-glow)';
-                ctx.beginPath();
-                
-                const sliceWidth = canvas.width * 1.0 / bufferLength;
-                let x = 0;
-                
-                for (let i = 0; i < bufferLength; i++) {
-                    const v = dataArray[i] / 128.0;
-                    const y = v * canvas.height / 2;
-                    
-                    if (i === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                    
-                    x += sliceWidth;
-                }
-                
-                ctx.lineTo(canvas.width, canvas.height / 2);
-                ctx.stroke();
-                
-                // Draw particles
-                const particleCount = 20; // Fewer particles for performance
-                for (let i = 0; i < particleCount; i++) {
-                    const index = Math.floor(Math.random() * bufferLength);
-                    const value = dataArray[index] / 255;
-                    const radius = value * 10 + 1; // Smaller max radius
-                    const xPos = Math.random() * canvas.width;
-                    const yPos = canvas.height - (Math.random() * canvas.height * value);
-                    
-                    ctx.beginPath();
-                    ctx.arc(xPos, yPos, radius, 0, 2 * Math.PI);
-                    ctx.fillStyle = `rgba(138, 127, 255, ${value * 0.5})`; // Use HE accent-light with lower opacity
-                    ctx.fill();
-                }
-            };
-
-            // Play/Pause button logic
-            playBtn.addEventListener('click', () => {
-                // Pause any currently playing audio
-                audioPlayerInstances.forEach((instance, key) => {
-                    if (key !== id && !instance.audio.paused) {
-                        instance.audio.pause();
-                        instance.playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                        if (instance.animationFrameId) {
-                            cancelAnimationFrame(instance.animationFrameId);
-                            instance.animationFrameId = null;
-                        }
-                    }
-                });
-
-                if (audio.paused) {
-                    audio.play().catch(e => console.error("Audio play failed:", e));
-                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                    drawVisualization(audioPlayerInstances.get(id));
-                } else {
-                    audio.pause();
-                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    if (audioPlayerInstances.get(id).animationFrameId) {
-                        cancelAnimationFrame(audioPlayerInstances.get(id).animationFrameId);
-                        audioPlayerInstances.get(id).animationFrameId = null;
-                    }
-                }
-            });
-
-            // Skip back button logic
-            skipBackBtn.addEventListener('click', () => {
-                audio.currentTime = Math.max(0, audio.currentTime - 10); // Skip back 10 seconds
-            });
-
-            // Skip forward button logic
-            skipForwardBtn.addEventListener('click', () => {
-                audio.currentTime = Math.min(audio.duration, audio.currentTime + 10); // Skip forward 10 seconds
-            });
-
-            // Update progress as audio plays
-            audio.addEventListener('timeupdate', () => {
-                const percent = (audio.currentTime / audio.duration) * 100;
-                progressDiv.style.width = `${percent}%`;
-                currentTimeEl.textContent = formatTime(audio.currentTime);
-            });
-
-            // Set audio duration when metadata is loaded
-            audio.addEventListener('loadedmetadata', () => {
-                durationEl.textContent = formatTime(audio.duration);
-            });
-
-            // Click on progress bar to seek
-            progressBar.addEventListener('click', (e) => {
-                const rect = progressBar.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const percent = clickX / rect.width;
-                audio.currentTime = percent * audio.duration;
-            });
-
-            // Reset when audio ends
-            audio.addEventListener('ended', () => {
-                playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                progressDiv.style.width = '0%';
-                currentTimeEl.textContent = '0:00';
-                if (audioPlayerInstances.get(id).animationFrameId) {
-                    cancelAnimationFrame(audioPlayerInstances.get(id).animationFrameId);
-                    audioPlayerInstances.get(id).animationFrameId = null;
-                }
-            });
-
-            // Handle window resize for canvas
-            window.addEventListener('resize', () => {
-                const instance = audioPlayerInstances.get(id);
-                if (instance) {
-                    const container = instance.canvas.parentElement;
-                    instance.canvas.width = container.clientWidth;
-                    instance.canvas.height = container.clientHeight;
-                    // Redraw visualization if playing
-                    if (!instance.audio.paused && !instance.animationFrameId) {
-                         drawVisualization(instance);
-                    }
-                }
-            });
-        }
-
-        // Function to delete evidence from Firebase Realtime Database and Storage
-        async function deleteEvidence(evidenceId, fileUrl) {
-            if (!userId) {
-                showConfirmModal('You must be logged in to delete evidence.');
-                return;
-            }
-
-            try {
-                // Get the evidence data from Realtime Database to verify uploaderId
-                const evidenceSnapshot = await historicEvidenceRef.child(evidenceId).once('value');
-                const evidenceData = evidenceSnapshot.val();
-
-                if (!evidenceData) {
-                    showConfirmModal('Evidence not found.');
-                    return;
-                }
-
-                // Check if current user is the uploader or an admin
-                if (evidenceData.uploaderId === userId || isAdmin) {
-                    // 1. Delete from Firebase Storage
-                    const storageRef = storage.refFromURL(fileUrl);
-                    await storageRef.delete();
-                    console.log(`[deleteEvidence] File deleted from Storage: ${fileUrl}`);
-
-                    // 2. Delete from Firebase Realtime Database
-                    await historicEvidenceRef.child(evidenceId).remove();
-                    console.log(`[deleteEvidence] Evidence metadata deleted from Realtime Database: ${evidenceId}`);
-
-                    showConfirmModal('Evidence deleted successfully!');
-                    renderHistoricEvidence(); // Re-render the list to reflect changes
-                } else {
-                    showConfirmModal('You are not authorized to delete this evidence.');
-                }
-            } catch (error) {
-                console.error("Error deleting evidence:", error);
-                showConfirmModal('Failed to delete evidence. Please try again.');
-            }
-        }
-
-        // Replace the existing uploadEvidence function with this enhanced version
-        async function uploadEvidence() {
-            if (!auth.currentUser) {
-                showConfirmModal('You must be logged in to upload evidence.');
-                return;
-            }
-
-            const title = evidenceTitleInput.value.trim();
-            const validationMessage = document.getElementById('fileValidation');
-            
-            // Reset validation message
-            validationMessage.textContent = '';
-            validationMessage.className = 'file-validation-message';
-            
-            if (!title) {
-                validationMessage.textContent = 'Please enter a title for the evidence';
-                validationMessage.classList.add('error');
-                evidenceTitleInput.focus();
-                return;
-            }
-            
-            if (!selectedFile) {
-                validationMessage.textContent = 'Please select an audio file';
-                validationMessage.classList.add('error');
-                return;
-            }
-            
-            // Validate file type
-            const validTypes = ['audio/mp3', 'audio/wav', 'audio/mpeg'];
-            if (!validTypes.includes(selectedFile.type)) {
-                validationMessage.textContent = 'Invalid file type. Please upload MP3 or WAV files only.';
-                validationMessage.classList.add('error');
-                return;
-            }
-            
-            // Validate file size
-            if (selectedFile.size > MAX_FILE_SIZE) {
-                validationMessage.textContent = `File too large. Maximum size is ${formatFileSize(MAX_FILE_SIZE)}.`;
-                validationMessage.classList.add('error');
-                return;
-            }
-
-            // Sanitize file name (remove invalid chars for Firebase paths)
-            const sanitizedFileName = selectedFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-            
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            document.querySelector('.progress-container').style.display = 'block';
-            
-            // Show cancel button (assume you add <button id="cancelUploadBtn" style="display:none;">Cancel</button> in HTML)
-            const cancelBtn = document.getElementById('cancelUploadBtn');
-            if (cancelBtn) {
-                cancelBtn.style.display = 'block';
-                cancelBtn.onclick = cancelUpload;
-            }
-            
-            try {
-                // Check if file already exists
-                const storageRef = storage.ref(`historic_audio/${userId}/${sanitizedFileName}`);
-                const fileExists = await checkFileExists(storageRef);
-                
-                if (fileExists) {
-                    const overwrite = await showConfirmModal(
-                        `A file with name "${sanitizedFileName}" already exists. Overwrite?`
-                    );
-                    if (!overwrite) {
-                        resetUploadForm();
-                        return;
-                    }
-                }
-                
-                // Start upload
-                uploadStartTime = Date.now();
-                lastUpdateTime = uploadStartTime;
-                lastUploaded = 0;
-                uploadTask = storageRef.put(selectedFile);
-                
-                // Set timeout to cancel if too slow
-                const timeoutId = setTimeout(() => {
-                    if (uploadTask && uploadTask.snapshot.state === 'running') {
-                        uploadTask.cancel();
-                        showConfirmModal('Upload timed out after 5 minutes.');
-                    }
-                }, UPLOAD_TIMEOUT);
-                
-                uploadTask.on('state_changed', 
-                    (snapshot) => {
-                        const currentTime = Date.now();
-                        if (currentTime - lastProgressUpdate < PROGRESS_UPDATE_INTERVAL) return; // Debounce
-                        
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        const deltaTime = Math.max((currentTime - lastUpdateTime) / 1000, 0.1); // Avoid divide by zero
-                        const deltaBytes = snapshot.bytesTransferred - lastUploaded;
-                        const uploadSpeed = (deltaBytes / deltaTime) / (1024 * 1024); // MB/s
-                        
-                        const eta = calculateETA(uploadSpeed, snapshot.totalBytes - snapshot.bytesTransferred);
-                        
-                        // Update UI
-                        updateProgressUI(progress, uploadSpeed, eta);
-                        
-                        lastUpdateTime = currentTime;
-                        lastUploaded = snapshot.bytesTransferred;
-                        lastProgressUpdate = currentTime;
-                    }, 
-                    (error) => {
-                        console.error("Upload failed:", error);
-                        let errorMessage = 'Upload failed';
-                        
-                        switch(error.code) {
-                            case 'storage/unauthorized':
-                                errorMessage = 'You don\'t have permission to upload files';
-                                break;
-                            case 'storage/canceled':
-                                errorMessage = 'Upload canceled';
-                                break;
-                            case 'storage/unknown':
-                                errorMessage = 'Unknown error occurred';
-                                break;
-                            case 'storage/quota-exceeded':
-                                errorMessage = 'Storage quota exceeded';
-                                break;
-                        }
-                        
-                        showConfirmModal(errorMessage);
-                        clearTimeout(timeoutId);
-                        resetUploadForm();
-                    }, 
-                    async () => {
-                        clearTimeout(timeoutId);
-                        try {
-                            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                            
-                            // Save evidence metadata
-                            await historicEvidenceRef.push({
-                                title: title,
-                                url: downloadURL,
-                                fileName: sanitizedFileName,
-                                fileSize: selectedFile.size,
-                                fileType: selectedFile.type,
-                                uploadedBy: userDisplayName,
-                                uploaderId: userId, // Use authenticated userId
-                                timestamp: firebase.database.ServerValue.TIMESTAMP
-                            });
-                            
-                            showConfirmModal('Evidence uploaded successfully!');
-                            resetUploadForm();
-                            // Refresh evidence list (implement if needed)
-                            renderHistoricEvidence(); // Call renderHistoricEvidence to refresh
-                        } catch (error) {
-                            console.error("Error saving metadata:", error);
-                            showConfirmModal('Error saving evidence metadata. The file was uploaded but may not appear in the list.');
-                            resetUploadForm();
-                        }
-                    }
-                );
-            } catch (error) {
-                console.error("Upload initialization error:", error);
-                showConfirmModal('Error starting upload process');
-                resetUploadForm();
-            }
-        }
-
-        // Helper to cancel upload
-        function cancelUpload() {
-            if (uploadTask && uploadTask.snapshot.state === 'running') {
-                uploadTask.cancel();
-                showConfirmModal('Upload canceled by user.');
-                resetUploadForm();
-            }
-        }
-
-        // Helper to update progress UI
-        function updateProgressUI(progress, speed, eta) {
-            uploadProgress.style.width = `${progress}%`;
-            document.getElementById('uploadPercentage').textContent = `${progress.toFixed(1)}%`;
-            document.getElementById('uploadSpeed').textContent = `${speed.toFixed(2)} MB/s`;
-            document.getElementById('uploadETA').textContent = eta; // Assume you add <span id="uploadETA">-</span> in HTML
-        }
-
-        // Helper to calculate ETA
-        function calculateETA(speed, remainingBytes) {
-            if (speed <= 0) return 'Calculating...';
-            const etaSeconds = remainingBytes / (speed * 1024 * 1024);
-            if (etaSeconds < 60) return `${Math.round(etaSeconds)} seconds`;
-            return `${Math.round(etaSeconds / 60)} minutes`;
-        }
-
-        // Helper function to check if file exists (unchanged)
-        async function checkFileExists(storageRef) {
-            try {
-                await storageRef.getDownloadURL();
-                return true;
-            } catch (error) {
-                if (error.code === 'storage/object-not-found') {
-                    return false;
-                }
-                throw error;
-            }
-        }
-
-        // Helper function to format file size (unchanged)
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' bytes';
-            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-            else return (bytes / 1048576).toFixed(1) + ' MB';
-        }
-
-        // Reset upload form (enhanced to hide cancel button)
-        function resetUploadForm() {
-            uploadForm.reset();
-            fileNameSpan.textContent = 'Select audio file';
-            selectedFile = null;
-            uploadProgress.style.width = '0%';
-            document.getElementById('uploadPercentage').textContent = '0%';
-            document.getElementById('uploadSpeed').textContent = '-';
-            document.getElementById('uploadETA').textContent = '-'; // Reset ETA
-            document.querySelector('.progress-container').style.display = 'none';
-            
-            const cancelBtn = document.getElementById('cancelUploadBtn');
-            if (cancelBtn) cancelBtn.style.display = 'none';
-            
-            uploadBtn.disabled = false;
-            uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Evidence';
-            document.getElementById('fileValidation').textContent = '';
-        }
-
-        // Update the file input change listener (enhanced with button disable logic)
-        if (audioFileInput) {
-            audioFileInput.addEventListener('change', (e) => {
-                const validationMessage = document.getElementById('fileValidation');
-                validationMessage.textContent = '';
-                validationMessage.className = 'file-validation-message';
-                
-                if (e.target.files[0]) {
-                    selectedFile = e.target.files[0];
-                    fileNameSpan.textContent = selectedFile.name;
-                    
-                    // Enable upload button only if valid
-                    uploadBtn.disabled = !(selectedFile && evidenceTitleInput.value.trim());
-                    
-                    // Show file info
-                    validationMessage.textContent = `File: ${selectedFile.name} (${formatFileSize(selectedFile.size)})`;
-                    validationMessage.classList.add('success');
-                } else {
-                    selectedFile = null;
-                    fileNameSpan.textContent = 'Select audio file';
-                    uploadBtn.disabled = true;
-                }
-            });
-        }
-
-        // Enable/disable upload button based on form validity (unchanged)
-        if (evidenceTitleInput) {
-            evidenceTitleInput.addEventListener('input', () => {
-                uploadBtn.disabled = !(selectedFile && evidenceTitleInput.value.trim());
-            });
-        }
-
-
-        // --- Polls Functions ---
-
-        const pollsRef = database.ref('polls');
-
-        async function addPollToFirebase(question, options) {
-            if (!userId) {
-                showConfirmModal('You must be logged in to create polls.');
-                return;
-            }
-            if (!userDisplayName || userDisplayName === userId) {
-                 showConfirmModal('Please set your display name first to create polls.');
-                 return;
-            }
-
-            const createPollBtn = document.querySelector('.create-poll-btn');
-            const createPollLoader = document.getElementById('createPollLoader');
-            createPollBtn.disabled = true;
-            createPollLoader.style.display = 'block';
-
-            try {
-                const newPollRef = pollsRef.push();
-                const pollData = {
-                    question: question,
-                    options: options.map(opt => ({ text: opt.text, imageUrl: opt.imageUrl || '' })),
-                    votes: {},
-                    creatorId: userId, // Use authenticated userId
-                    creatorDisplayName: userDisplayName,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                };
-
-                options.forEach((_, index) => {
-                    pollData.votes[index] = 0;
-                });
-
-                await newPollRef.set(pollData);
-                document.getElementById('pollQuestion').value = '';
-                const pollOptionsContainer = document.getElementById('pollOptionsContainer');
-                pollOptionsContainer.innerHTML = `
-                    <div class="poll-option-item">
-                        <input type="text" class="poll-option-text" placeholder="Option 1 Text" required>
-                        <input type="text" class="poll-option-image-url" placeholder="Option 1 Image URL (Optional)">
-                        <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
-                    </div>
-                    <div class="poll-option-item">
-                        <input type="text" class="poll-option-image-url" placeholder="Option 2 Image URL (Optional)">
-                        <input type="text" class="poll-option-text" placeholder="Option 2 Text" required>
-                        <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
-                    </div>
-                `; 
-                attachRemoveOptionListeners();
-                showConfirmModal('Poll created successfully!');
-                console.log(`[addPollToFirebase] Poll created by ${userId}`);
-            } catch (error) {
-                console.error('Error adding poll to Firebase:', error);
-                showConfirmModal('Failed to create poll. Please try again.');
-            } finally {
-                createPollBtn.disabled = false;
-                createPollLoader.style.display = 'none';
-            }
-        }
-
-        function loadPollsFirebase() {
-            const activePollsContainer = document.getElementById('activePollsContainer');
-            activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading polls...</p>';
-            pollsRef.off('value', handlePollsSnapshot);
-            pollsRef.on('value', handlePollsSnapshot, (error) => {
-                console.error("Error loading polls from Firebase:", error);
-                activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--status-danger);">Error loading polls.</p>';
-            });
-            console.log("[loadPollsFirebase] Loading all polls.");
-        }
-
-        function handlePollsSnapshot(snapshot) {
-            const activePollsContainer = document.getElementById('activePollsContainer');
-            const pollsData = snapshot.val();
-            activePollsContainer.innerHTML = '';
-
-            if (pollsData) {
-                const pollsArray = Object.keys(pollsData).map(key => ({
-                    id: key,
-                    ...pollsData[key]
-                })).sort((a, b) => b.timestamp - a.timestamp);
-
-                if (pollsArray.length === 0) {
-                    activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No active polls found.</p>';
-                    return;
-                }
-
-                pollsArray.forEach(poll => {
-                    const pollItem = document.createElement('div');
-                    pollItem.className = 'poll-item';
-                    pollItem.dataset.pollId = poll.id;
-
-                    let optionsHtml = '';
-                    let totalVotes = 0;
-                    if (poll.votes) {
-                        totalVotes = Object.values(poll.votes).reduce((sum, count) => sum + count, 0);
-                    }
-
-                    poll.options.forEach((option, index) => {
-                        const voteCount = poll.votes ? (poll.votes[index] || 0) : 0;
-                        const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100).toFixed(1) : 0;
-                        const imageUrl = option.imageUrl || 'https://placehold.co/50x50/1a2539/e0f7ff?text=No+Img';
-
-                        const isVoted = poll.votedBy && poll.votedBy[userId] !== undefined && poll.votedBy[userId] === index;
-                        const isDisabled = poll.votedBy && poll.votedBy[userId] !== undefined;
-
-                        optionsHtml += `
-                            <label class="poll-option ${isVoted ? 'voted' : ''}">
-                                <div class="poll-progress-bar" style="width: ${percentage}%;"></div>
-                                <input type="radio" name="poll-${poll.id}" value="${index}" data-poll-id="${poll.id}" ${isVoted ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
-                                <img src="${imageUrl}" alt="Option Image" onerror="this.onerror=null;this.src='https://placehold.co/50x50/1a2539/e0f7ff?text=No+Img';">
-                                <span>${option.text}</span>
-                                <span class="poll-vote-count">${voteCount} votes (${percentage}%)</span>
-                            </label>
-                        `;
-                    });
-
-                    let actionsHtml = '';
-                    if (poll.creatorId === userId || isAdmin) {
-                        actionsHtml = `
-                            <div class="poll-actions">
-                                <button data-poll-id="${poll.id}" class="delete-poll-btn">Delete Poll</button>
-                            </div>
-                        `;
-                    }
-
-                    pollItem.innerHTML = `
-                        <div class="poll-question">${poll.question}</div>
-                        <div class="poll-options">
-                            ${optionsHtml}
-                        </div>
-                        <div class="poll-meta">Created by: ${poll.creatorDisplayName || 'Anonymous'} on ${new Date(poll.timestamp).toLocaleString()}</div>
-                        ${actionsHtml}
-                    `;
-                    activePollsContainer.appendChild(pollItem);
-                });
-                attachPollActionListeners();
-            } else {
-                activePollsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No active polls found.</p>';
-            }
-        }
-
-        async function handlePollVote(pollId, optionIndex) {
-            if (!userId) {
-                showConfirmModal('You must be logged in to vote on polls.');
-                return;
-            }
-
-            const pollRef = database.ref('polls/' + pollId);
-
-            try {
-                const snapshot = await pollRef.once('value');
-                const poll = snapshot.val();
-
-                if (!poll) {
-                    showConfirmModal('Poll not found.');
-                    return;
-                }
-
-                if (poll.votedBy && poll.votedBy[userId] !== undefined) {
-                    showConfirmModal('You have already voted on this poll.');
-                    return;
-                }
-
-                const newVotes = { ...poll.votes };
-                newVotes[optionIndex] = (newVotes[optionIndex] || 0) + 1;
-
-                const newVotedBy = { ...poll.votedBy, [userId]: optionIndex };
-
-                const updates = {
-                    votes: newVotes,
-                    votedBy: newVotedBy
-                };
-                await pollRef.update(updates);
-                showConfirmModal('Your vote has been recorded!');
-                console.log(`[handlePollVote] User ${userId} voted on poll ${pollId}, option ${optionIndex}`);
-            } catch (error) {
-                console.error('Error casting vote:', error);
-                showConfirmModal('Failed to cast vote. Please try again.');
-            }
-        }
-
-        async function deletePollFromFirebase(pollId) {
-            if (!userId) {
-                showConfirmModal('You must be logged in to delete polls.');
-                return;
-            }
-            try {
-                const pollRef = database.ref('polls/' + pollId);
-                const snapshot = await pollRef.once('value');
-                const poll = snapshot.val();
-
-                if (poll && (poll.creatorId === userId || isAdmin)) {
-                    await pollRef.remove();
-                    showConfirmModal('Poll deleted successfully!');
-                    console.log(`[deletePollFromFirebase] Poll ${pollId} deleted by ${userId}`);
-                } else {
-                    showConfirmModal('You are not authorized to delete this poll.');
-                }
-            } catch (error) {
-                console.error('Error deleting poll from Firebase:', error);
-                showConfirmModal('Failed to delete poll. Please try again.');
-            }
-        }
-
-        function attachPollActionListeners() {
-            document.querySelectorAll('.poll-option input[type="radio"]').forEach(radio => {
-                radio.onclick = null;
-                if (!radio.disabled) {
-                    radio.addEventListener('change', (event) => {
-                        const pollId = event.target.dataset.pollId;
-                        const optionIndex = parseInt(event.target.value);
-                        handlePollVote(pollId, optionIndex);
-                    });
-                }
-            });
-
-            document.querySelectorAll('.delete-poll-btn').forEach(button => {
-                button.onclick = null;
-                button.addEventListener('click', (event) => {
-                    const pollId = event.target.dataset.pollId;
-                    showConfirmModal('Are you sure you want to delete this poll?', async () => {
-                        await deletePollFromFirebase(pollId);
-                    });
-                });
-            });
-        }
-
+        
         // --- Side Drawer Logic ---
         const sideDrawer = document.getElementById('sideDrawer');
         const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -4529,17 +1831,8 @@
                     const targetPage = document.getElementById(targetId);
                     if (targetPage) {
                         targetPage.classList.add('active-page');
-                        console.log(`[setupPageSwitching] Navigated to: ${targetId}`); // Debug log
                         if (targetId === 'analytics-page') {
                             updateAnalyticsAndChart();
-                        } else if (targetId === 'what-if-page') {
-                            loadSharedStoriesFirebase();
-                        } else if (targetId === 'community-stories-page') {
-                            loadAllStoriesFirebase();
-                        } else if (targetId === 'polls-page') {
-                            loadPollsFirebase();
-                        } else if (targetId === 'audio-library-page') { 
-                            renderHistoricEvidence(); 
                         } else if (targetId === 'settings-page') {
                             updateAdminPanelUI();
                         }
@@ -4570,25 +1863,11 @@
                 return;
             }
 
-            const success = await saveUserDisplayNameFirebase(name);
-            if (success) {
-                hideWelcomeModal();
-                showMainContent();
-                // Re-load data for currently active page after welcome modal is dismissed
-                const activePageElement = document.querySelector('.page-content.active-page');
-                if (activePageElement) {
-                    const activePageId = activePageElement.id;
-                    if (activePageId === 'what-if-page') {
-                        loadSharedStoriesFirebase();
-                    } else if (activePageId === 'community-stories-page') {
-                        loadAllStoriesFirebase();
-                    } else if (activePageId === 'polls-page') {
-                        loadPollsFirebase();
-                    } else if (activePageId === 'audio-library-page') {
-                        renderHistoricEvidence(); 
-                    }
-                }
-            }
+            const profileData = { displayName: name, isAdmin, theme: currentTheme };
+            await saveUserProfile(profileData);
+            
+            hideWelcomeModal();
+            showMainContent();
         }
 
         function hideWelcomeModal() {
@@ -4610,8 +1889,8 @@
             document.querySelectorAll('.theme-btn').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const themeName = event.currentTarget.dataset.theme;
-                    applyTheme(themeName);
-                    await saveThemeFirebase(themeName);
+                    const profileData = { displayName: userDisplayName, isAdmin, theme: themeName };
+                    await saveUserProfile(profileData);
                 });
             });
         }
@@ -4644,70 +1923,18 @@
             }
         }
 
-        function attachAddRemoveOptionListeners() {
-            const addOptionBtn = document.getElementById('addOptionBtn');
-            const pollOptionsContainer = document.getElementById('pollOptionsContainer');
-
-            addOptionBtn.onclick = null;
-            addOptionBtn.addEventListener('click', () => {
-                const optionCount = pollOptionsContainer.children.length + 1;
-                const newOptionItem = document.createElement('div');
-                newOptionItem.className = 'poll-option-item';
-                newOptionItem.innerHTML = `
-                    <input type="text" class="poll-option-text" placeholder="Option ${optionCount} Text" required>
-                    <input type="text" class="poll-option-image-url" placeholder="Option ${optionCount} Image URL (Optional)">
-                    <button type="button" class="remove-option-btn" title="Remove this option"><i class="fas fa-minus-circle"></i></button>
-                `;
-                pollOptionsContainer.appendChild(newOptionItem);
-                attachRemoveOptionListeners();
-            });
-
-            attachRemoveOptionListeners();
-        }
-
-        function attachRemoveOptionListeners() {
-            document.querySelectorAll('.remove-option-btn').forEach(button => {
-                button.onclick = null;
-                button.addEventListener('click', (event) => {
-                    const pollOptionsContainer = document.getElementById('pollOptionsContainer');
-                    if (pollOptionsContainer.children.length > 2) {
-                        event.target.closest('.poll-option-item').remove();
-                        Array.from(pollOptionsContainer.children).forEach((item, index) => {
-                            item.querySelector('.poll-option-text').placeholder = `Option ${index + 1} Text`;
-                            item.querySelector('.poll-option-image-url').placeholder = `Option ${index + 1} Image URL (Optional)`;
-                        });
-                    } else {
-                        showConfirmModal('A poll must have at least two options.');
-                    }
-                });
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
 
             window.addEventListener('resize', updateAnalyticsAndChart);
 
-            const storyForm = document.getElementById('storyForm');
-            if (storyForm) {
-                storyForm.addEventListener('submit', async (event) => {
-                    event.preventDefault();
-                    const storyTextarea = document.getElementById('storyText');
-                    const storyText = storyTextarea.value.trim();
-
-                    if (!storyText) {
-                        showConfirmModal('Please write your story before submitting.');
-                        return;
-                    }
-                    await addStoryToFirebase(storyText);
-                });
-            }
-
             const saveDisplayNameBtn = document.getElementById('saveDisplayNameBtn');
             if (saveDisplayNameBtn) {
                 saveDisplayNameBtn.addEventListener('click', async () => {
                     const name = document.getElementById('displayNameInput').value.trim();
-                    await saveUserDisplayNameFirebase(name);
+                    const profileData = { displayName: name, isAdmin, theme: currentTheme };
+                    await saveUserProfile(profileData);
+                    showConfirmModal("Display name updated!");
                 });
             }
 
@@ -4721,7 +1948,9 @@
                 grantAdminBtn.addEventListener('click', async () => {
                     const enteredPin = document.getElementById('adminPinInput').value.trim();
                     if (enteredPin === ADMIN_PIN) {
-                        await grantAdminAccessFirebase(userId);
+                        const profileData = { displayName: userDisplayName, isAdmin: true, theme: currentTheme };
+                        await saveUserProfile(profileData);
+                        showConfirmModal('Admin access granted!');
                         document.getElementById('adminPinInput').value = '';
                     } else {
                         showConfirmModal('Incorrect PIN. Please try again.');
@@ -4733,87 +1962,13 @@
             if (revokeAdminBtn) {
                 revokeAdminBtn.addEventListener('click', async () => {
                     await showConfirmModal('Are you sure you want to revoke your admin access?', async () => {
-                        await revokeAdminAccessFirebase(userId);
+                        const profileData = { displayName: userDisplayName, isAdmin: false, theme: currentTheme };
+                        await saveUserProfile(profileData);
+                        showConfirmModal('Admin access revoked.');
                     });
-                });
-            }
-
-            const backToAllUsersBtn = document.getElementById('backToAllUsersBtn');
-            if (backToAllUsersBtn) {
-                backToAllUsersBtn.addEventListener('click', backToAllUsers);
-            }
-
-            const pollForm = document.getElementById('pollForm');
-            if (pollForm) {
-                pollForm.addEventListener('submit', async (event) => {
-                    event.preventDefault();
-                    const pollQuestion = document.getElementById('pollQuestion').value.trim();
-                    const pollOptionInputs = document.querySelectorAll('.poll-option-item');
-                    
-                    const options = [];
-                    let hasEmptyOptionText = false;
-                    pollOptionInputs.forEach(item => {
-                        const textInput = item.querySelector('.poll-option-text');
-                        const imageUrlInput = item.querySelector('.poll-option-image-url');
-                        const optionText = textInput.value.trim();
-                        const optionImageUrl = imageUrlInput.value.trim();
-
-                        if (!optionText) {
-                            hasEmptyOptionText = true;
-                        }
-                        options.push({ text: optionText, imageUrl: optionImageUrl });
-                    });
-
-                    if (!pollQuestion) {
-                        showConfirmModal('Please enter a poll question.');
-                        return;
-                    }
-                    if (options.length < 2) {
-                        showConfirmModal('Please add at least two poll options.');
-                        return;
-                    }
-                    if (hasEmptyOptionText) {
-                        showConfirmModal('Please ensure all poll options have text.');
-                        return;
-                    }
-
-                    await addPollToFirebase(pollQuestion, options);
-                });
-            }
-            attachAddRemoveOptionListeners();
-
-            // Event Listeners for Historic Evidence page
-            if (audioFileInput) {
-                audioFileInput.addEventListener('change', (e) => {
-                    const validationMessage = document.getElementById('fileValidation');
-                    validationMessage.textContent = '';
-                    validationMessage.className = 'file-validation-message';
-                    
-                    if (e.target.files[0]) {
-                        selectedFile = e.target.files[0];
-                        fileNameSpan.textContent = selectedFile.name;
-                        
-                        // Enable upload button only if valid
-                        uploadBtn.disabled = !(selectedFile && evidenceTitleInput.value.trim());
-                        
-                        // Show file info
-                        validationMessage.textContent = `File: ${selectedFile.name} (${formatFileSize(selectedFile.size)})`;
-                        validationMessage.classList.add('success');
-                    } else {
-                        selectedFile = null;
-                        fileNameSpan.textContent = 'Select audio file';
-                        uploadBtn.disabled = true;
-                    }
                 });
             }
             
-            if (uploadForm) {
-                uploadForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    uploadEvidence();
-                });
-            }
-
             if (hamburgerBtn) {
                 hamburgerBtn.addEventListener('click', () => {
                     if (sideDrawer) sideDrawer.classList.toggle('open');
