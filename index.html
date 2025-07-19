@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js CDN for analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <!-- Bootstrap Icons for Music Player -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         /* Base CSS for Tatti Players */
         :root {
@@ -24,6 +26,19 @@
             --status-warning: #ff9100;
             --status-danger: #ff1744;
             --highlight-effect: rgba(0, 240, 255, 0.15);
+
+            /* Music Player Specific Variables (default to original theme) */
+            --mp-background-gradient-start: #161b22;
+            --mp-background-gradient-end: #0d1117;
+            --mp-album-art-gradient-start: var(--accent-purple);
+            --mp-album-art-gradient-end: var(--accent-pink);
+            --mp-album-art-shadow: rgba(110, 64, 201, 0.4);
+            --mp-progress-bar-bg: #30363d;
+            --mp-progress-gradient-start: var(--accent-purple);
+            --mp-progress-gradient-end: var(--accent-blue);
+            --mp-control-btn-hover-color: var(--accent-blue);
+            --mp-control-btn-active-color: var(--accent-purple);
+            --mp-time-info-color: var(--text-secondary);
         }
 
         /* Light Theme */
@@ -42,6 +57,19 @@
             --status-warning: #fbc02d;
             --status-danger: #d32f2f;
             --highlight-effect: rgba(30, 136, 229, 0.15);
+
+            /* Music Player Specific Variables for Light Theme */
+            --mp-background-gradient-start: #f0f8fa;
+            --mp-background-gradient-end: #e0f2f7;
+            --mp-album-art-gradient-start: var(--accent-purple);
+            --mp-album-art-gradient-end: var(--accent-pink);
+            --mp-album-art-shadow: rgba(103, 58, 183, 0.4);
+            --mp-progress-bar-bg: #cfd8dc;
+            --mp-progress-gradient-start: var(--accent-purple);
+            --mp-progress-gradient-end: var(--accent-blue);
+            --mp-control-btn-hover-color: var(--accent-blue);
+            --mp-control-btn-active-color: var(--accent-purple);
+            --mp-time-info-color: var(--text-secondary);
         }
 
         /* Cyberpunk Theme */
@@ -60,6 +88,112 @@
             --status-warning: #ffea00;
             --status-danger: #ff3300;
             --highlight-effect: rgba(0, 255, 255, 0.25);
+
+            /* Music Player Specific Variables for Cyberpunk Theme */
+            --mp-background-gradient-start: #1a1a1a;
+            --mp-background-gradient-end: #050505;
+            --mp-album-art-gradient-start: var(--accent-purple);
+            --mp-album-art-gradient-end: var(--accent-pink);
+            --mp-album-art-shadow: rgba(255, 0, 255, 0.4);
+            --mp-progress-bar-bg: #3a3a3a;
+            --mp-progress-gradient-start: var(--accent-purple);
+            --mp-progress-gradient-end: var(--accent-blue);
+            --mp-control-btn-hover-color: var(--accent-blue);
+            --mp-control-btn-active-color: var(--accent-purple);
+            --mp-time-info-color: var(--text-secondary);
+        }
+
+        /* Hacker Theme */
+        body.hacker-theme {
+            --dark-bg: #0a0a0a;
+            --darker-bg: #001a00;
+            --accent-blue: #00ff00;
+            --accent-purple: #00aa00;
+            --accent-pink: #00ff88;
+            --surface-color: #0a1a0a;
+            --card-color: #0f2a0f;
+            --border-color: #004400;
+            --text-primary: #00ff00;
+            --text-secondary: #009900;
+            --status-success: #00ff00;
+            --status-warning: #ffff00;
+            --status-danger: #ff0000;
+            --highlight-effect: rgba(0, 255, 0, 0.15);
+
+            /* Music Player Specific Variables for Hacker Theme */
+            --mp-background-gradient-start: #0a1a0a;
+            --mp-background-gradient-end: #001a00;
+            --mp-album-art-gradient-start: var(--accent-purple);
+            --mp-album-art-gradient-end: var(--accent-pink);
+            --mp-album-art-shadow: rgba(0, 170, 0, 0.4);
+            --mp-progress-bar-bg: #003300;
+            --mp-progress-gradient-start: var(--accent-purple);
+            --mp-progress-gradient-end: var(--accent-blue);
+            --mp-control-btn-hover-color: var(--accent-blue);
+            --mp-control-btn-active-color: var(--accent-purple);
+            --mp-time-info-color: var(--text-secondary);
+        }
+
+        /* Royal Theme */
+        body.royal-theme {
+            --dark-bg: #1a0a33;
+            --darker-bg: #0d0519;
+            --accent-blue: #9b59b6;
+            --accent-purple: #8e44ad;
+            --accent-pink: #e74c3c;
+            --surface-color: #2c0d4d;
+            --card-color: #3d1a66;
+            --border-color: #5d2d8b;
+            --text-primary: #f5d6ff;
+            --text-secondary: #c9a0dc;
+            --status-success: #2ecc71;
+            --status-warning: #f39c12;
+            --status-danger: #e74c3c;
+            --highlight-effect: rgba(155, 89, 182, 0.15);
+
+            /* Music Player Specific Variables for Royal Theme */
+            --mp-background-gradient-start: #2c0d4d;
+            --mp-background-gradient-end: #1a0a33;
+            --mp-album-art-gradient-start: var(--accent-purple);
+            --mp-album-art-gradient-end: var(--accent-pink);
+            --mp-album-art-shadow: rgba(142, 68, 173, 0.4);
+            --mp-progress-bar-bg: #5d2d8b;
+            --mp-progress-gradient-start: var(--accent-purple);
+            --mp-progress-gradient-end: var(--accent-blue);
+            --mp-control-btn-hover-color: var(--accent-blue);
+            --mp-control-btn-active-color: var(--accent-purple);
+            --mp-time-info-color: var(--text-secondary);
+        }
+
+        /* Anime Theme */
+        body.anime-theme {
+            --dark-bg: #1e1e2e;
+            --darker-bg: #161622;
+            --accent-blue: #89dceb;
+            --accent-purple: #cba6f7;
+            --accent-pink: #f5c2e7;
+            --surface-color: #2a2a3a;
+            --card-color: #3a3a4a;
+            --border-color: #585b70;
+            --text-primary: #cdd6f4;
+            --text-secondary: #a6adc8;
+            --status-success: #a6e3a1;
+            --status-warning: #f9e2af;
+            --status-danger: #f38ba8;
+            --highlight-effect: rgba(137, 220, 235, 0.15);
+
+            /* Music Player Specific Variables for Anime Theme */
+            --mp-background-gradient-start: #2a2a3a;
+            --mp-background-gradient-end: #1e1e2e;
+            --mp-album-art-gradient-start: var(--accent-purple);
+            --mp-album-art-gradient-end: var(--accent-pink);
+            --mp-album-art-shadow: rgba(203, 166, 247, 0.4);
+            --mp-progress-bar-bg: #585b70;
+            --mp-progress-gradient-start: var(--accent-purple);
+            --mp-progress-gradient-end: var(--accent-blue);
+            --mp-control-btn-hover-color: var(--accent-blue);
+            --mp-control-btn-active-color: var(--accent-purple);
+            --mp-time-info-color: var(--text-secondary);
         }
 
 
@@ -70,12 +204,22 @@
             font-family: 'Inter', sans-serif; /* Changed to Inter */
         }
 
+        html {
+            /* For Firefox */
+            scrollbar-width: none;
+        }
+
+        /* For Chrome, Safari, and Edge */
+        html::-webkit-scrollbar {
+            display: none;
+        }
+
         body {
             background: radial-gradient(circle at top, var(--dark-bg), var(--darker-bg));
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
-            overflow-x: hidden;
+            /* Removed overflow: hidden; to allow scrolling */
         }
 
         /* Background effect */
@@ -121,7 +265,7 @@
             background: rgba(255, 255, 255, 0.8);
         }
 
-        body.cyberpunk-theme .site-header {
+        body.cyberpunk-theme .site-header, body.hacker-theme .site-header, body.royal-theme .site-header, body.anime-theme .site-header {
             background: rgba(0, 0, 0, 0.8);
             border-bottom: 1px solid var(--border-color);
         }
@@ -597,7 +741,7 @@
         }
 
         .page-content.active-page {
-            display: grid; /* Show active page as grid */
+            display: grid; /* Show active page as grid by default */
         }
 
         /* Player Description Styling */
@@ -609,6 +753,8 @@
             margin-top: 20px;
             text-align: left;
             grid-column: 1 / -1; /* Span across all columns in the grid */
+            display: flex; /* Use flex to align content and button */
+            flex-direction: column; /* Stack content vertically */
         }
         .player-description-card h3 {
             color: var(--accent-pink);
@@ -618,7 +764,28 @@
             font-size: 1rem;
             color: var(--text-secondary);
             line-height: 1.6;
+            margin-bottom: 15px; /* Add margin below paragraph */
         }
+        .player-description-card .actions {
+            display: flex;
+            justify-content: flex-end; /* Align button to the right */
+            margin-top: auto; /* Push actions to the bottom */
+        }
+        .player-description-card .delete-btn {
+            background-color: var(--status-danger);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .player-description-card .delete-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
 
         /* Custom Modal Styling */
         .modal-overlay {
@@ -977,6 +1144,32 @@
             .theme-options {
                 grid-template-columns: 1fr;
             }
+
+            .music-player {
+                padding: 20px;
+                margin: 10px;
+            }
+            .album-art {
+                width: 150px;
+                height: 150px;
+            }
+            .album-art i {
+                font-size: 40px;
+            }
+            .song-title {
+                font-size: 18px;
+            }
+            .song-artist {
+                font-size: 14px;
+            }
+            .controls {
+                gap: 15px;
+            }
+            .control-btn.large {
+                width: 40px;
+                height: 40px;
+                font-size: 24px;
+            }
         }
 
         /* New styles for editable player profiles */
@@ -1050,6 +1243,215 @@
             opacity: 0.9;
             transform: translateY(-2px);
         }
+
+        /* Music Player Styles (integrated and adapted) */
+        .music-player-container {
+            /* Removed display: flex; from here */
+            justify-content: center;
+            align-items: center;
+            padding: 30px; /* Added padding to ensure it's not flush with page edges */
+            min-height: calc(100vh - 150px); /* Adjust based on header/footer height */
+        }
+        /* Specific rule to make audio player page flex when active */
+        #audio-player-page.active-page {
+            display: flex;
+        }
+
+        .music-player {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px;
+            background: linear-gradient(145deg, var(--mp-background-gradient-start), var(--mp-background-gradient-end));
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .album-art {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 25px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, var(--mp-album-art-gradient-start), var(--mp-album-art-gradient-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px var(--mp-album-art-shadow);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-art:hover {
+            transform: scale(1.03);
+        }
+        
+        .album-art.playing::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+            100% { transform: scale(0.95); opacity: 0.7; }
+        }
+        
+        .album-art i {
+            font-size: 60px;
+            color: white;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+        
+        .album-art:hover i {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .song-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .song-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-primary); /* Use theme primary text color */
+        }
+        
+        .song-artist {
+            font-size: 16px;
+            color: var(--text-secondary); /* Use theme secondary text color */
+        }
+        
+        .progress-container {
+            margin: 25px 0;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: var(--mp-progress-bar-bg);
+            border-radius: 2px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--mp-progress-gradient-start), var(--mp-progress-gradient-end));
+            border-radius: 2px;
+            position: relative;
+            transition: width 0.1s linear;
+        }
+        
+        .progress::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: -3px;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .progress-bar:hover .progress::after {
+            opacity: 1;
+        }
+        
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--mp-time-info-color);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary); /* Use theme primary text color */
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            color: var(--mp-control-btn-hover-color);
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-btn.active {
+            color: var(--mp-control-btn-active-color);
+        }
+        
+        .control-btn.large {
+            font-size: 28px;
+            width: 50px;
+            height: 50px;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .volume-slider {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            background: var(--mp-progress-bar-bg);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .volume-slider:hover {
+            height: 6px;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .volume-slider:hover::-webkit-slider-thumb {
+            width: 14px;
+            height: 14px;
+        }
     </style>
 </head>
 <body>
@@ -1076,6 +1478,7 @@
         <nav class="main-nav">
             <a href="#" class="nav-link active" data-target="dashboard-page"><i class="fas fa-home"></i> Dashboard</a>
             <a href="#" class="nav-link" data-target="analytics-page"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="#" class="nav-link" data-target="audio-player-page"><i class="fas fa-music"></i> Audio Player</a>
             <a href="#" class="nav-link" data-target="settings-page"><i class="fas fa-cog"></i> Settings</a>
         </nav>
     </div>
@@ -1110,6 +1513,54 @@
                 <!-- Player Description Container -->
                 <div id="playerDescriptions" style="margin-top: 20px;">
                     <!-- Descriptions will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio Player Page Content -->
+        <div id="audio-player-page" class="dashboard page-content music-player-container">
+            <div class="music-player">
+                <div class="album-art" id="albumArt">
+                    <i class="bi bi-github" id="albumIcon"></i>
+                </div>
+                
+                <div class="song-info">
+                    <div class="song-title" id="songTitle">Push to Main</div>
+                    <div class="song-artist" id="songArtist">GitHub Beats</div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <div class="time-info">
+                        <span id="currentTime">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" id="shuffleBtn" aria-label="Shuffle">
+                        <i class="bi bi-shuffle"></i>
+                    </button>
+                    <button class="control-btn" id="prevBtn" aria-label="Previous">
+                        <i class="bi bi-skip-start-fill"></i>
+                    </button>
+                    <button class="control-btn large" id="playBtn" aria-label="Play/Pause">
+                        <i class="bi bi-play-circle-fill" id="playIcon"></i>
+                    </button>
+                    <button class="control-btn" id="nextBtn" aria-label="Next">
+                        <i class="bi bi-skip-end-fill"></i>
+                    </button>
+                    <button class="control-btn" id="repeatBtn" aria-label="Repeat">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                </div>
+                
+                <div class="volume-control">
+                    <i class="bi bi-volume-down"></i>
+                    <input type="range" class="volume-slider" id="volumeSlider" value="70" min="0" max="100">
+                    <i class="bi bi-volume-up"></i>
                 </div>
             </div>
         </div>
@@ -1214,7 +1665,18 @@
                 '--status-success': '#00e676',
                 '--status-warning': '#ff9100',
                 '--status-danger': '#ff1744',
-                '--highlight-effect': 'rgba(0, 240, 255, 0.15)'
+                // Music Player Specific Variables (default to original theme)
+                '--mp-background-gradient-start': '#161b22',
+                '--mp-background-gradient-end': '#0d1117',
+                '--mp-album-art-gradient-start': '#8a2be2',
+                '--mp-album-art-gradient-end': '#ff00d0',
+                '--mp-album-art-shadow': 'rgba(110, 64, 201, 0.4)',
+                '--mp-progress-bar-bg': '#30363d',
+                '--mp-progress-gradient-start': '#8a2be2',
+                '--mp-progress-gradient-end': '#00f0ff',
+                '--mp-control-btn-hover-color': '#00f0ff',
+                '--mp-control-btn-active-color': '#8a2be2',
+                '--mp-time-info-color': '#a0b8c8'
             },
             hacker: {
                 '--dark-bg': '#0a0a0a',
@@ -1230,7 +1692,19 @@
                 '--status-success': '#00ff00',
                 '--status-warning': '#ffff00',
                 '--status-danger': '#ff0000',
-                '--highlight-effect': 'rgba(0, 255, 0, 0.15)'
+                '--highlight-effect': 'rgba(0, 255, 0, 0.15)',
+                // Music Player Specific Variables for Hacker Theme
+                '--mp-background-gradient-start': '#0a1a0a',
+                '--mp-background-gradient-end': '#001a00',
+                '--mp-album-art-gradient-start': '#00aa00',
+                '--mp-album-art-gradient-end': '#00ff88',
+                '--mp-album-art-shadow': 'rgba(0, 170, 0, 0.4)',
+                '--mp-progress-bar-bg': '#003300',
+                '--mp-progress-gradient-start': '#00aa00',
+                '--mp-progress-gradient-end': '#00ff00',
+                '--mp-control-btn-hover-color': '#00ff00',
+                '--mp-control-btn-active-color': '#00aa00',
+                '--mp-time-info-color': '#009900'
             },
             royal: {
                 '--dark-bg': '#1a0a33',
@@ -1246,7 +1720,19 @@
                 '--status-success': '#2ecc71',
                 '--status-warning': '#f39c12',
                 '--status-danger': '#e74c3c',
-                '--highlight-effect': 'rgba(155, 89, 182, 0.15)'
+                '--highlight-effect': 'rgba(155, 89, 182, 0.15)',
+                // Music Player Specific Variables for Royal Theme
+                '--mp-background-gradient-start': '#2c0d4d',
+                '--mp-background-gradient-end': '#1a0a33',
+                '--mp-album-art-gradient-start': '#8e44ad',
+                '--mp-album-art-gradient-end': '#e74c3c',
+                '--mp-album-art-shadow': 'rgba(142, 68, 173, 0.4)',
+                '--mp-progress-bar-bg': '#5d2d8b',
+                '--mp-progress-gradient-start': '#8e44ad',
+                '--mp-progress-gradient-end': '#9b59b6',
+                '--mp-control-btn-hover-color': '#9b59b6',
+                '--mp-control-btn-active-color': '#8e44ad',
+                '--mp-time-info-color': '#c9a0dc'
             },
             anime: {
                 '--dark-bg': '#1e1e2e',
@@ -1262,7 +1748,19 @@
                 '--status-success': '#a6e3a1',
                 '--status-warning': '#f9e2af',
                 '--status-danger': '#f38ba8',
-                '--highlight-effect': 'rgba(137, 220, 235, 0.15)'
+                '--highlight-effect': 'rgba(137, 220, 235, 0.15)',
+                // Music Player Specific Variables for Anime Theme
+                '--mp-background-gradient-start': '#2a2a3a',
+                '--mp-background-gradient-end': '#1e1e2e',
+                '--mp-album-art-gradient-start': '#cba6f7',
+                '--mp-album-art-gradient-end': '#f5c2e7',
+                '--mp-album-art-shadow': 'rgba(203, 166, 247, 0.4)',
+                '--mp-progress-bar-bg': '#585b70',
+                '--mp-progress-gradient-start': '#cba6f7',
+                '--mp-progress-gradient-end': '#89dceb',
+                '--mp-control-btn-hover-color': '#89dceb',
+                '--mp-control-btn-active-color': '#cba6f7',
+                '--mp-time-info-color': '#a6adc8'
             }
         };
 
@@ -1440,7 +1938,7 @@
             ctx.textAlign = 'center';
             ctx.translate(15, chartHeight / 2);
             ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Player Score', 0, 0); // Changed from Tatti Score
+            ctx.fillText('Tatti Score', 0, 0); // Changed back to Tatti Score
             ctx.restore();
         }
 
@@ -1516,6 +2014,7 @@
             setupThemeSelection();
             renderPlayerProfiles(playersData);
             updateAnalyticsAndChart();
+            initAudioPlayer(); // Initialize audio player
         }
 
         function updateAdminPanelUI() {
@@ -1638,7 +2137,7 @@
                         ${prosHtml}
                         ${consHtml}
                         <ul class="trait-list">
-                            <li><i class="fas fa-star"></i> <strong>Player Score:</strong> <span class="player-score-display">${player.tattiScore}</span></li>
+                            <li><i class="fas fa-star"></i> <strong>Tatti Score:</strong> <span class="player-score-display">${player.tattiScore}</span></li>
                             <li><i class="fas fa-gamepad"></i> <strong>Favorite Game:</strong> <span class="player-fav-game-display">Not set</span></li>
                             <li><i class="fas fa-users"></i> <strong>Team Role:</strong> <span class="player-team-role-display">Player</span></li>
                             <li><i class="fas fa-fire"></i> <strong>Play Style:</strong> <span class="player-play-style-display">Adaptive</span></li>
@@ -1727,7 +2226,7 @@
             const newImageUrl = playerCard.querySelector('.edit-player-image-url').value.trim();
 
             if (!newName || isNaN(newScore) || newScore < 0 || newScore > 100) {
-                showConfirmModal('Please enter a valid player name and a Player Score between 0 and 100.');
+                showConfirmModal('Please enter a valid player name and a Tatti Score between 0 and 100.');
                 return;
             }
 
@@ -1835,6 +2334,9 @@
                             updateAnalyticsAndChart();
                         } else if (targetId === 'settings-page') {
                             updateAdminPanelUI();
+                        } else if (targetId === 'audio-player-page') {
+                            // Ensure audio player is initialized and ready
+                            initAudioPlayer();
                         }
                     }
                 });
@@ -1923,6 +2425,256 @@
             }
         }
 
+        // --- Audio Player Logic ---
+        // DOM Elements
+        let ap_albumArt;
+        let ap_albumIcon;
+        let ap_songTitle;
+        let ap_songArtist;
+        let ap_progressBar;
+        let ap_progress;
+        let ap_currentTimeEl;
+        let ap_durationEl;
+        let ap_playBtn;
+        let ap_playIcon;
+        let ap_prevBtn;
+        let ap_nextBtn;
+        let ap_shuffleBtn;
+        let ap_repeatBtn;
+        let ap_volumeSlider;
+        
+        // Sample playlist (using placeholder URLs for audio)
+        const ap_playlist = [
+            {
+                title: "Shikari Mode",
+                artist: "Naga Saki",
+                audioSrc: "audio/shikari mode 1.mp3" // Placeholder
+            },
+            {
+                title: "Shikari Mode 2",
+                artist: "Naga Saki",
+                audioSrc: "audio/shikari mode 2.mp3"
+            },
+            {
+                title: "404 Groove",
+                artist: "API Collective",
+                audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+            }
+        ];
+        
+        // Player state
+        let ap_currentTrackIndex = 0;
+        let ap_isPlaying = false;
+        let ap_isShuffled = false;
+        let ap_isRepeated = false;
+        let ap_audio = new Audio();
+
+        function getAudioPlayerElements() {
+            ap_albumArt = document.getElementById('albumArt');
+            ap_albumIcon = document.getElementById('albumIcon');
+            ap_songTitle = document.getElementById('songTitle');
+            ap_songArtist = document.getElementById('songArtist');
+            ap_progressBar = document.getElementById('progressBar');
+            ap_progress = document.getElementById('progress');
+            ap_currentTimeEl = document.getElementById('currentTime');
+            ap_durationEl = document.getElementById('duration');
+            ap_playBtn = document.getElementById('playBtn');
+            ap_playIcon = document.getElementById('playIcon');
+            ap_prevBtn = document.getElementById('prevBtn');
+            ap_nextBtn = document.getElementById('nextBtn');
+            ap_shuffleBtn = document.getElementById('shuffleBtn');
+            ap_repeatBtn = document.getElementById('repeatBtn');
+            ap_volumeSlider = document.getElementById('volumeSlider');
+        }
+
+        // Initialize player
+        function initAudioPlayer() {
+            getAudioPlayerElements(); // Get elements after they are in DOM
+
+            if (!ap_audio || !ap_playBtn) {
+                console.warn("Audio player elements not found, skipping initialization.");
+                return;
+            }
+
+            loadTrack(ap_currentTrackIndex);
+            
+            // Event listeners
+            ap_playBtn.addEventListener('click', togglePlay);
+            ap_albumArt.addEventListener('click', togglePlay);
+            ap_prevBtn.addEventListener('click', prevTrack);
+            ap_nextBtn.addEventListener('click', nextTrack);
+            ap_progressBar.addEventListener('click', seek);
+            ap_volumeSlider.addEventListener('input', setVolume);
+            ap_shuffleBtn.addEventListener('click', toggleShuffle);
+            ap_repeatBtn.addEventListener('click', toggleRepeat);
+            
+            // Keyboard shortcuts
+            document.removeEventListener('keydown', handleAudioPlayerKeydown); // Remove previous to avoid duplicates
+            document.addEventListener('keydown', handleAudioPlayerKeydown);
+            
+            // Audio event listeners
+            ap_audio.addEventListener('timeupdate', updateProgress);
+            ap_audio.addEventListener('ended', handleTrackEnd);
+            ap_audio.addEventListener('loadedmetadata', updateDuration);
+            ap_audio.addEventListener('play', () => {
+                ap_isPlaying = true;
+                ap_playIcon.classList.replace('bi-play-circle-fill', 'bi-pause-circle-fill');
+                ap_albumArt.classList.add('playing');
+            });
+            ap_audio.addEventListener('pause', () => {
+                ap_isPlaying = false;
+                ap_playIcon.classList.replace('bi-pause-circle-fill', 'bi-play-circle-fill');
+                ap_albumArt.classList.remove('playing');
+            });
+
+            // Set initial volume
+            ap_audio.volume = ap_volumeSlider.value / 100;
+        }
+        
+        // Load track
+        function loadTrack(index) {
+            const track = ap_playlist[index];
+            ap_audio.src = track.audioSrc;
+            ap_songTitle.textContent = track.title;
+            ap_songArtist.textContent = track.artist;
+            
+            // Reset progress
+            ap_progress.style.width = '0%';
+            ap_currentTimeEl.textContent = '0:00';
+            ap_durationEl.textContent = '0:00';
+            
+            // Load and play if already playing
+            if (ap_isPlaying) {
+                ap_audio.play().catch(e => console.log('Auto-play prevented (user interaction needed):', e));
+            }
+        }
+        
+        // Toggle play/pause
+        function togglePlay() {
+            if (ap_audio.paused) {
+                ap_audio.play().catch(e => console.log('Play failed (user interaction needed):', e));
+            } else {
+                ap_audio.pause();
+            }
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const { currentTime, duration } = ap_audio;
+            const progressPercent = (currentTime / duration) * 100;
+            ap_progress.style.width = `${progressPercent}%`;
+            ap_currentTimeEl.textContent = formatTime(currentTime);
+        }
+        
+        // Update duration
+        function updateDuration() {
+            ap_durationEl.textContent = formatTime(ap_audio.duration);
+        }
+        
+        // Seek in track
+        function seek(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const duration = ap_audio.duration;
+            ap_audio.currentTime = (clickX / width) * duration;
+        }
+        
+        // Seek backward 10 seconds
+        function seekBackward() {
+            ap_audio.currentTime = Math.max(0, ap_audio.currentTime - 10);
+        }
+        
+        // Seek forward 10 seconds
+        function seekForward() {
+            ap_audio.currentTime = Math.min(ap_audio.duration, ap_audio.currentTime + 10);
+        }
+        
+        // Previous track
+        function prevTrack() {
+            ap_currentTrackIndex = (ap_currentTrackIndex - 1 + ap_playlist.length) % ap_playlist.length;
+            loadTrack(ap_currentTrackIndex);
+            if (ap_isPlaying) ap_audio.play();
+        }
+        
+        // Next track
+        function nextTrack() {
+            if (ap_isShuffled) {
+                ap_currentTrackIndex = Math.floor(Math.random() * ap_playlist.length);
+            } else {
+                ap_currentTrackIndex = (ap_currentTrackIndex + 1) % ap_playlist.length;
+            }
+            loadTrack(ap_currentTrackIndex);
+            if (ap_isPlaying) ap_audio.play();
+        }
+        
+        // Handle track end
+        function handleTrackEnd() {
+            if (ap_isRepeated) {
+                ap_audio.currentTime = 0;
+                ap_audio.play();
+            } else {
+                nextTrack();
+            }
+        }
+        
+        // Set volume
+        function setVolume() {
+            ap_audio.volume = this.value / 100;
+        }
+        
+        // Increase volume
+        function increaseVolume() {
+            ap_volumeSlider.value = Math.min(100, parseInt(ap_volumeSlider.value) + 10);
+            setVolume.call(ap_volumeSlider);
+        }
+        
+        // Decrease volume
+        function decreaseVolume() {
+            ap_volumeSlider.value = Math.max(0, parseInt(ap_volumeSlider.value) - 10);
+            setVolume.call(ap_volumeSlider);
+        }
+        
+        // Toggle shuffle
+        function toggleShuffle() {
+            ap_isShuffled = !ap_isShuffled;
+            ap_shuffleBtn.classList.toggle('active', ap_isShuffled);
+        }
+        
+        // Toggle repeat
+        function toggleRepeat() {
+            ap_isRepeated = !ap_isRepeated;
+            ap_repeatBtn.classList.toggle('active', ap_isRepeated);
+        }
+        
+        // Format time (mm:ss)
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // Keyboard handler for audio player
+        function handleAudioPlayerKeydown(e) {
+            // Only handle if audio player page is active
+            if (!document.getElementById('audio-player-page').classList.contains('active-page')) {
+                return;
+            }
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === 'ArrowLeft') {
+                seekBackward();
+            } else if (e.code === 'ArrowRight') {
+                seekForward();
+            } else if (e.code === 'ArrowUp') {
+                increaseVolume();
+            } else if (e.code === 'ArrowDown') {
+                decreaseVolume();
+            }
+        }
+
+        // Initial setup on page load
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
 
