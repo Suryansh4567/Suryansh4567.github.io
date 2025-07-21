@@ -196,6 +196,37 @@
             --mp-time-info-color: var(--text-secondary);
         }
 
+        /* Transformers Theme */
+        body.transformers-theme {
+            --dark-bg: #11141d; /* cybertron-dark */
+            --darker-bg: #0c0e16; /* Slightly darker */
+            --accent-blue: #00cfff; /* matrix-blue */
+            --accent-purple: #8e44ad; /* decepticon-purple */
+            --accent-pink: #e10a05; /* autobot-red (for contrast) */
+            --surface-color: #1a1e28; /* Slightly lighter than dark-bg */
+            --card-color: #222630; /* Slightly lighter than surface-color */
+            --border-color: #00cfff; /* matrix-blue for borders */
+            --text-primary: #ffffff; /* White */
+            --text-secondary: #a0b8c8; /* Light grey */
+            --status-success: #2ecc71; /* Standard green */
+            --status-warning: #ffde00; /* bumblebee-yellow */
+            --status-danger: #e10a05; /* autobot-red */
+            --highlight-effect: rgba(0, 207, 255, 0.2); /* Transparent matrix-blue */
+
+            /* Music Player Specific Variables for Transformers Theme */
+            --mp-background-gradient-start: #1a1e28;
+            --mp-background-gradient-end: #11141d;
+            --mp-album-art-gradient-start: #8e44ad; /* decepticon-purple */
+            --mp-album-art-gradient-end: #e10a05; /* autobot-red */
+            --mp-album-art-shadow: rgba(142, 68, 173, 0.4);
+            --mp-progress-bar-bg: #30363d;
+            --mp-progress-gradient-start: #8e44ad; /* decepticon-purple */
+            --mp-progress-gradient-end: #00cfff; /* matrix-blue */
+            --mp-control-btn-hover-color: #00cfff; /* matrix-blue */
+            --mp-control-btn-active-color: #8e44ad; /* decepticon-purple */
+            --mp-time-info-color: #a0b8c8;
+        }
+
 
         * {
             margin: 0;
@@ -265,7 +296,7 @@
             background: rgba(255, 255, 255, 0.8);
         }
 
-        body.cyberpunk-theme .site-header, body.hacker-theme .site-header, body.royal-theme .site-header, body.anime-theme .site-header {
+        body.cyberpunk-theme .site-header, body.hacker-theme .site-header, body.royal-theme .site-header, body.anime-theme .site-header, body.transformers-theme .site-header {
             background: rgba(0, 0, 0, 0.8);
             border-bottom: 1px solid var(--border-color);
         }
@@ -1590,6 +1621,10 @@
                             <i class="fas fa-dragon"></i><br>
                             Anime
                         </button>
+                        <button class="theme-btn" data-theme="transformers">
+                            <i class="fas fa-robot"></i><br>
+                            Transformers
+                        </button>
                     </div>
                 </div>
 
@@ -1761,6 +1796,35 @@
                 '--mp-control-btn-hover-color': '#89dceb',
                 '--mp-control-btn-active-color': '#cba6f7',
                 '--mp-time-info-color': '#a6adc8'
+            },
+            transformers: {
+                '--dark-bg': '#11141d',
+                '--darker-bg': '#0c0e16',
+                '--accent-blue': '#00cfff', /* matrix-blue */
+                '--accent-purple': '#8e44ad', /* decepticon-purple */
+                '--accent-pink': '#e10a05', /* autobot-red */
+                '--surface-color': '#1a1e28',
+                '--card-color': '#222630',
+                '--border-color': '#00cfff', /* matrix-blue for borders */
+                '--text-primary': '#ffffff',
+                '--text-secondary': '#a0b8c8',
+                '--status-success': '#2ecc71',
+                '--status-warning': '#ffde00', /* bumblebee-yellow */
+                '--status-danger': '#e10a05', /* autobot-red */
+                '--highlight-effect': 'rgba(0, 207, 255, 0.2)',
+
+                // Music Player Specific Variables for Transformers Theme
+                '--mp-background-gradient-start': '#1a1e28',
+                '--mp-background-gradient-end': '#11141d',
+                '--mp-album-art-gradient-start': '#8e44ad', /* decepticon-purple */
+                '--mp-album-art-gradient-end': '#e10a05', /* autobot-red */
+                '--mp-album-art-shadow': 'rgba(142, 68, 173, 0.4)',
+                '--mp-progress-bar-bg': '#30363d',
+                '--mp-progress-gradient-start': '#8e44ad', /* decepticon-purple */
+                '--mp-progress-gradient-end': '#00cfff', /* matrix-blue */
+                '--mp-control-btn-hover-color': '#00cfff', /* matrix-blue */
+                '--mp-control-btn-active-color': '#8e44ad', /* decepticon-purple */
+                '--mp-time-info-color': '#a0b8c8'
             }
         };
 
@@ -1816,6 +1880,11 @@
 
             const root = document.documentElement;
             
+            // Remove all existing theme classes
+            Object.keys(themes).forEach(t => document.body.classList.remove(`${t}-theme`));
+            // Add the new theme class
+            document.body.classList.add(`${themeName}-theme`);
+
             Object.keys(theme).forEach(key => {
                 root.style.setProperty(key, theme[key]);
             });
@@ -1867,45 +1936,91 @@
             
             const ctx = canvas.getContext('2d');
             
+            // Get device pixel ratio for sharper rendering on high-DPI screens
             const dpr = window.devicePixelRatio || 1;
             const rect = canvas.parentElement.getBoundingClientRect();
+            
+            // Set canvas drawing buffer size based on actual display size and DPR
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
+            
+            // Scale the context to ensure drawing is at the correct resolution
             ctx.scale(dpr, dpr);
             
+            // Clear the canvas before redrawing
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
+            // Use the actual display dimensions for calculations
             const chartWidth = rect.width;
             const chartHeight = rect.height;
-            const barWidth = chartWidth / (data.length * 2.5);
-            const spacing = barWidth / 2;
-            const maxVal = Math.max(...data);
-            const scale = (chartHeight - 60) / (maxVal > 0 ? maxVal : 1);
-            const bottomPadding = 40;
-            const topPadding = 20;
             
+            // Define padding based on chart dimensions for responsiveness
+            const paddingLeft = chartWidth * 0.08; // 8% of width for left padding
+            const paddingRight = chartWidth * 0.02; // 2% of width for right padding
+            const paddingTop = chartHeight * 0.05; // 5% of height for top padding
+            let paddingBottom = chartHeight * 0.12; // 12% of height for bottom padding (for labels)
+
+            // Calculate effective drawing area
+            const drawableWidth = chartWidth - paddingLeft - paddingRight;
+            const drawableHeight = chartHeight - paddingTop - paddingBottom;
+
+            // Calculate bar width and spacing dynamically
+            const numberOfBars = data.length;
+            const minBarWidth = 20; // Minimum bar width to ensure readability
+            const maxBarWidth = 80; // Maximum bar width
+            const gapRatio = 0.4; // Ratio of gap to bar width
+
+            let barWidth = drawableWidth / (numberOfBars * (1 + gapRatio));
+            barWidth = Math.max(minBarWidth, Math.min(barWidth, maxBarWidth)); // Clamp bar width
+            
+            const spacing = barWidth * gapRatio;
+            
+            // Adjust total width used by bars and spacing
+            const totalBarsWidth = (barWidth * numberOfBars) + (spacing * (numberOfBars - 1));
+            // Center the bars if they don't fill the entire drawable width
+            const startX = paddingLeft + (drawableWidth - totalBarsWidth) / 2;
+
+            const maxVal = Math.max(...data);
+            const scale = drawableHeight / (maxVal > 0 ? maxVal : 1);
+            
+            // Determine if labels need rotation or more space
+            const estimatedLabelWidth = Math.max(12, chartWidth * 0.025) * 8; // Estimate average label length * font size
+            const labelOverlapThreshold = barWidth * 0.8; // If label is wider than 80% of bar, consider rotation
+            let rotateLabels = false;
+            if (estimatedLabelWidth > labelOverlapThreshold || numberOfBars > 6 && chartWidth < 768) {
+                rotateLabels = true;
+                paddingBottom = chartHeight * 0.20; // Increase bottom padding for rotated labels
+            }
+
+            // Re-calculate drawable height with potentially adjusted paddingBottom
+            const newDrawableHeight = chartHeight - paddingTop - paddingBottom;
+            const newScale = newDrawableHeight / (maxVal > 0 ? maxVal : 1);
+
+            // Draw horizontal grid lines
             ctx.strokeStyle = 'var(--border-color)';
             ctx.lineWidth = 0.5;
-            
             const gridLineCount = 5;
             for (let i = 0; i <= gridLineCount; i++) {
-                const y = chartHeight - bottomPadding - (i * (chartHeight - bottomPadding - topPadding) / gridLineCount);
+                const y = chartHeight - paddingBottom - (i * newDrawableHeight / gridLineCount);
                 ctx.beginPath();
-                ctx.moveTo(30, y);
-                ctx.lineTo(chartWidth - 10, y);
+                ctx.moveTo(paddingLeft, y);
+                ctx.lineTo(chartWidth - paddingRight, y);
                 ctx.stroke();
                 
-                ctx.fillStyle = 'var(--text-primary)';
-                ctx.font = '12px Inter'; // Changed font
+                // Y-axis labels
+                ctx.fillStyle = 'var(--text-secondary)';
+                ctx.font = `${Math.max(10, chartHeight * 0.03)}px Inter`; // Dynamic font size
                 ctx.textAlign = 'right';
-                ctx.fillText(Math.round(maxVal * i / gridLineCount), 25, y + 4);
+                ctx.fillText(Math.round(maxVal * i / gridLineCount), paddingLeft - 5, y + 4);
             }
             
-            for (let i = 0; i < data.length; i++) {
-                const barHeight = data[i] * scale;
-                const x = 40 + i * (barWidth + spacing);
-                const y = chartHeight - bottomPadding - barHeight;
+            // Draw bars and labels
+            for (let i = 0; i < numberOfBars; i++) {
+                const barHeight = data[i] * newScale; // Use newScale
+                const x = startX + i * (barWidth + spacing);
+                const y = chartHeight - paddingBottom - barHeight;
                 
+                // Create gradient for the bar
                 const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
                 const color = colors[i % colors.length]; // Use modulo to cycle through colors
                 gradient.addColorStop(0, color);
@@ -1913,32 +2028,60 @@
                 
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
-                ctx.roundRect(x, y, barWidth, barHeight, [8, 8, 0, 0]);
+                // Draw rounded rectangle for the bar
+                ctx.roundRect(x, y, barWidth, barHeight, [8, 8, 0, 0]); // Top corners rounded
                 ctx.fill();
                 
+                // Add subtle shadow for depth
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
                 ctx.shadowBlur = 5;
                 ctx.shadowOffsetY = 3;
                 ctx.fill();
-                ctx.shadowColor = 'transparent';
+                ctx.shadowColor = 'transparent'; // Reset shadow for subsequent drawings
                 
+                // Value label on top of the bar
                 ctx.fillStyle = 'var(--text-primary)';
-                ctx.font = 'bold 14px Inter'; // Changed font
+                ctx.font = `bold ${Math.max(12, chartHeight * 0.04)}px Inter`; // Dynamic font size
                 ctx.textAlign = 'center';
                 ctx.fillText(data[i], x + barWidth / 2, y - 8);
                 
+                // X-axis labels (player names)
                 ctx.fillStyle = 'var(--text-primary)';
-                ctx.font = '14px Inter'; // Changed font
-                ctx.fillText(labels[i], x + barWidth / 2, chartHeight - 15);
+                ctx.font = `${Math.max(12, chartWidth * 0.025)}px Inter`; // Dynamic font size
+                
+                const labelX = x + barWidth / 2;
+                const labelY = chartHeight - paddingBottom + 15; // Adjusted Y for labels
+
+                if (rotateLabels) {
+                    ctx.save();
+                    ctx.translate(labelX, labelY);
+                    ctx.rotate(Math.PI / 4); // Rotate 45 degrees
+                    ctx.textAlign = 'left'; // Align text from the new origin
+                    ctx.fillText(labels[i], 0, 0);
+                    ctx.restore();
+                } else {
+                    ctx.textAlign = 'center';
+                    // Simple text wrapping or truncation for X-axis labels
+                    const maxLabelWidth = barWidth + spacing;
+                    let displayLabel = labels[i];
+                    if (ctx.measureText(displayLabel).width > maxLabelWidth) {
+                        while (ctx.measureText(displayLabel + "...").width > maxLabelWidth && displayLabel.length > 0) {
+                            displayLabel = displayLabel.slice(0, -1);
+                        }
+                        displayLabel += "...";
+                    }
+                    ctx.fillText(displayLabel, labelX, labelY);
+                }
             }
             
+            // Y-axis title
             ctx.save();
             ctx.fillStyle = 'var(--text-primary)';
-            ctx.font = '14px Inter'; // Changed font
+            ctx.font = `${Math.max(14, chartHeight * 0.045)}px Inter`; // Dynamic font size
             ctx.textAlign = 'center';
-            ctx.translate(15, chartHeight / 2);
+            ctx.translate(paddingLeft / 2, chartHeight / 2);
             ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Tatti Score', 0, 0); // Changed back to Tatti Score
+            ctx.fillText('Tatti Score', 0, 0);
             ctx.restore();
         }
 
@@ -2295,13 +2438,26 @@
 
             const chartData = [];
             const chartLabels = [];
-            const chartColors = currentTheme === 'hacker' ? 
-                ['#00ff00', '#00cc00', '#009900', '#006600', '#003300', '#00ff88'] : 
-                currentTheme === 'royal' ? 
-                ['#9b59b6', '#8e44ad', '#6c3483', '#562d7c', '#401f5c', '#e74c3c'] :
-                currentTheme === 'anime' ?
-                ['#89dceb', '#cba6f7', '#f5c2e7', '#b5a2e2', '#9786f0', '#f2cdcd'] :
-                ['#00f0ff', '#8a2be2', '#ff00d0', '#00aaff', '#ffcc00', '#ff6384'];
+            let chartColors;
+
+            switch (currentTheme) {
+                case 'hacker':
+                    chartColors = ['#00ff00', '#00cc00', '#009900', '#006600', '#003300', '#00ff88'];
+                    break;
+                case 'royal':
+                    chartColors = ['#9b59b6', '#8e44ad', '#6c3483', '#562d7c', '#401f5c', '#e74c3c'];
+                    break;
+                case 'anime':
+                    chartColors = ['#89dceb', '#cba6f7', '#f5c2e7', '#b5a2e2', '#9786f0', '#f2cdcd'];
+                    break;
+                case 'transformers':
+                    chartColors = ['#00cfff', '#8e44ad', '#e10a05', '#ffde00', '#2ecc71', '#a0b8c8']; // Matrix Blue, Decepticon Purple, Autobot Red, Bumblebee Yellow, Success Green, Secondary Text
+                    break;
+                default: // original
+                    chartColors = ['#00f0ff', '#8a2be2', '#ff00d0', '#00aaff', '#ffcc00', '#ff6384'];
+                    break;
+            }
+
 
             sortedPlayers.forEach((player, index) => {
                 chartData.push(player.tattiScore);
